@@ -16,7 +16,6 @@ static const char *shaderSource =
 	"ADD input, input, program.local[1];" // scale
 	"TEX output, input, texture[1], 3D;"
 	"MUL result.color, fragment.color, output;"
-	"MOV result.color.a, 1.0;" // no transparency
 	"END"
 ;
 
@@ -232,7 +231,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	(*s->bindProgram) (GL_FRAGMENT_PROGRAM_ARB, function);
 
 	(*s->programLocalParameter4f) (GL_FRAGMENT_PROGRAM_ARB, 0,
-		ps->scale, ps->scale, ps->scale, 0.0);
+		ps->scale, ps->scale, ps->scale, 1.0);
 	(*s->programLocalParameter4f) (GL_FRAGMENT_PROGRAM_ARB, 1,
 		ps->offset, ps->offset, ps->offset, 0.0);
 
@@ -247,14 +246,14 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	GLfloat y0 = texture->matrix.y0 * height;
 
 	GLfloat verts[] = {
-		0.0, y0,
-			w->attrib.x + width / 4, w->attrib.y + height / 4,
-		0.0, y0 + texture->matrix.yy * height,
-			w->attrib.x + width / 4, w->attrib.y + height * 3 / 4,
+		texture->matrix.xx * width / 2, y0,
+			w->attrib.x + width / 2, w->attrib.y,
+		texture->matrix.xx * width / 2, y0 + texture->matrix.yy * height,
+			w->attrib.x + width / 2, w->attrib.y + height,
 		texture->matrix.xx * width, y0 + texture->matrix.yy * height,
-			w->attrib.x + width * 3 / 4, w->attrib.y + height * 3 / 4,
+			w->attrib.x + width, w->attrib.y + height,
 		texture->matrix.xx * width, y0,
-			w->attrib.x + width * 3 / 4, w->attrib.y + height / 4
+			w->attrib.x + width, w->attrib.y
 	};
 
 	glTexCoordPointer(2, GL_FLOAT, 4 * sizeof(GLfloat), verts);
@@ -263,7 +262,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glEnable(GL_BLEND);
 
-	glColor4us(0x4fff, 0x4fff, 0x4fff, 0x4fff);
+	glColor4us(0x4fff, 0x4fff, 0x4fff, 0xffff);
 	glDrawArrays(GL_QUADS, 0, 4);
 
 	glDisable(GL_TEXTURE_3D);
@@ -274,13 +273,15 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	(*s->bindProgram) (GL_FRAGMENT_PROGRAM_ARB, 0);
 	glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
-	glColor4us(0x2fff, 0x2fff, 0x4fff, 0x9fff);
+	glColor4us(0x4fff, 0x2fff, 0x2fff, 0x9fff);
 	glLineWidth(3.0);
-	glDrawArrays(GL_LINE_LOOP, 0, 4);
+	glDrawArrays(GL_LINES, 0, 2);
 
 	glColor4usv(defaultColor);
 
 	glDisable(GL_BLEND);
+
+	addWindowDamage(w);
 }
 
 
