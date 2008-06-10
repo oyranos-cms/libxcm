@@ -5,20 +5,8 @@
 #include <assert.h>
 #include <string.h>
 
+#include <stdarg.h>
 #include <lcms.h>
-
-static const char *shaderSource =
-	"!!ARBfp1.0"
-	"TEMP input;"
-	"TEMP output;"
-	"TEX input, fragment.texcoord[0], texture[0], %s;"
-	"MUL input, input, program.local[0];" // offset
-	"ADD input, input, program.local[1];" // scale
-	"TEX output, input, texture[1], 3D;"
-	"MUL result.color, fragment.color, output;"
-	"END"
-;
-
 
 
 typedef void (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
@@ -45,19 +33,20 @@ typedef struct {
 
 	DrawWindowTextureProc drawWindowTexture;
 
+	int function, param, unit;
+
 	GLuint clutTexture;
 	GLfloat scale, offset;
 } PrivScreen;
 
 typedef struct {
-	int nRegions;
-	Region *region;
-
-	GLuint function;
+	int dummy;
 } PrivWindow;
 
 
 /**
+ *    Private Data Allocation
+ *
  * These are helper functions that really should be part of compiz. The private
  * data setup and handling currently requires macros and duplicates code all over
  * the place. These functions, along with the object setup code (at the very bottom
@@ -73,8 +62,6 @@ static void *compObjectGetPrivate(CompObject *o)
 		return o->privates[*privateIndex].ptr;
 	}
 }
-
-#define __priv(o) compObjectGetPrivate((CompObject *) o)
 
 static void *compObjectAllocPrivate(CompObject *parent, CompObject *object, int size)
 {
@@ -122,6 +109,53 @@ static void compObjectFreePrivate(CompObject *parent, CompObject *object)
  * Here begins the real code
  */
 
+static int getFetchTarget(CompTexture *texture)
+{
+	if (texture->target == GL_TEXTURE_2D) {
+		return COMP_FETCH_TARGET_2D;
+	} else {
+		return COMP_FETCH_TARGET_RECT;
+	}
+}
+
+static void addDataOp(CompFunctionData *data, const char *format, ...)
+{
+
+	static char buffer[128];
+
+	va_list ap;
+	va_start(ap, format);
+	vsnprintf(buffer, sizeof(buffer), format, ap);
+	va_end(ap);
+
+	addDataOpToFunctionData(data, buffer);
+}
+
+static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int unit)
+{
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	if (ps->function && ps->param == param && ps->unit == unit)
+		return ps->function;
+
+	if (ps->function)
+		destroyFragmentFunction(s, ps->function);
+
+	CompFunctionData *data = createFunctionData();
+
+	addFetchOpToFunctionData(data, "output", NULL, getFetchTarget(texture));
+
+	addDataOp(data, "MAD output, output, program.env[%d], program.env[%d];", param, param + 1);
+	addDataOp(data, "TEX output, output, texture[%d], 3D;", unit);
+	addColorOpToFunctionData (data, "output", "output");
+
+	ps->function = createFragmentFunction(s, "color", data);
+	ps->param = param;
+	ps->unit = unit;
+
+	return ps->function;
+}
+
 static void clutGenerate(CompScreen *s)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -132,7 +166,7 @@ static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 	int r, g, b, n = GRIDPOINTS;
 
  	cmsHPROFILE sRGB = cmsCreate_sRGBProfile();
-	cmsHPROFILE monitor = cmsOpenProfileFromFile("/home/tomc/profile.icc", "r");
+	cmsHPROFILE monitor = cmsOpenProfileFromFile("/home/tomc/Desktop/FakeBRG.icc", "r");
 
 	cmsHTRANSFORM xform = cmsCreateTransform(sRGB, TYPE_RGB_16, monitor, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
 
@@ -172,35 +206,6 @@ static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16, n, n, n, 0, GL_RGB, GL_UNSIGNED_SHORT, clut);
 }
 
-static int getFragmentFunction(CompWindow *w, CompTexture *texture, const FragmentAttrib *attrib)
-{
-	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-
-	CompScreen *s = w->screen;
-
-	if (pw->function)
-		return pw->function;
-
-	glGetError();
-
-	(*s->genPrograms) (1, &pw->function);
-	(*s->bindProgram) (GL_FRAGMENT_PROGRAM_ARB, pw->function);
-
-	char programString[250];
-	sprintf(programString, shaderSource, texture->target == GL_TEXTURE_2D ? "2D" : "RECT");
-	(*s->programString) (GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, strlen (programString), programString);
-
-	GLint errorPos;
-	glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, &errorPos);
-	if (glGetError() != GL_NO_ERROR || errorPos != -1) {
-		compLogMessage (NULL, "cm", CompLogLevelError, "failed to load fragment program: %d", errorPos);
-	}
-
-	(*s->bindProgram) (GL_FRAGMENT_PROGRAM_ARB, 0);
-
-	return pw->function;
-}
-
 static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 {
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
@@ -212,74 +217,64 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 
 static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const FragmentAttrib *attrib, unsigned int mask)
 {
-	/* PrivWindow *pw = compObjectGetPrivate((CompObject *) w); */
-
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	/**
+	 * We draw the left half of the window normally, and the right half with
+	 * color transformation applied.
+	 */
+
+	if (texture != w->texture || (w->type & CompWindowTypeNormalMask) == 0) {
+		UNWRAP(ps, s, drawWindowTexture);
+		(*s->drawWindowTexture) (w, texture, attrib, mask);
+		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
+
+		return;
+	}
+
+	glPushAttrib(GL_SCISSOR_BIT);
+	glEnable(GL_SCISSOR_TEST);
+	GLint width = w->attrib.width, height = w->attrib.height;
+
+	glScissor(w->attrib.x, s->height - w->attrib.y - height, width / 2, height);
+
+	FragmentAttrib fa = *attrib;
 
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, attrib, mask);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
-	/* only draw the window contents, not the decoration */
-	if (texture != w->texture)
-		return;
+	glScissor(w->attrib.x + width / 2, s->height - w->attrib.y - height, width / 2, height);
 
-	int function = getFragmentFunction(w, texture, attrib);
+	int param = allocFragmentParameters(&fa, 2);
+	int unit = allocFragmentTextureUnits(&fa, 1);
 
-	glEnable(GL_FRAGMENT_PROGRAM_ARB);
-	(*s->bindProgram) (GL_FRAGMENT_PROGRAM_ARB, function);
+	int function = getProfileShader(s, texture, param, unit);
+	if (function)
+		addFragmentFunction(&fa, function);
 
-	(*s->programLocalParameter4f) (GL_FRAGMENT_PROGRAM_ARB, 0,
+	(*s->programEnvParameter4f) (GL_FRAGMENT_PROGRAM_ARB, param,
 		ps->scale, ps->scale, ps->scale, 1.0);
-	(*s->programLocalParameter4f) (GL_FRAGMENT_PROGRAM_ARB, 1,
+
+	(*s->programEnvParameter4f) (GL_FRAGMENT_PROGRAM_ARB, param + 1,
 		ps->offset, ps->offset, ps->offset, 0.0);
 
-	(*s->activeTexture) (GL_TEXTURE0_ARB);
-	enableTexture(s, texture, COMP_TEXTURE_FILTER_FAST);
-
-	(*s->activeTexture) (GL_TEXTURE0_ARB + 1);
+	(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
 	glEnable(GL_TEXTURE_3D);
 	glBindTexture(GL_TEXTURE_3D, ps->clutTexture);
+	(*s->activeTexture) (GL_TEXTURE0_ARB);
 
-	GLfloat width = w->attrib.width, height = w->attrib.height;
-	GLfloat y0 = texture->matrix.y0 * height;
+	UNWRAP(ps, s, drawWindowTexture);
+	(*s->drawWindowTexture) (w, texture, &fa, mask);
+	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
-	GLfloat verts[] = {
-		texture->matrix.xx * width / 2, y0,
-			w->attrib.x + width / 2, w->attrib.y,
-		texture->matrix.xx * width / 2, y0 + texture->matrix.yy * height,
-			w->attrib.x + width / 2, w->attrib.y + height,
-		texture->matrix.xx * width, y0 + texture->matrix.yy * height,
-			w->attrib.x + width, w->attrib.y + height,
-		texture->matrix.xx * width, y0,
-			w->attrib.x + width, w->attrib.y
-	};
-
-	glTexCoordPointer(2, GL_FLOAT, 4 * sizeof(GLfloat), verts);
-	glVertexPointer(2, GL_FLOAT, 4 * sizeof(GLfloat), &verts[2]);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glEnable(GL_BLEND);
-
-	glColor4us(0x4fff, 0x4fff, 0x4fff, 0xffff);
-	glDrawArrays(GL_QUADS, 0, 4);
-
+	(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
+	glBindTexture(GL_TEXTURE_3D, 0);
 	glDisable(GL_TEXTURE_3D);
 	(*s->activeTexture) (GL_TEXTURE0_ARB);
 
-	disableTexture(s, texture);
-
-	(*s->bindProgram) (GL_FRAGMENT_PROGRAM_ARB, 0);
-	glDisable(GL_FRAGMENT_PROGRAM_ARB);
-
-	glColor4us(0x4fff, 0x2fff, 0x2fff, 0x9fff);
-	glLineWidth(3.0);
-	glDrawArrays(GL_LINES, 0, 2);
-
-	glColor4usv(defaultColor);
-
-	glDisable(GL_BLEND);
+	glPopAttrib();
 
 	addWindowDamage(w);
 }
@@ -308,6 +303,7 @@ static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *priva
 
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
+	ps->function = 0;
 	clutGenerate(s);
 }
 
@@ -316,10 +312,7 @@ static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *priva
 	/* CompWindow *w = (CompWindow *) object; */
 	PrivWindow *pw = privateData;
 
-	pw->nRegions = 0;
-	pw->region = NULL;
-
-	pw->function = 0;
+	pw->dummy = 0;
 }
 
 static dispatchObjectProc dispatchInitObject[] = {
