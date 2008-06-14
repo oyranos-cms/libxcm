@@ -237,15 +237,32 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	glEnable(GL_SCISSOR_TEST);
 	GLint width = w->attrib.width, height = w->attrib.height;
 
-	glScissor(w->attrib.x, s->height - w->attrib.y - height, width / 2, height);
-
 	FragmentAttrib fa = *attrib;
 
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, attrib, mask);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
+	glEnable(GL_STENCIL_TEST);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	glClear(GL_STENCIL_BUFFER_BIT);
+
+	glPushAttrib(GL_SCISSOR_BIT);
+	glEnable(GL_SCISSOR_TEST);
 	glScissor(w->attrib.x + width / 2, s->height - w->attrib.y - height, width / 2, height);
+
+	glStencilFunc(GL_ALWAYS, 0x1, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	(*w->drawWindowGeometry) (w);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glDisable(GL_STENCIL_TEST);
+
+	glPopAttrib();
 
 	int param = allocFragmentParameters(&fa, 2);
 	int unit = allocFragmentTextureUnits(&fa, 1);
@@ -254,10 +271,10 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	if (function)
 		addFragmentFunction(&fa, function);
 
-	(*s->programEnvParameter4f) (GL_FRAGMENT_PROGRAM_ARB, param,
+	glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param,
 		ps->scale, ps->scale, ps->scale, 1.0);
 
-	(*s->programEnvParameter4f) (GL_FRAGMENT_PROGRAM_ARB, param + 1,
+	glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 1,
 		ps->offset, ps->offset, ps->offset, 0.0);
 
 	(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
@@ -265,10 +282,15 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	glBindTexture(GL_TEXTURE_3D, ps->clutTexture);
 	(*s->activeTexture) (GL_TEXTURE0_ARB);
 
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glStencilFunc(GL_EQUAL, 0x1, ~0);
+
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, &fa, mask);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
+	glDisable(GL_STENCIL_TEST);
 	(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
 	glBindTexture(GL_TEXTURE_3D, 0);
 	glDisable(GL_TEXTURE_3D);
@@ -305,6 +327,11 @@ static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *priva
 
 	ps->function = 0;
 	clutGenerate(s);
+
+	GLint stencilBits = 0;
+	glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
+	if (stencilBits == 0)
+		compLogMessage(s->display, "color", CompLogLevelWarn, "No stencil buffer. Region based color management disabled");
 }
 
 static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *privateData)
