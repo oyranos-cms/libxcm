@@ -1,7 +1,13 @@
 
 #define GL_GLEXT_PROTOTYPES
 
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+
+#include <X11/extensions/Xfixes.h>
+
 #include <compiz-core.h>
+
 #include <assert.h>
 #include <string.h>
 
@@ -10,6 +16,14 @@
 
 
 typedef void (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
+
+
+typedef struct  {
+	Region region;
+
+	GLuint clutTexture;
+	GLfloat scale, offset;
+} ColorRegion;
 
 
 static CompMetadata pluginMetadata;
@@ -26,11 +40,15 @@ typedef struct {
 	int childPrivateIndex;
 
 	HandleEventProc handleEvent;
+
+	Atom cmRegionsAtom;
+	Atom cmPropertyType;
 } PrivDisplay;
 
 typedef struct {
 	int childPrivateIndex;
 
+	DrawWindowProc drawWindow;
 	DrawWindowTextureProc drawWindowTexture;
 
 	int function, param, unit;
@@ -40,7 +58,7 @@ typedef struct {
 } PrivScreen;
 
 typedef struct {
-	int dummy;
+	XserverRegion region;
 } PrivWindow;
 
 
@@ -213,10 +231,101 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 	UNWRAP(pd, d, handleEvent);
 	(*d->handleEvent) (d, event);
 	WRAP(pd, d, handleEvent, pluginHandleEvent);
+
+	switch (event->type) {
+	case PropertyNotify:
+		if (event->xproperty.atom == pd->cmRegionsAtom) {
+			CompWindow *w = findWindowAtDisplay (d, event->xproperty.window);
+			if (w == NULL)
+				return;
+
+			//compLogMessage(d, "color", CompLogLevelWarn, "changed color regions on window %x", event->xproperty.window);
+
+			PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+			
+			Atom actual;
+			int format;
+			unsigned long n, left;
+			unsigned char *data;
+
+			int result = XGetWindowProperty(d->display, w->id, pd->cmRegionsAtom,
+						     0L, 1L, False, pd->cmPropertyType, &actual, &format,
+						     &n, &left, &data);
+
+			//compLogMessage(d, "color", CompLogLevelWarn, "%d %d %p", result, n, data);
+			if (result == Success && n && data) {
+				//compLogMessage(d, "color", CompLogLevelWarn, "got region");
+				memcpy(&pw->region, data, sizeof(pw->region));
+				XFree(data);
+			} else {
+				pw->region = None;
+			}
+
+			addWindowDamage(w);
+		}
+		break;
+	}
+}
+
+static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, const FragmentAttrib *attrib, Region region, unsigned int mask)
+{
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+
+	CompScreen *s = w->screen;
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	//compLogMessage(s->display, "color", CompLogLevelWarn, "draw window %p", w);
+
+	if (pw->region != None) {
+		int nRects = 0;
+		XRectangle *rect = XFixesFetchRegion(s->display->display, pw->region, &nRects);
+
+		glEnable(GL_STENCIL_TEST);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+		w->vCount = w->indexCount = 0;
+		(*w->screen->addWindowGeometry) (w, &w->matrix, 1, w->region, region);
+		glClear(GL_STENCIL_BUFFER_BIT);
+
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+		for (int i = 0; i < nRects; ++i) {
+			glStencilFunc(GL_ALWAYS, i + 1, ~0);
+
+			REGION tmpRegion;
+			tmpRegion.rects = &tmpRegion.extents;
+			tmpRegion.numRects = tmpRegion.size = 1;
+
+			tmpRegion.extents.x1 = w->attrib.x + rect->x;
+			tmpRegion.extents.x2 = w->attrib.x + rect->x + rect->width;
+			tmpRegion.extents.y1 = w->attrib.y + rect->y;
+			tmpRegion.extents.y2 = w->attrib.y + rect->y + rect->height;
+
+			w->vCount = w->indexCount = 0;
+			(*w->screen->addWindowGeometry) (w, &w->matrix, 1, &tmpRegion, region);
+
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			(*w->drawWindowGeometry) (w);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			compLogMessage(s->display, "color", CompLogLevelWarn, "rect %d: %d %d %d %d", i, rect->x, rect->y, rect->width, rect->height);
+		}
+
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glDisable(GL_STENCIL_TEST);
+	}
+
+	UNWRAP(ps, s, drawWindow);
+	Bool status = (*s->drawWindow) (w, transform, attrib, region, mask);
+	WRAP(ps, s, drawWindow, pluginDrawWindow);
+
+	return status;
 }
 
 static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const FragmentAttrib *attrib, unsigned int mask)
 {
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+	
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
 
@@ -225,7 +334,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	 * color transformation applied.
 	 */
 
-	if (texture != w->texture || (w->type & CompWindowTypeNormalMask) == 0) {
+	if (texture != w->texture || (w->type & CompWindowTypeNormalMask) == 0 || pw->region == None) {
 		UNWRAP(ps, s, drawWindowTexture);
 		(*s->drawWindowTexture) (w, texture, attrib, mask);
 		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
@@ -233,36 +342,11 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 		return;
 	}
 
-	glPushAttrib(GL_SCISSOR_BIT);
-	glEnable(GL_SCISSOR_TEST);
-	GLint width = w->attrib.width, height = w->attrib.height;
-
 	FragmentAttrib fa = *attrib;
 
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, attrib, mask);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
-
-	glEnable(GL_STENCIL_TEST);
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
-	glClear(GL_STENCIL_BUFFER_BIT);
-
-	glPushAttrib(GL_SCISSOR_BIT);
-	glEnable(GL_SCISSOR_TEST);
-	glScissor(w->attrib.x + width / 2, s->height - w->attrib.y - height, width / 2, height);
-
-	glStencilFunc(GL_ALWAYS, 0x1, ~0);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	(*w->drawWindowGeometry) (w);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glDisable(GL_STENCIL_TEST);
-
-	glPopAttrib();
 
 	int param = allocFragmentParameters(&fa, 2);
 	int unit = allocFragmentTextureUnits(&fa, 1);
@@ -316,6 +400,9 @@ static void pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *priv
 	PrivDisplay *pd = privateData;
 
 	WRAP(pd, d, handleEvent, pluginHandleEvent);
+
+	pd->cmRegionsAtom = XInternAtom(d->display, "_NET_CM_REGIONS", False);
+	pd->cmPropertyType = XInternAtom(d->display, "_NET_CM_TYPE", False);
 }
 
 static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *privateData)
@@ -323,6 +410,7 @@ static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *priva
 	CompScreen *s = (CompScreen *) object;
 	PrivScreen *ps = privateData;
 
+	WRAP(ps, s, drawWindow, pluginDrawWindow);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
 	ps->function = 0;
@@ -339,7 +427,7 @@ static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *priva
 	/* CompWindow *w = (CompWindow *) object; */
 	PrivWindow *pw = privateData;
 
-	pw->dummy = 0;
+	pw->region = None;
 }
 
 static dispatchObjectProc dispatchInitObject[] = {
@@ -368,6 +456,7 @@ static void pluginFiniScreen(CompPlugin *plugin, CompObject *object, void *priva
 	CompScreen *s = (CompScreen *) object;
 	PrivScreen *ps = privateData;
 
+	UNWRAP(ps, s, drawWindow);
 	UNWRAP(ps, s, drawWindowTexture);
 }
 
