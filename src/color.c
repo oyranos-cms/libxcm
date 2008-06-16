@@ -304,9 +304,11 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 			w->vCount = w->indexCount = 0;
 			(*w->screen->addWindowGeometry) (w, &w->matrix, 1, &tmpRegion, region);
 
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-			(*w->drawWindowGeometry) (w);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			if (w->vCount > 0) {
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				(*w->drawWindowGeometry) (w);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			}
 
 			compLogMessage(s->display, "color", CompLogLevelWarn, "rect %d: %d %d %d %d", i, rect->x, rect->y, rect->width, rect->height);
 		}
