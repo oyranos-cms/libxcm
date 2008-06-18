@@ -41,8 +41,12 @@ typedef struct {
 
 	HandleEventProc handleEvent;
 
-	Atom cmRegionsAtom;
-	Atom cmPropertyType;
+	/* ClientMessage sent by the application */
+	Atom netColorManagement;
+
+	/* Window properties */
+	Atom netColorRegions;
+	Atom netColorType;
 } PrivDisplay;
 
 typedef struct {
@@ -58,7 +62,10 @@ typedef struct {
 } PrivScreen;
 
 typedef struct {
-	XserverRegion region;
+	unsigned long nRegions;
+	Region *region;
+
+	unsigned long enabled;
 } PrivWindow;
 
 
@@ -224,6 +231,66 @@ static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16, n, n, n, 0, GL_RGB, GL_UNSIGNED_SHORT, clut);
 }
 
+static Region convertRegion(Display *dpy, XserverRegion src)
+{
+	Region ret = XCreateRegion();
+
+	int nRects = 0;
+	XRectangle *rect = XFixesFetchRegion(dpy, src, &nRects);
+
+	for (int i = 0; i < nRects; ++i) {
+		XUnionRectWithRegion(&rect[i], ret, ret);
+	}
+
+	XFree(rect);
+
+	return ret;
+}
+
+static void updateWindowRegions(CompDisplay *d, CompWindow *w)
+{
+	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
+
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+      
+	if (pw->nRegions) {
+		for (int i = 0; i < pw->nRegions; ++i)
+			XDestroyRegion(pw->region[i]);
+
+		pw->nRegions = 0;
+		free(pw->region);
+	}
+
+	Atom actual;
+	int format;
+	unsigned long n, left, *data;
+
+	int result = XGetWindowProperty(d->display, w->id, pd->netColorRegions, 0, ~0, False,
+					pd->netColorType, &actual, &format, &n, &left, (unsigned char **) &data);
+
+	if (result != Success) {
+		return;
+	} else {
+		pw->region = malloc(n * sizeof(Region));
+		if (pw->region == NULL)
+			return;
+
+		pw->nRegions = n;
+
+		compLogMessage(w->screen->display, "color", CompLogLevelWarn, "got %d regions", n);		
+ 
+		for (int i = 0; i < n; ++i) {
+			XserverRegion serverRegion = data[i];
+			pw->region[i] = convertRegion(d->display, serverRegion);
+			compLogMessage(d, "color", CompLogLevelWarn, " has %d rectangles", pw->region[i]->numRects);		
+
+		}
+
+		XFree(data);
+	}
+
+}
+
 static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 {
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
@@ -233,38 +300,47 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 	WRAP(pd, d, handleEvent, pluginHandleEvent);
 
 	switch (event->type) {
-	case PropertyNotify:
-		if (event->xproperty.atom == pd->cmRegionsAtom) {
-			CompWindow *w = findWindowAtDisplay (d, event->xproperty.window);
+	case ClientMessage:
+		if (event->xclient.message_type == pd->netColorManagement) {
+			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
 			if (w == NULL)
 				return;
 
-			//compLogMessage(d, "color", CompLogLevelWarn, "changed color regions on window %x", event->xproperty.window);
+			long enable = event->xclient.data.l[0];
+			compLogMessage(d, "color", CompLogLevelWarn, "received color management request: %i", enable);
+
+			updateWindowRegions(d, w);
+			addWindowDamage(w);
 
 			PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-			
-			Atom actual;
-			int format;
-			unsigned long n, left;
-			unsigned char *data;
-
-			int result = XGetWindowProperty(d->display, w->id, pd->cmRegionsAtom,
-						     0L, 1L, False, pd->cmPropertyType, &actual, &format,
-						     &n, &left, &data);
-
-			//compLogMessage(d, "color", CompLogLevelWarn, "%d %d %p", result, n, data);
-			if (result == Success && n && data) {
-				//compLogMessage(d, "color", CompLogLevelWarn, "got region");
-				memcpy(&pw->region, data, sizeof(pw->region));
-				XFree(data);
-			} else {
-				pw->region = None;
-			}
-
-			addWindowDamage(w);
+			pw->enabled = enable;
 		}
 		break;
 	}
+}
+
+static Region absoluteRegion(CompWindow *w, Region region)
+{
+	static REGION ret;
+	static BOX rects[128];
+
+	ret.numRects = region->numRects;
+	ret.rects = rects;
+
+	memset(&ret.extents, 0, sizeof(ret.extents));
+
+	for (int i = 0; i < region->numRects; ++i) {
+		rects[i].x1 = region->rects[i].x1 + w->attrib.x;
+		rects[i].x2 = region->rects[i].x2 + w->attrib.x;
+		rects[i].y1 = region->rects[i].y1 + w->attrib.y;
+		rects[i].y2 = region->rects[i].y2 + w->attrib.y;
+
+		EXTENTS(&rects[i], &ret);
+	}
+
+	//compLogMessage(w->screen->display, "color", CompLogLevelWarn, "region %d %d %d %d", ret.extents.x1, ret.extents.x2, ret.extents.y1, ret.extents.y2);
+
+	return &ret;
 }
 
 static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, const FragmentAttrib *attrib, Region region, unsigned int mask)
@@ -276,10 +352,7 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 
 	//compLogMessage(s->display, "color", CompLogLevelWarn, "draw window %p", w);
 
-	if (pw->region != None) {
-		int nRects = 0;
-		XRectangle *rect = XFixesFetchRegion(s->display->display, pw->region, &nRects);
-
+	if (pw->nRegions > 0) {
 		glEnable(GL_STENCIL_TEST);
 		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
@@ -289,28 +362,19 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-		for (int i = 0; i < nRects; ++i) {
+		for (int i = 0; i < pw->nRegions; ++i) {
 			glStencilFunc(GL_ALWAYS, i + 1, ~0);
 
-			REGION tmpRegion;
-			tmpRegion.rects = &tmpRegion.extents;
-			tmpRegion.numRects = tmpRegion.size = 1;
-
-			tmpRegion.extents.x1 = w->attrib.x + rect->x;
-			tmpRegion.extents.x2 = w->attrib.x + rect->x + rect->width;
-			tmpRegion.extents.y1 = w->attrib.y + rect->y;
-			tmpRegion.extents.y2 = w->attrib.y + rect->y + rect->height;
-
+			Region tmp = absoluteRegion(w, pw->region[i]);
+		       
 			w->vCount = w->indexCount = 0;
-			(*w->screen->addWindowGeometry) (w, &w->matrix, 1, &tmpRegion, region);
+			(*w->screen->addWindowGeometry) (w, &w->matrix, 1, tmp, region);
 
 			if (w->vCount > 0) {
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				(*w->drawWindowGeometry) (w);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			}
-
-			compLogMessage(s->display, "color", CompLogLevelWarn, "rect %d: %d %d %d %d", i, rect->x, rect->y, rect->width, rect->height);
 		}
 
 		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -331,12 +395,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
 
-	/**
-	 * We draw the left half of the window normally, and the right half with
-	 * color transformation applied.
-	 */
-
-	if (texture != w->texture || (w->type & CompWindowTypeNormalMask) == 0 || pw->region == None) {
+	if (texture != w->texture || pw->nRegions == 0 || pw->enabled == 0) {
 		UNWRAP(ps, s, drawWindowTexture);
 		(*s->drawWindowTexture) (w, texture, attrib, mask);
 		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
@@ -344,45 +403,47 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 		return;
 	}
 
-	FragmentAttrib fa = *attrib;
+	glEnable(GL_STENCIL_TEST);    
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	glStencilFunc(GL_EQUAL, 0, ~0);
 
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, attrib, mask);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
-	int param = allocFragmentParameters(&fa, 2);
-	int unit = allocFragmentTextureUnits(&fa, 1);
+	for (int i = 0; i < pw->nRegions; ++i) {
+		FragmentAttrib fa = *attrib;
 
-	int function = getProfileShader(s, texture, param, unit);
-	if (function)
-		addFragmentFunction(&fa, function);
+		int param = allocFragmentParameters(&fa, 2);
+		int unit = allocFragmentTextureUnits(&fa, 1);
 
-	glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param,
-		ps->scale, ps->scale, ps->scale, 1.0);
+		int function = getProfileShader(s, texture, param, unit);
+		if (function)
+			addFragmentFunction(&fa, function);
 
-	glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 1,
-		ps->offset, ps->offset, ps->offset, 0.0);
+		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 0, ps->scale, ps->scale, ps->scale, 1.0);
 
-	(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
-	glEnable(GL_TEXTURE_3D);
-	glBindTexture(GL_TEXTURE_3D, ps->clutTexture);
-	(*s->activeTexture) (GL_TEXTURE0_ARB);
+		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 1, ps->offset, ps->offset, ps->offset, 0.0);
 
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	glStencilFunc(GL_EQUAL, 0x1, ~0);
+		(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
+		glEnable(GL_TEXTURE_3D);
+		glBindTexture(GL_TEXTURE_3D, ps->clutTexture);
+		(*s->activeTexture) (GL_TEXTURE0_ARB);
 
-	UNWRAP(ps, s, drawWindowTexture);
-	(*s->drawWindowTexture) (w, texture, &fa, mask);
-	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
+		glStencilFunc(GL_EQUAL, i + 1, ~0);
+
+		UNWRAP(ps, s, drawWindowTexture);
+		(*s->drawWindowTexture) (w, texture, &fa, mask);
+		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
+
+		(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
+		glBindTexture(GL_TEXTURE_3D, 0);
+		glDisable(GL_TEXTURE_3D);
+		(*s->activeTexture) (GL_TEXTURE0_ARB);
+	}
 
 	glDisable(GL_STENCIL_TEST);
-	(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
-	glBindTexture(GL_TEXTURE_3D, 0);
-	glDisable(GL_TEXTURE_3D);
-	(*s->activeTexture) (GL_TEXTURE0_ARB);
-
-	glPopAttrib();
 
 	addWindowDamage(w);
 }
@@ -403,8 +464,10 @@ static void pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *priv
 
 	WRAP(pd, d, handleEvent, pluginHandleEvent);
 
-	pd->cmRegionsAtom = XInternAtom(d->display, "_NET_CM_REGIONS", False);
-	pd->cmPropertyType = XInternAtom(d->display, "_NET_CM_TYPE", False);
+	pd->netColorManagement = XInternAtom(d->display, "_NET_COLOR_MANAGEMENT", False);
+
+	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
+	pd->netColorType = XInternAtom(d->display, "_NET_COLOR_TYPE", False);
 }
 
 static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *privateData)
@@ -429,7 +492,10 @@ static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *priva
 	/* CompWindow *w = (CompWindow *) object; */
 	PrivWindow *pw = privateData;
 
-	pw->region = None;
+	pw->nRegions = 0;
+	pw->region = NULL;
+
+	pw->enabled = 0;
 }
 
 static dispatchObjectProc dispatchInitObject[] = {

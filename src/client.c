@@ -7,6 +7,8 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
+#include <stdio.h>
+
 int main(int argc, char *argv[])
 {
 	Display *dpy = XOpenDisplay(NULL);
@@ -19,7 +21,7 @@ int main(int argc, char *argv[])
 	XSetWindowAttributes attrs;
 	attrs.colormap = cmap;
 	attrs.border_pixel = 0;
-	attrs.event_mask = StructureNotifyMask | ExposureMask;
+	attrs.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask;
 
 	Window w = XCreateWindow(dpy, XRootWindow(dpy, screen), 200, 200, 300, 300, 5, 24,
 				 InputOutput, DefaultVisual(dpy, screen),
@@ -37,12 +39,19 @@ int main(int argc, char *argv[])
 	 * Color management
 	 */
 
-	XRectangle rec = { 100, 100, 150, 100 };
-	XserverRegion reg = XFixesCreateRegion(dpy, &rec, 1);
+	/* Region 1, one rectangle */
+	XRectangle rec1 = { 100, 50, 150, 80 };
+	XserverRegion reg1 = XFixesCreateRegion(dpy, &rec1, 1);
+       
+	/* Region 2, two rectangles */
+	XRectangle rec2[2] = { { 50, 200, 80, 50 }, { 50, 200, 50, 80 } };
+	XserverRegion reg2 = XFixesCreateRegion(dpy, rec2, 2);
 
-	Atom cmRegionsAtom = XInternAtom(dpy, "_NET_CM_REGIONS", False);
-	Atom cmPropertyType = XInternAtom(dpy, "_NET_CM_TYPE", False);
-	XChangeProperty(dpy, w, cmRegionsAtom, cmPropertyType, 32, PropModeReplace, &reg, 1);
+	Atom cmRegionsAtom = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
+	Atom cmPropertyType = XInternAtom(dpy, "_NET_COLOR_TYPE", False);
+
+	unsigned long data[2] = { reg1, reg2 };
+	XChangeProperty(dpy, w, cmRegionsAtom, cmPropertyType, 32, PropModeReplace, (unsigned char *) &data, 2);
 
 	for (;;) {
 		XEvent event;
@@ -71,6 +80,21 @@ int main(int argc, char *argv[])
 			cairo_rectangle(cr, 0.5, 0, 0.5, 0.5);
 			cairo_set_source_rgba(cr, 0, 0, 1, 0.40);
 			cairo_fill(cr);
+		} else if (event.type == KeyPress) {
+			XClientMessageEvent xev;
+			static long enable = 0;
+
+			xev.type = ClientMessage;
+			xev.window = w;
+			xev.message_type = XInternAtom(dpy, "_NET_COLOR_MANAGEMENT", False);
+			xev.format = 32;
+
+			++enable;
+			xev.data.l[0] = enable % 2;
+
+			XSendEvent(dpy, RootWindow(dpy, screen), False, ExposureMask, (XEvent *) &xev);
+
+			printf("Sent color manangement request: %i\n", enable % 2);
 		}
 	}
 
