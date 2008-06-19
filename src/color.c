@@ -143,19 +143,6 @@ static int getFetchTarget(CompTexture *texture)
 	}
 }
 
-static void addDataOp(CompFunctionData *data, const char *format, ...)
-{
-
-	static char buffer[128];
-
-	va_list ap;
-	va_start(ap, format);
-	vsnprintf(buffer, sizeof(buffer), format, ap);
-	va_end(ap);
-
-	addDataOpToFunctionData(data, buffer);
-}
-
 static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int unit)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -170,8 +157,8 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 
 	addFetchOpToFunctionData(data, "output", NULL, getFetchTarget(texture));
 
-	addDataOp(data, "MAD output, output, program.env[%d], program.env[%d];", param, param + 1);
-	addDataOp(data, "TEX output, output, texture[%d], 3D;", unit);
+	addDataOpToFunctionData(data, "MAD output, output, program.env[%d], program.env[%d];", param, param + 1);
+	addDataOpToFunctionData(data, "TEX output, output, texture[%d], 3D;", unit);
 	addColorOpToFunctionData (data, "output", "output");
 
 	ps->function = createFragmentFunction(s, "color", data);
