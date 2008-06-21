@@ -255,27 +255,24 @@ static void updateWindowRegions(CompDisplay *d, CompWindow *w)
 	int result = XGetWindowProperty(d->display, w->id, pd->netColorRegions, 0, ~0, False,
 					pd->netColorType, &actual, &format, &n, &left, (unsigned char **) &data);
 
-	if (result != Success) {
+	if (result != Success)
+		return;     
+
+	pw->region = malloc(n * sizeof(Region));
+	if (pw->region == NULL)
 		return;
-	} else {
-		pw->region = malloc(n * sizeof(Region));
-		if (pw->region == NULL)
-			return;
 
-		pw->nRegions = n;
+	pw->nRegions = n;
 
-		compLogMessage(w->screen->display, "color", CompLogLevelWarn, "got %d regions", n);		
+	compLogMessage(w->screen->display, "color", CompLogLevelWarn, "got %d regions", n);		
  
-		for (int i = 0; i < n; ++i) {
-			XserverRegion serverRegion = data[i];
-			pw->region[i] = convertRegion(d->display, serverRegion);
-			compLogMessage(d, "color", CompLogLevelWarn, " has %d rectangles", pw->region[i]->numRects);		
-
-		}
-
-		XFree(data);
+	for (int i = 0; i < n; ++i) {
+		XserverRegion serverRegion = data[i];
+		pw->region[i] = convertRegion(d->display, serverRegion);
+		compLogMessage(d, "color", CompLogLevelWarn, " has %d rectangles", pw->region[i]->numRects);
 	}
 
+	XFree(data);
 }
 
 static void pluginHandleEvent(CompDisplay *d, XEvent *event)
