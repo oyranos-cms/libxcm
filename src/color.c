@@ -16,6 +16,9 @@
 
 #include "xcolor.h"
 
+#define GRIDPOINTS 64
+static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
+
 
 typedef void (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
 
@@ -74,6 +77,12 @@ typedef struct {
 	/* regions attached to the window */
 	unsigned long nRegions;
 	XColorRegion **region;
+
+	/* active stack range */
+	unsigned long active[2];
+
+	/* local copies of the active regions */
+	ColorRegion local[16];
 } PrivWindow;
 
 
@@ -179,9 +188,6 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 static void clutGenerate(CompScreen *s)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
-
-#define GRIDPOINTS 64
-static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 
 	int r, g, b, n = GRIDPOINTS;
 
@@ -344,6 +350,90 @@ out:
 	XFree(data);
 }
 
+static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
+{
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	for (unsigned long i = 0; i < ps->nProfiles; ++i) {
+		if (uuid_compare(uuid, ps->profile[i]->uuid) == 0) {
+			*nBytes = ntohl(ps->profile[i]->size);
+			return ps->profile[i] + 1;
+		}
+	}
+
+	return NULL;
+}
+
+static void activateRegions(CompWindow *w, unsigned long active[2])
+{
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+
+	/* free existing data structures */
+	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+		XDestroyRegion(pw->local[i].region);
+		glDeleteTextures(1, &pw->local[i].clutTexture);
+	}
+
+	if (active[1] > pw->nRegions)
+		return;
+
+	memcpy(pw->active, active, 2 * sizeof(unsigned long));
+
+	/* regenerate local region variables */
+	for (unsigned long i = 0; i < active[1] - active[0]; ++i) {
+		pw->local[i].clutTexture = 0;
+		pw->local[i].region = convertRegion(w->screen->display->display, ntohl(pw->region[i + pw->active[0]]->region));
+
+		int r, g, b, n = GRIDPOINTS;
+
+ 		cmsHPROFILE sRGB = cmsCreate_sRGBProfile();
+
+		unsigned long nBytes;
+		void *data = findProfileBlob(w->screen, pw->region[i + pw->active[0]]->uuid, &nBytes);
+		if (data == NULL){
+			fprintf(stderr, "Blob not found!\n");
+			continue;
+		}
+
+		cmsHPROFILE window = cmsOpenProfileFromMem(data, nBytes);
+		cmsHTRANSFORM xform = cmsCreateTransform(window, TYPE_RGB_16, sRGB, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
+
+		if (xform == NULL) {
+			fprintf(stderr, "Failed to create transformation\n");
+			continue;
+		}
+
+		pw->local[i].scale = (double) (n - 1) / n;
+		pw->local[i].offset = 1.0 / (2 * n);
+
+		unsigned short in[3];
+		for (r = 0; r < n; r++) {
+			in[0] = floor ((double) r / (n - 1) * 65535.0 + 0.5);
+			for (g = 0; g < n; g++) {
+				in[1] = floor ((double) g / (n - 1) * 65535.0 + 0.5);
+				for (b = 0; b < n; b++) {
+					in[2] = floor ((double) b / (n - 1) * 65535.0 + 0.5);
+					cmsDoTransform(xform, in, clut[b][g][r], 1);
+				}
+			}
+		}
+		cmsDeleteTransform(xform);
+		cmsCloseProfile(window);
+		cmsCloseProfile(sRGB);
+
+		glGenTextures(1, &pw->local[i].clutTexture);
+		glBindTexture(GL_TEXTURE_3D, pw->local[i].clutTexture);
+
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16, n, n, n, 0, GL_RGB, GL_UNSIGNED_SHORT, clut);
+	}
+}
+
 static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 {
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
@@ -365,6 +455,10 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 	case ClientMessage:
 		if (event->xclient.message_type == pd->netColorManagement) {
 			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
+
+			unsigned long active[2] = { event->xclient.data.l[0], event->xclient.data.l[1] };
+			activateRegions(w, active);
+
 			addWindowDamage(w);
 		}
 		break;
@@ -533,7 +627,9 @@ static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *priva
 	WRAP(ps, s, drawWindow, pluginDrawWindow);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
+	ps->nProfiles = 0;
 	ps->function = 0;
+
 	clutGenerate(s);
 
 	GLint stencilBits = 0;
@@ -548,7 +644,7 @@ static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *priva
 	PrivWindow *pw = privateData;
 
 	pw->nRegions = 0;
-	pw->region = NULL;
+	pw->active[0] = pw->active[1] = 0;
 }
 
 static dispatchObjectProc dispatchInitObject[] = {

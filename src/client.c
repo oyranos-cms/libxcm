@@ -94,7 +94,8 @@ int main(int argc, char *argv[])
 			xev.format = 32;
 
 			++enable;
-			xev.data.l[0] = enable % 2;
+			xev.data.l[0] = 0;
+			xev.data.l[1] = enable % 2;
 
 			XSendEvent(dpy, RootWindow(dpy, screen), False, ExposureMask, (XEvent *) &xev);
 

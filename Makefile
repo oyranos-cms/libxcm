@@ -1,6 +1,6 @@
 
 CFLAGS = -Wall -Iinclude -std=c99 -g -ggdb `pkg-config --cflags compiz`
-LIBS   = `pkg-config --libs compiz` -llcms
+LIBS   = `pkg-config --libs compiz` -llcms -luuid
 
 OBJS   = src/color.o
 
