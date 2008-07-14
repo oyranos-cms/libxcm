@@ -5,6 +5,7 @@
 #include <X11/Xatom.h>
 
 #include <X11/extensions/Xfixes.h>
+#include <X11/extensions/Xrandr.h>
 
 #include <compiz-core.h>
 
@@ -29,6 +30,13 @@ typedef struct  {
 	GLuint clutTexture;
 	GLfloat scale, offset;
 } ColorRegion;
+
+
+typedef struct {
+	long x, y;
+	unsigned long width, height;
+	cmsHPROFILE profile;
+} ColorOutput;
 
 
 static CompMetadata pluginMetadata;
@@ -68,6 +76,10 @@ typedef struct {
 
 	/* compiz fragement function */
 	int function, param, unit;
+
+	/* XRandR */
+	unsigned long nOutputs;
+	ColorOutput *output;
 } PrivScreen;
 
 typedef struct {
@@ -313,11 +325,15 @@ static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 static void activateRegions(CompWindow *w, unsigned long active[2])
 {
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) w->screen);
 
 	/* free existing data structures */
 	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
 		XDestroyRegion(pw->local[i].region);
+		pw->local[i].region = NULL;
+
 		glDeleteTextures(1, &pw->local[i].clutTexture);
+		pw->local[i].clutTexture = 0;
 	}
 
 	if (active[1] > pw->nRegions)
@@ -327,27 +343,24 @@ static void activateRegions(CompWindow *w, unsigned long active[2])
 
 	/* regenerate local region variables */
 	for (unsigned long i = 0; i < active[1] - active[0]; ++i) {
-		pw->local[i].clutTexture = 0;
-		pw->local[i].region = convertRegion(w->screen->display->display, ntohl(pw->region[i + pw->active[0]]->region));
-
 		int r, g, b, n = GRIDPOINTS;
-
- 		cmsHPROFILE sRGB = cmsCreate_sRGBProfile();
 
 		unsigned long nBytes;
 		void *data = findProfileBlob(w->screen, pw->region[i + pw->active[0]]->uuid, &nBytes);
 		if (data == NULL){
-			fprintf(stderr, "Blob not found!\n");
+			fprintf(stderr, "Profile not found!\n");
 			continue;
 		}
 
 		cmsHPROFILE window = cmsOpenProfileFromMem(data, nBytes);
-		cmsHTRANSFORM xform = cmsCreateTransform(window, TYPE_RGB_16, sRGB, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
+		cmsHTRANSFORM xform = cmsCreateTransform(window, TYPE_RGB_16, ps->output[0].profile, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
 
 		if (xform == NULL) {
 			fprintf(stderr, "Failed to create transformation\n");
 			continue;
 		}
+
+		pw->local[i].region = convertRegion(w->screen->display->display, ntohl(pw->region[i + pw->active[0]]->region));
 
 		pw->local[i].scale = (double) (n - 1) / n;
 		pw->local[i].offset = 1.0 / (2 * n);
@@ -363,9 +376,9 @@ static void activateRegions(CompWindow *w, unsigned long active[2])
 				}
 			}
 		}
+
 		cmsDeleteTransform(xform);
 		cmsCloseProfile(window);
-		cmsCloseProfile(sRGB);
 
 		glGenTextures(1, &pw->local[i].clutTexture);
 		glBindTexture(GL_TEXTURE_3D, pw->local[i].clutTexture);
@@ -456,6 +469,9 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+		if (pw->local[i].region == NULL)
+			continue;
+
 		glStencilFunc(GL_ALWAYS, i + 1, ~0);
 
 		Region tmp = absoluteRegion(w, pw->local[i].region);
@@ -493,6 +509,9 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
 	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+		if (pw->local[i].region == NULL)
+			continue;
+
 		FragmentAttrib fa = *attrib;
 
 		int param = allocFragmentParameters(&fa, 2);
@@ -525,6 +544,54 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	glDisable(GL_STENCIL_TEST);
 
 	addWindowDamage(w);
+}
+
+static void updateOutputConfiguration(CompScreen *s)
+{
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	if (ps->nOutputs > 0) {
+		for (unsigned long i = 0; i < ps->nOutputs; ++i)
+			cmsCloseProfile(ps->output[i].profile);
+
+		free(ps->output);
+	}
+
+	XRRScreenResources *res = XRRGetScreenResources(s->display->display, s->root);
+
+	ps->nOutputs = res->noutput;
+	ps->output = malloc(ps->nOutputs * sizeof(ColorOutput));
+	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
+		XRROutputInfo *oinfo = XRRGetOutputInfo(s->display->display, res, res->outputs[i]);
+		XRRCrtcInfo *cinfo = XRRGetCrtcInfo(s->display->display, res, oinfo->crtc);
+
+		ps->output[i].x = cinfo->x;
+		ps->output[i].y = cinfo->x;
+		ps->output[i].width = cinfo->width;
+		ps->output[i].height = cinfo->height;
+
+		Atom actualType, outputProfile = XInternAtom(s->display->display, "PROFILE", False);
+		int actualFormat, result;
+		unsigned long n, left;
+		unsigned char *data;
+
+		result = XRRGetOutputProperty(s->display->display, res->outputs[i],
+		      outputProfile, 0, ~0, False, False, AnyPropertyType, 
+		      &actualType, &actualFormat, &n, &left, &data);
+
+		if (result == Success && n > 0) {
+			printf("Output '%s' has attached profile.\n", oinfo->name);
+			ps->output[i].profile = cmsOpenProfileFromMem(data, n);
+		} else {
+			printf("Assuming sRGB profile for output '%s'\n", oinfo->name);
+			ps->output[i].profile = cmsCreate_sRGBProfile();
+		}
+
+		XRRFreeCrtcInfo(cinfo);
+		XRRFreeOutputInfo(oinfo);
+	}
+
+	XRRFreeScreenResources(res);
 }
 
 
@@ -565,6 +632,10 @@ static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *priva
 	glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
 	if (stencilBits == 0)
 		compLogMessage(s->display, "color", CompLogLevelWarn, "No stencil buffer. Region based color management disabled");
+
+	/* XRandR outputs */
+	ps->nOutputs = 0;
+	updateOutputConfiguration(s);
 }
 
 static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *privateData)
