@@ -71,10 +71,9 @@ typedef struct {
 } PrivScreen;
 
 typedef struct {
+	/* regions attached to the window */
 	unsigned long nRegions;
-	Region *region;
-
-	unsigned long enabled;
+	XColorRegion **region;
 } PrivWindow;
 
 
@@ -301,44 +300,47 @@ out:
 	XFree(data);
 }
 
-static void updateWindowRegions(CompDisplay *d, CompWindow *w)
+static void updateWindowRegions(CompWindow *w)
 {
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+
+	CompDisplay *d = w->screen->display;
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
 
-	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-      
+	/* free existing data structures */
 	if (pw->nRegions) {
-		for (int i = 0; i < pw->nRegions; ++i)
-			XDestroyRegion(pw->region[i]);
-
-		pw->nRegions = 0;
+		XFree(pw->region[0]);
 		free(pw->region);
 	}
 
-	Atom actual;
-	int format;
-	unsigned long n, left, *data;
+	pw->nRegions = 0;
 
-	int result = XGetWindowProperty(d->display, w->id, pd->netColorRegions, 0, ~0, False,
-					pd->netColorType, &actual, &format, &n, &left, (unsigned char **) &data);
-
-	if (result != Success)
+	/* fetch the regions */
+	unsigned long nBytes;
+	void *data = fetchProperty(d->display, w->id, pd->netColorRegions, pd->netColorType, &nBytes);
+	if (data == NULL)
 		return;     
 
-	pw->region = malloc(n * sizeof(Region));
+	/* allocate the list */
+	unsigned long count = XColorRegionCount(data, nBytes);
+	pw->region = malloc(count * sizeof(XColorRegion *));
 	if (pw->region == NULL)
-		return;
+		goto out;
 
-	pw->nRegions = n;
+	fprintf(stderr, "%lu regions\n", count);
 
-	compLogMessage(w->screen->display, "color", CompLogLevelWarn, "got %d regions", n);		
- 
-	for (int i = 0; i < n; ++i) {
-		XserverRegion serverRegion = data[i];
-		pw->region[i] = convertRegion(d->display, serverRegion);
-		compLogMessage(d, "color", CompLogLevelWarn, " has %d rectangles", pw->region[i]->numRects);
+	/* fill in the pointers */
+	XColorRegion *ptr = data;
+	for (unsigned long i = 0; i < count; ++i) {
+		pw->region[i] = ptr;
+		ptr = XColorRegionNext(ptr);
 	}
 
+	pw->nRegions = count;
+
+	return;
+
+out:
 	XFree(data);
 }
 
@@ -355,22 +357,15 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 		if (event->xproperty.atom == pd->netColorProfiles) {
 			CompScreen *s = findScreenAtDisplay(d, event->xproperty.window);
 			updateScreenProfiles(s);
+		} else if (event->xproperty.atom == pd->netColorRegions) {
+			CompWindow *w = findWindowAtDisplay(d, event->xproperty.window);
+			updateWindowRegions(w);
 		}
 		break;
 	case ClientMessage:
 		if (event->xclient.message_type == pd->netColorManagement) {
 			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
-			if (w == NULL)
-				return;
-
-			long enable = event->xclient.data.l[0];
-			compLogMessage(d, "color", CompLogLevelWarn, "received color management request: %i", enable);
-
-			updateWindowRegions(d, w);
 			addWindowDamage(w);
-
-			PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-			pw->enabled = enable;
 		}
 		break;
 	}
@@ -422,7 +417,9 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 		for (int i = 0; i < pw->nRegions; ++i) {
 			glStencilFunc(GL_ALWAYS, i + 1, ~0);
 
-			Region tmp = absoluteRegion(w, pw->region[i]);
+			Region loc = convertRegion(s->display->display, ntohl(pw->region[i]->region));
+			Region tmp = absoluteRegion(w, loc);
+			XDestroyRegion(loc);
 		       
 			w->vCount = w->indexCount = 0;
 			(*w->screen->addWindowGeometry) (w, &w->matrix, 1, tmp, region);
@@ -452,7 +449,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
 
-	if (texture != w->texture || pw->nRegions == 0 || pw->enabled == 0) {
+	if (texture != w->texture || pw->nRegions == 0) {
 		UNWRAP(ps, s, drawWindowTexture);
 		(*s->drawWindowTexture) (w, texture, attrib, mask);
 		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
@@ -552,8 +549,6 @@ static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *priva
 
 	pw->nRegions = 0;
 	pw->region = NULL;
-
-	pw->enabled = 0;
 }
 
 static dispatchObjectProc dispatchInitObject[] = {

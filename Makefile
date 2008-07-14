@@ -11,7 +11,7 @@ libcolor.so: $(OBJS)
 	gcc $(LIBS) -fPIC -shared -o $@ $<
 
 all: libcolor.so
-	gcc -o client src/client.c -lX11 `pkg-config --cflags --libs cairo xfixes` 
+	gcc $(CFLAGS) -o client src/client.c -lX11 `pkg-config --cflags --libs cairo xfixes` 
 
 install:
 	mkdir -p $(HOME)/.compiz/plugins
