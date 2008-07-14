@@ -21,7 +21,7 @@
 static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 
 
-typedef void (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
+typedef CompBool (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
 
 
 typedef struct  {
@@ -106,12 +106,14 @@ typedef struct {
 
 static void *compObjectGetPrivate(CompObject *o)
 {
-	if (o == NULL) {
+	if (o == NULL)
 		return &corePrivateIndex;
-	} else {
-		int *privateIndex = compObjectGetPrivate(o->parent);
-		return o->privates[*privateIndex].ptr;
-	}
+
+	int *privateIndex = compObjectGetPrivate(o->parent);
+	if (privateIndex == NULL)
+		return NULL;
+
+	return o->privates[*privateIndex].ptr;
 }
 
 static void *compObjectAllocPrivate(CompObject *parent, CompObject *object, int size)
@@ -145,12 +147,14 @@ static void compObjectFreePrivate(CompObject *parent, CompObject *object)
 		return;
 
 	int *privateData = object->privates[*privateIndex].ptr;
-	if (privateData == NULL);
+	if (privateData == NULL)
 		return;
 
-	if (object->type > 0) {
-		compObjectFreePrivateIndex(parent, object->type, *privateIndex);
-	}
+	/* free index of child objects */
+	if (object->type < 3)
+		compObjectFreePrivateIndex(object, object->type + 1, *privateData);
+
+	object->privates[*privateIndex].ptr = NULL;
 
 	free(privateData);
 }
@@ -596,110 +600,6 @@ static void updateOutputConfiguration(CompScreen *s)
 
 
 /**
- *    Object Init Functions
- */
-
-static void pluginInitCore(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-}
-
-static void pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-	CompDisplay *d = (CompDisplay *) object;
-	PrivDisplay *pd = privateData;
-
-	WRAP(pd, d, handleEvent, pluginHandleEvent);
-
-	pd->netColorManagement = XInternAtom(d->display, "_NET_COLOR_MANAGEMENT", False);
-
-	pd->netColorProfiles = XInternAtom(d->display, "_NET_COLOR_PROFILES", False);
-	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
-	pd->netColorType = XInternAtom(d->display, "_NET_COLOR_TYPE", False);
-}
-
-static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-	CompScreen *s = (CompScreen *) object;
-	PrivScreen *ps = privateData;
-
-	WRAP(ps, s, drawWindow, pluginDrawWindow);
-	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
-
-	ps->nProfiles = 0;
-	ps->function = 0;
-
-	GLint stencilBits = 0;
-	glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
-	if (stencilBits == 0)
-		compLogMessage(s->display, "color", CompLogLevelWarn, "No stencil buffer. Region based color management disabled");
-
-	/* XRandR outputs */
-	ps->nOutputs = 0;
-	updateOutputConfiguration(s);
-}
-
-static void pluginInitWindow(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-	/* CompWindow *w = (CompWindow *) object; */
-	PrivWindow *pw = privateData;
-
-	pw->nRegions = 0;
-	pw->active[0] = pw->active[1] = 0;
-}
-
-static dispatchObjectProc dispatchInitObject[] = {
-	pluginInitCore, pluginInitDisplay, pluginInitScreen, pluginInitWindow
-};
-
-/**
- *    Object Fini Functions
- */
-
-
-static void pluginFiniCore(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-}
-
-static void pluginFiniDisplay(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-	CompDisplay *d = (CompDisplay *) object;
-	PrivDisplay *pd = privateData;
-
-	UNWRAP(pd, d, handleEvent);
-}
-
-static void pluginFiniScreen(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-	CompScreen *s = (CompScreen *) object;
-	PrivScreen *ps = privateData;
-
-	UNWRAP(ps, s, drawWindow);
-	UNWRAP(ps, s, drawWindowTexture);
-}
-
-static void pluginFiniWindow(CompPlugin *plugin, CompObject *object, void *privateData)
-{
-}
-
-static dispatchObjectProc dispatchFiniObject[] = {
-	pluginFiniCore, pluginFiniDisplay, pluginFiniScreen, pluginFiniWindow
-};
-
-
-/**
- *    Plugin Interface
- */
-static Bool pluginInit(CompPlugin *p)
-{
-	corePrivateIndex = allocateCorePrivateIndex();
-	if (corePrivateIndex < 0)
-		return FALSE;
-
-	return TRUE;
-}
-
-
-/**
  * This is really stupid, object->parent isn't inisialized when pluginInitObject()
  * is called. So this is a wrapper to get the parent because compObjectAllocPrivate()
  * needs it.
@@ -720,6 +620,124 @@ static CompObject *getParent(CompObject *object)
 	}
 }
 
+/**
+ *    Object Init Functions
+ */
+
+static CompBool pluginInitCore(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	return TRUE;
+}
+
+static CompBool pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	CompDisplay *d = (CompDisplay *) object;
+	PrivDisplay *pd = privateData;
+
+	if (d->randrExtension == False)
+		return FALSE;
+
+	WRAP(pd, d, handleEvent, pluginHandleEvent);
+
+	pd->netColorManagement = XInternAtom(d->display, "_NET_COLOR_MANAGEMENT", False);
+
+	pd->netColorProfiles = XInternAtom(d->display, "_NET_COLOR_PROFILES", False);
+	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
+	pd->netColorType = XInternAtom(d->display, "_NET_COLOR_TYPE", False);
+
+	return TRUE;
+}
+
+static CompBool pluginInitScreen(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	CompScreen *s = (CompScreen *) object;
+	PrivScreen *ps = privateData;
+
+	GLint stencilBits = 0;
+	glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
+	if (stencilBits == 0)
+		return FALSE;
+
+	WRAP(ps, s, drawWindow, pluginDrawWindow);
+	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
+
+	ps->nProfiles = 0;
+	ps->function = 0;
+
+	/* XRandR outputs */
+	ps->nOutputs = 0;
+	updateOutputConfiguration(s);
+
+	return TRUE;
+}
+
+static CompBool pluginInitWindow(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	/* CompWindow *w = (CompWindow *) object; */
+	PrivWindow *pw = privateData;
+
+	pw->nRegions = 0;
+	pw->active[0] = pw->active[1] = 0;
+
+	return TRUE;
+}
+
+static dispatchObjectProc dispatchInitObject[] = {
+	pluginInitCore, pluginInitDisplay, pluginInitScreen, pluginInitWindow
+};
+
+/**
+ *    Object Fini Functions
+ */
+
+
+static CompBool pluginFiniCore(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	return TRUE;
+}
+
+static CompBool pluginFiniDisplay(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	CompDisplay *d = (CompDisplay *) object;
+	PrivDisplay *pd = privateData;
+
+	UNWRAP(pd, d, handleEvent);
+
+	return TRUE;
+}
+
+static CompBool pluginFiniScreen(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	CompScreen *s = (CompScreen *) object;
+	PrivScreen *ps = privateData;
+
+	UNWRAP(ps, s, drawWindow);
+	UNWRAP(ps, s, drawWindowTexture);
+
+	return TRUE;
+}
+
+static CompBool pluginFiniWindow(CompPlugin *plugin, CompObject *object, void *privateData)
+{
+	return TRUE;
+}
+
+static dispatchObjectProc dispatchFiniObject[] = {
+	pluginFiniCore, pluginFiniDisplay, pluginFiniScreen, pluginFiniWindow
+};
+
+
+/**
+ *    Plugin Interface
+ */
+static CompBool pluginInit(CompPlugin *p)
+{
+	corePrivateIndex = allocateCorePrivateIndex();
+	if (corePrivateIndex < 0)
+		return FALSE;
+
+	return TRUE;
+}
 
 static CompBool pluginInitObject(CompPlugin *p, CompObject *o)
 {
@@ -729,9 +747,10 @@ static CompBool pluginInitObject(CompPlugin *p, CompObject *o)
 
 	void *privateData = compObjectAllocPrivate(getParent(o), o, privateSizes[o->type]);
 	if (privateData == NULL)
-		return FALSE;
+		return TRUE;
 
-	dispatchInitObject[o->type](p, o, privateData);
+	if (dispatchInitObject[o->type](p, o, privateData) == FALSE)
+		compObjectFreePrivate(getParent(o), o);
 
 	return TRUE;
 }
