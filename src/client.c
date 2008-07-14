@@ -9,7 +9,31 @@
 
 #include <stdio.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "xcolor.h"
+
+static void *readFile(const char *path, unsigned long *nBytes)
+{
+	int fd = open(path, O_RDONLY);
+
+	struct stat buf;
+	fstat(fd, &buf);
+
+	void *ret = malloc(buf.st_size);
+	read(fd, ret, buf.st_size);
+
+	close(fd);
+
+	*nBytes = buf.st_size;
+
+	return ret;	
+}
 
 int main(int argc, char *argv[])
 {
@@ -41,21 +65,30 @@ int main(int argc, char *argv[])
 	 * Color management
 	 */
 
-	/* Region 1, one rectangle */
-	XRectangle rec1 = { 100, 50, 150, 80 };
-	XserverRegion reg1 = XFixesCreateRegion(dpy, &rec1, 1);
-	XColorRegion xcr1 = { .region = htonl(reg1) };
-       
-	/* Region 2, two rectangles */
-	XRectangle rec2[2] = { { 50, 200, 80, 50 }, { 50, 200, 50, 80 } };
-	XserverRegion reg2 = XFixesCreateRegion(dpy, rec2, 2);
-	XColorRegion xcr2 = { .region = htonl(reg2) };
+	unsigned long nBytes;
+	void *blob = readFile("profile.icc", &nBytes);
 
-	Atom cmRegionsAtom = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
-	Atom cmPropertyType = XInternAtom(dpy, "_NET_COLOR_TYPE", False);
+	/* upload profile to the root window */
+	XColorProfile *profile = malloc(sizeof(XColorProfile) + nBytes);
+	uuid_generate(profile->uuid);
+	profile->size = htonl(nBytes);
+	memcpy(profile + 1, blob, nBytes);
 
-	XColorRegion data[2] = { xcr1, xcr2 };
-	XChangeProperty(dpy, w, cmRegionsAtom, cmPropertyType, 8, PropModeReplace, (unsigned char *) &data, 2 * sizeof(XColorRegion));
+	Atom netColorType = XInternAtom(dpy, "_NET_COLOR_TYPE", False);
+	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
+
+	XChangeProperty(dpy, XRootWindow(dpy, screen), netColorProfiles, netColorType, 8, PropModeReplace, (unsigned char *) profile, sizeof(XColorProfile) + nBytes);
+
+	/* upload regions */
+	XRectangle rec[2] = { { 50, 200, 80, 50 }, { 100, 100, 150, 100 } };
+	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
+
+	XColorRegion region;
+	region.region = htonl(reg);
+	uuid_copy(region.uuid, profile->uuid);
+
+	Atom netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
+	XChangeProperty(dpy, w, netColorRegions, netColorType, 8, PropModeReplace, (unsigned char *) &region, sizeof(XColorRegion));
 
 	for (;;) {
 		XEvent event;
@@ -99,7 +132,7 @@ int main(int argc, char *argv[])
 
 			XSendEvent(dpy, RootWindow(dpy, screen), False, ExposureMask, (XEvent *) &xev);
 
-			printf("Sent color manangement request: %ld\n", enable % 2);
+			printf("Sent color manangement request: %li\n", enable % 2);
 		}
 	}
 
@@ -109,3 +142,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
