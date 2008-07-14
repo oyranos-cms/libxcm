@@ -14,6 +14,8 @@
 #include <stdarg.h>
 #include <lcms.h>
 
+#include "xcolor.h"
+
 
 typedef void (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
 
@@ -45,6 +47,7 @@ typedef struct {
 	Atom netColorManagement;
 
 	/* Window properties */
+	Atom netColorProfiles;
 	Atom netColorRegions;
 	Atom netColorType;
 } PrivDisplay;
@@ -52,9 +55,15 @@ typedef struct {
 typedef struct {
 	int childPrivateIndex;
 
+	/* hooked functions */
 	DrawWindowProc drawWindow;
 	DrawWindowTextureProc drawWindowTexture;
 
+	/* profiles attached to the screen */
+	unsigned long nProfiles;
+	XColorProfile **profile;
+
+	/* compiz fragement function */
 	int function, param, unit;
 
 	GLuint clutTexture;
@@ -234,6 +243,64 @@ static Region convertRegion(Display *dpy, XserverRegion src)
 	return ret;
 }
 
+static void *fetchProperty(Display *dpy, Window w, Atom prop, Atom type, unsigned long *n)
+{
+	Atom actual;
+	int format;
+	unsigned long left;
+	unsigned char *data;
+
+	int result = XGetWindowProperty(dpy, w, prop, 0, ~0, False, type, &actual, &format, n, &left, &data);
+	if (result == Success)
+		return (void *) data;
+
+	return NULL;
+}
+
+static void updateScreenProfiles(CompScreen *s)
+{
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	CompDisplay *d = s->display;
+	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
+
+	/* free existing data structures */
+	if (ps->nProfiles) {
+		XFree(ps->profile[0]);
+		free(ps->profile);
+	}
+
+	ps->nProfiles = 0;
+
+	/* fetch the profiles */
+	unsigned long nBytes;
+	void *data = fetchProperty(d->display, s->root, pd->netColorProfiles, pd->netColorType, &nBytes);
+	if (data == NULL)
+		return;
+
+	/* allocate list */
+	unsigned long count = XColorProfileCount(data, nBytes);
+	ps->profile = malloc(count * sizeof(XColorProfile *));
+	if (ps->profile == NULL)
+		goto out;
+
+	fprintf(stderr, "%lu profiles\n", count);
+
+	/* fill in the pointers */
+	XColorProfile *ptr = data;
+	for (unsigned long i = 0; i < count; ++i) {
+		ps->profile[i] = ptr;
+		ptr = XColorProfileNext(ptr);
+	}
+
+	ps->nProfiles = count;
+
+	return;
+
+out:
+	XFree(data);
+}
+
 static void updateWindowRegions(CompDisplay *d, CompWindow *w)
 {
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
@@ -284,6 +351,12 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 	WRAP(pd, d, handleEvent, pluginHandleEvent);
 
 	switch (event->type) {
+	case PropertyNotify:
+		if (event->xproperty.atom == pd->netColorProfiles) {
+			CompScreen *s = findScreenAtDisplay(d, event->xproperty.window);
+			updateScreenProfiles(s);
+		}
+		break;
 	case ClientMessage:
 		if (event->xclient.message_type == pd->netColorManagement) {
 			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
@@ -450,6 +523,7 @@ static void pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *priv
 
 	pd->netColorManagement = XInternAtom(d->display, "_NET_COLOR_MANAGEMENT", False);
 
+	pd->netColorProfiles = XInternAtom(d->display, "_NET_COLOR_PROFILES", False);
 	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
 	pd->netColorType = XInternAtom(d->display, "_NET_COLOR_TYPE", False);
 }
