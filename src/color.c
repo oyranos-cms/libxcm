@@ -397,6 +397,59 @@ static void activateRegions(CompWindow *w, unsigned long active[2])
 	}
 }
 
+static void updateOutputConfiguration(CompScreen *s)
+{
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	if (ps->nOutputs > 0) {
+		for (unsigned long i = 0; i < ps->nOutputs; ++i)
+			cmsCloseProfile(ps->output[i].profile);
+
+		free(ps->output);
+	}
+
+	XRRScreenResources *res = XRRGetScreenResources(s->display->display, s->root);
+
+	ps->nOutputs = res->noutput;
+	ps->output = malloc(ps->nOutputs * sizeof(ColorOutput));
+	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
+		XRROutputInfo *oinfo = XRRGetOutputInfo(s->display->display, res, res->outputs[i]);
+
+		Atom actualType, outputProfile = XInternAtom(s->display->display, "PROFILE", False);
+		int actualFormat, result;
+		unsigned long n, left;
+		unsigned char *data;
+
+		result = XRRGetOutputProperty(s->display->display, res->outputs[i],
+		      outputProfile, 0, ~0, False, False, AnyPropertyType, 
+		      &actualType, &actualFormat, &n, &left, &data);
+
+		if (result == Success && n > 0) {
+			printf("Output '%s' has attached profile.\n", oinfo->name);
+			ps->output[i].profile = cmsOpenProfileFromMem(data, n);
+		} else {
+			printf("Assuming sRGB profile for output '%s'\n", oinfo->name);
+			ps->output[i].profile = cmsCreate_sRGBProfile();
+		}
+
+		if (oinfo->crtc != None) {
+			XRRCrtcInfo *cinfo = XRRGetCrtcInfo(s->display->display, res, oinfo->crtc);
+
+			ps->output[i].x = cinfo->x;
+			ps->output[i].y = cinfo->x;
+			ps->output[i].width = cinfo->width;
+			ps->output[i].height = cinfo->height;
+
+			XRRFreeCrtcInfo(cinfo);
+		}
+
+		XRRFreeOutputInfo(oinfo);
+	}
+
+	XRRFreeScreenResources(res);
+}
+
+
 static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 {
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
@@ -423,6 +476,13 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 			activateRegions(w, active);
 
 			addWindowDamage(w);
+		}
+		break;
+	default:
+		if (event->type == d->randrEvent + RRScreenChangeNotify) {
+			XRRScreenChangeNotifyEvent *rre = (XRRScreenChangeNotifyEvent *) event;
+			CompScreen *s = findScreenAtDisplay(d, rre->root);
+			updateOutputConfiguration(s);
 		}
 		break;
 	}
@@ -550,54 +610,6 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	addWindowDamage(w);
 }
 
-static void updateOutputConfiguration(CompScreen *s)
-{
-	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
-
-	if (ps->nOutputs > 0) {
-		for (unsigned long i = 0; i < ps->nOutputs; ++i)
-			cmsCloseProfile(ps->output[i].profile);
-
-		free(ps->output);
-	}
-
-	XRRScreenResources *res = XRRGetScreenResources(s->display->display, s->root);
-
-	ps->nOutputs = res->noutput;
-	ps->output = malloc(ps->nOutputs * sizeof(ColorOutput));
-	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
-		XRROutputInfo *oinfo = XRRGetOutputInfo(s->display->display, res, res->outputs[i]);
-		XRRCrtcInfo *cinfo = XRRGetCrtcInfo(s->display->display, res, oinfo->crtc);
-
-		ps->output[i].x = cinfo->x;
-		ps->output[i].y = cinfo->x;
-		ps->output[i].width = cinfo->width;
-		ps->output[i].height = cinfo->height;
-
-		Atom actualType, outputProfile = XInternAtom(s->display->display, "PROFILE", False);
-		int actualFormat, result;
-		unsigned long n, left;
-		unsigned char *data;
-
-		result = XRRGetOutputProperty(s->display->display, res->outputs[i],
-		      outputProfile, 0, ~0, False, False, AnyPropertyType, 
-		      &actualType, &actualFormat, &n, &left, &data);
-
-		if (result == Success && n > 0) {
-			printf("Output '%s' has attached profile.\n", oinfo->name);
-			ps->output[i].profile = cmsOpenProfileFromMem(data, n);
-		} else {
-			printf("Assuming sRGB profile for output '%s'\n", oinfo->name);
-			ps->output[i].profile = cmsCreate_sRGBProfile();
-		}
-
-		XRRFreeCrtcInfo(cinfo);
-		XRRFreeOutputInfo(oinfo);
-	}
-
-	XRRFreeScreenResources(res);
-}
-
 
 /**
  * This is really stupid, object->parent isn't inisialized when pluginInitObject()
@@ -664,7 +676,10 @@ static CompBool pluginInitScreen(CompPlugin *plugin, CompObject *object, void *p
 	ps->nProfiles = 0;
 	ps->function = 0;
 
-	/* XRandR outputs */
+	/* XRandR setup code */
+
+	XRRSelectInput(s->display->display, s->root, RRScreenChangeNotifyMask);
+
 	ps->nOutputs = 0;
 	updateOutputConfiguration(s);
 
