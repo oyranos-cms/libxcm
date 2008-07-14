@@ -68,9 +68,6 @@ typedef struct {
 
 	/* compiz fragement function */
 	int function, param, unit;
-
-	GLuint clutTexture;
-	GLfloat scale, offset;
 } PrivScreen;
 
 typedef struct {
@@ -183,53 +180,6 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 	ps->unit = unit;
 
 	return ps->function;
-}
-
-static void clutGenerate(CompScreen *s)
-{
-	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
-
-	int r, g, b, n = GRIDPOINTS;
-
- 	cmsHPROFILE sRGB = cmsCreate_sRGBProfile();
-	cmsHPROFILE monitor = cmsOpenProfileFromFile("/home/tomc/Desktop/FakeBRG.icc", "r");
-
-	cmsHTRANSFORM xform = cmsCreateTransform(sRGB, TYPE_RGB_16, monitor, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
-
-	if (xform == NULL) {
-		fprintf(stderr, "Failed to create transformation\n");
-		return;
-	}
-
-	ps->scale = (double) (n - 1) / n;
-	ps->offset = 1.0 / (2 * n);
-
-	unsigned short in[3];
-	for (r = 0; r < n; r++) {
-		in[0] = floor ((double) r / (n - 1) * 65535.0 + 0.5);
-		for (g = 0; g < n; g++) {
-			in[1] = floor ((double) g / (n - 1) * 65535.0 + 0.5);
-			for (b = 0; b < n; b++) {
-				in[2] = floor ((double) b / (n - 1) * 65535.0 + 0.5);
-				cmsDoTransform(xform, in, clut[b][g][r], 1);
-			}
-		}
-	}
-
-	cmsDeleteTransform(xform);
-	cmsCloseProfile(monitor);
-	cmsCloseProfile(sRGB);
-
-	glGenTextures (1, &ps->clutTexture);
-	glBindTexture(GL_TEXTURE_3D, ps->clutTexture);
-
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16, n, n, n, 0, GL_RGB, GL_UNSIGNED_SHORT, clut);
 }
 
 static Region convertRegion(Display *dpy, XserverRegion src)
@@ -532,29 +482,21 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 
 static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const FragmentAttrib *attrib, unsigned int mask)
 {
-	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-	
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
-
-	if (texture != w->texture || pw->nRegions == 0) {
-		UNWRAP(ps, s, drawWindowTexture);
-		(*s->drawWindowTexture) (w, texture, attrib, mask);
-		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
-
-		return;
-	}
-
-	glEnable(GL_STENCIL_TEST);    
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-	glStencilFunc(GL_EQUAL, 0, ~0);
 
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, attrib, mask);
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
-	for (int i = 0; i < pw->nRegions; ++i) {
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+	if (pw->active[0] == pw->active[1])
+		return;
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
 		FragmentAttrib fa = *attrib;
 
 		int param = allocFragmentParameters(&fa, 2);
@@ -564,16 +506,15 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 		if (function)
 			addFragmentFunction(&fa, function);
 
-		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 0, ps->scale, ps->scale, ps->scale, 1.0);
-
-		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 1, ps->offset, ps->offset, ps->offset, 0.0);
+		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 0, pw->local[i].scale, pw->local[i].scale, pw->local[i].scale, 1.0);
+		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 1, pw->local[i].offset, pw->local[i].offset, pw->local[i].offset, 0.0);
 
 		(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
 		glEnable(GL_TEXTURE_3D);
-		glBindTexture(GL_TEXTURE_3D, ps->clutTexture);
+		glBindTexture(GL_TEXTURE_3D, pw->local[i].clutTexture);
 		(*s->activeTexture) (GL_TEXTURE0_ARB);
 
-		glStencilFunc(GL_EQUAL, i + 1, ~0);
+		glStencilFunc(GL_EQUAL, 1, ~0);
 
 		UNWRAP(ps, s, drawWindowTexture);
 		(*s->drawWindowTexture) (w, texture, &fa, mask);
@@ -623,8 +564,6 @@ static void pluginInitScreen(CompPlugin *plugin, CompObject *object, void *priva
 
 	ps->nProfiles = 0;
 	ps->function = 0;
-
-	clutGenerate(s);
 
 	GLint stencilBits = 0;
 	glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
