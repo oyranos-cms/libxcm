@@ -239,8 +239,6 @@ static void updateScreenProfiles(CompScreen *s)
 	if (ps->profile == NULL)
 		goto out;
 
-	fprintf(stderr, "%lu profiles\n", count);
-
 	/* fill in the pointers */
 	XColorProfile *ptr = data;
 	for (unsigned long i = 0; i < count; ++i) {
@@ -282,8 +280,6 @@ static void updateWindowRegions(CompWindow *w)
 	pw->region = malloc(count * sizeof(XColorRegion *));
 	if (pw->region == NULL)
 		goto out;
-
-	fprintf(stderr, "%lu regions\n", count);
 
 	/* fill in the pointers */
 	XColorRegion *ptr = data;
