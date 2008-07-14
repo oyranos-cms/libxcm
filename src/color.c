@@ -491,47 +491,41 @@ static Region absoluteRegion(CompWindow *w, Region region)
 
 static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, const FragmentAttrib *attrib, Region region, unsigned int mask)
 {
-	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
-
-	//compLogMessage(s->display, "color", CompLogLevelWarn, "draw window %p", w);
-
-	if (pw->nRegions > 0) {
-		glEnable(GL_STENCIL_TEST);
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
-		w->vCount = w->indexCount = 0;
-		(*w->screen->addWindowGeometry) (w, &w->matrix, 1, w->region, region);
-		glClear(GL_STENCIL_BUFFER_BIT);
-
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-		for (int i = 0; i < pw->nRegions; ++i) {
-			glStencilFunc(GL_ALWAYS, i + 1, ~0);
-
-			Region loc = convertRegion(s->display->display, ntohl(pw->region[i]->region));
-			Region tmp = absoluteRegion(w, loc);
-			XDestroyRegion(loc);
-		       
-			w->vCount = w->indexCount = 0;
-			(*w->screen->addWindowGeometry) (w, &w->matrix, 1, tmp, region);
-
-			if (w->vCount > 0) {
-				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-				(*w->drawWindowGeometry) (w);
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			}
-		}
-
-		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glDisable(GL_STENCIL_TEST);
-	}
 
 	UNWRAP(ps, s, drawWindow);
 	Bool status = (*s->drawWindow) (w, transform, attrib, region, mask);
 	WRAP(ps, s, drawWindow, pluginDrawWindow);
+
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+	if (pw->active[0] == pw->active[1])
+		return status;
+
+	glClear(GL_STENCIL_BUFFER_BIT);
+
+	glEnable(GL_STENCIL_TEST);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+		glStencilFunc(GL_ALWAYS, i + 1, ~0);
+
+		Region tmp = absoluteRegion(w, pw->local[i].region);
+		       
+		w->vCount = w->indexCount = 0;
+		(*w->screen->addWindowGeometry) (w, &w->matrix, 1, tmp, region);
+
+		if (w->vCount > 0) {
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			(*w->drawWindowGeometry) (w);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+	}
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glDisable(GL_STENCIL_TEST);
 
 	return status;
 }
