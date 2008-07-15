@@ -708,6 +708,9 @@ static dispatchObjectProc dispatchInitObject[] = {
 
 static CompBool pluginFiniCore(CompPlugin *plugin, CompObject *object, void *privateData)
 {
+	/* Don't crash if something goes wrong inside lcms */
+	cmsErrorAction(LCMS_ERRC_WARNING);
+
 	return TRUE;
 }
 
