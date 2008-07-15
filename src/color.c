@@ -415,7 +415,7 @@ static void updateOutputConfiguration(CompScreen *s)
 	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
 		XRROutputInfo *oinfo = XRRGetOutputInfo(s->display->display, res, res->outputs[i]);
 
-		Atom actualType, outputProfile = XInternAtom(s->display->display, "PROFILE", False);
+		Atom actualType, outputProfile = XInternAtom(s->display->display, "_ICC_PROFILE", False);
 		int actualFormat, result;
 		unsigned long n, left;
 		unsigned char *data;
