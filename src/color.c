@@ -1,5 +1,6 @@
 
 #define GL_GLEXT_PROTOTYPES
+#define _BSD_SOURCE
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -33,8 +34,7 @@ typedef struct  {
 
 
 typedef struct {
-	long x, y;
-	unsigned long width, height;
+	char name[32];
 	cmsHPROFILE profile;
 } ColorOutput;
 
@@ -60,6 +60,7 @@ typedef struct {
 	/* Window properties */
 	Atom netColorProfiles;
 	Atom netColorRegions;
+	Atom netColorTarget;
 	Atom netColorType;
 } PrivDisplay;
 
@@ -87,10 +88,14 @@ typedef struct {
 	unsigned long nRegions;
 	XColorRegion **region;
 
-	/* active stack range */
+	/* stack range */
 	unsigned long active[2];
 
+	/* active output */
+	char *output;
+
 	/* local copies of the active regions */
+	unsigned long nLocals;
 	ColorRegion local[16];
 } PrivWindow;
 
@@ -312,6 +317,20 @@ out:
 	XFree(data);
 }
 
+static void updateWindowOutput(CompWindow *w)
+{
+	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+
+	CompDisplay *d = w->screen->display;
+	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
+
+	if (pw->output)
+		XFree(pw->output);
+
+	unsigned long nBytes;
+	pw->output = fetchProperty(d->display, w->id, pd->netColorTarget, XA_STRING, &nBytes);
+}
+
 static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -326,13 +345,25 @@ static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 	return NULL;
 }
 
-static void activateRegions(CompWindow *w, unsigned long active[2])
+static void *findOutputProfile(CompScreen *s, const char *name)
+{
+	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+
+	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
+		if (strcmp(name, ps->output[i].name) == 0) {
+			return ps->output[i].profile;
+		}
+	}
+
+	return NULL;
+}
+
+static void updateWindowLocals(CompWindow *w, void *closure)
 {
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-	PrivScreen *ps = compObjectGetPrivate((CompObject *) w->screen);
 
 	/* free existing data structures */
-	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+	for (unsigned long i = 0; i < pw->nLocals; ++i) {
 		XDestroyRegion(pw->local[i].region);
 		pw->local[i].region = NULL;
 
@@ -340,28 +371,33 @@ static void activateRegions(CompWindow *w, unsigned long active[2])
 		pw->local[i].clutTexture = 0;
 	}
 
-	if (active[1] > pw->nRegions)
-		return;
-
-	memcpy(pw->active, active, 2 * sizeof(unsigned long));
+	pw->nLocals = 0;
+	if (pw->active[0] + pw->active[1] > pw->nRegions)
+		goto out;
 
 	/* regenerate local region variables */
-	for (unsigned long i = 0; i < active[1] - active[0]; ++i) {
+	for (unsigned long i = 0; i < pw->active[1]; ++i) {
 		int r, g, b, n = GRIDPOINTS;
 
 		unsigned long nBytes;
-		void *data = findProfileBlob(w->screen, pw->region[i + pw->active[0]]->uuid, &nBytes);
+		void *data = findProfileBlob(w->screen, pw->region[pw->active[0] + i]->uuid, &nBytes);
 		if (data == NULL){
-			fprintf(stderr, "Profile not found!\n");
-			continue;
+			fprintf(stderr, "source profile not found!\n");
+			goto out;
 		}
 
-		cmsHPROFILE window = cmsOpenProfileFromMem(data, nBytes);
-		cmsHTRANSFORM xform = cmsCreateTransform(window, TYPE_RGB_16, ps->output[0].profile, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
+		cmsHPROFILE srcProfile = cmsOpenProfileFromMem(data, nBytes);
+		cmsHPROFILE dstProfile = findOutputProfile(w->screen, pw->output);
+		if (dstProfile == NULL){
+			fprintf(stderr, "destination profile not found!\n");
+			goto out;
+		}
+
+		cmsHTRANSFORM xform = cmsCreateTransform(srcProfile, TYPE_RGB_16, dstProfile, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
 
 		if (xform == NULL) {
 			fprintf(stderr, "Failed to create transformation\n");
-			continue;
+			goto out;
 		}
 
 		pw->local[i].region = convertRegion(w->screen->display->display, ntohl(pw->region[i + pw->active[0]]->region));
@@ -382,7 +418,7 @@ static void activateRegions(CompWindow *w, unsigned long active[2])
 		}
 
 		cmsDeleteTransform(xform);
-		cmsCloseProfile(window);
+		cmsCloseProfile(srcProfile);
 
 		glGenTextures(1, &pw->local[i].clutTexture);
 		glBindTexture(GL_TEXTURE_3D, pw->local[i].clutTexture);
@@ -395,9 +431,14 @@ static void activateRegions(CompWindow *w, unsigned long active[2])
 
 		glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16, n, n, n, 0, GL_RGB, GL_UNSIGNED_SHORT, clut);
 	}
+
+	pw->nLocals = pw->active[1];
+
+out:
+	addWindowDamage(w);
 }
 
-static void updateOutputConfiguration(CompScreen *s)
+static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
 
@@ -414,6 +455,7 @@ static void updateOutputConfiguration(CompScreen *s)
 	ps->output = malloc(ps->nOutputs * sizeof(ColorOutput));
 	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
 		XRROutputInfo *oinfo = XRRGetOutputInfo(s->display->display, res, res->outputs[i]);
+		strcpy(ps->output[i].name, oinfo->name);
 
 		Atom actualType, outputProfile = XInternAtom(s->display->display, "_ICC_PROFILE", False);
 		int actualFormat, result;
@@ -432,21 +474,13 @@ static void updateOutputConfiguration(CompScreen *s)
 			ps->output[i].profile = cmsCreate_sRGBProfile();
 		}
 
-		if (oinfo->crtc != None) {
-			XRRCrtcInfo *cinfo = XRRGetCrtcInfo(s->display->display, res, oinfo->crtc);
-
-			ps->output[i].x = cinfo->x;
-			ps->output[i].y = cinfo->x;
-			ps->output[i].width = cinfo->width;
-			ps->output[i].height = cinfo->height;
-
-			XRRFreeCrtcInfo(cinfo);
-		}
-
 		XRRFreeOutputInfo(oinfo);
 	}
 
 	XRRFreeScreenResources(res);
+
+	if (updateWindows)
+		forEachWindowOnScreen(s, updateWindowLocals, NULL);
 }
 
 
@@ -466,23 +500,27 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 		} else if (event->xproperty.atom == pd->netColorRegions) {
 			CompWindow *w = findWindowAtDisplay(d, event->xproperty.window);
 			updateWindowRegions(w);
+		} else if (event->xproperty.atom == pd->netColorTarget) {
+			CompWindow *w = findWindowAtDisplay(d, event->xproperty.window);
+			updateWindowOutput(w);
 		}
 		break;
 	case ClientMessage:
 		if (event->xclient.message_type == pd->netColorManagement) {
 			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
+			PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
 
 			unsigned long active[2] = { event->xclient.data.l[0], event->xclient.data.l[1] };
-			activateRegions(w, active);
+			memcpy(pw->active, active, 2 * sizeof(unsigned long));
 
-			addWindowDamage(w);
+			updateWindowLocals(w, NULL);
 		}
 		break;
 	default:
-		if (event->type == d->randrEvent + RRScreenChangeNotify) {
-			XRRScreenChangeNotifyEvent *rre = (XRRScreenChangeNotifyEvent *) event;
-			CompScreen *s = findScreenAtDisplay(d, rre->root);
-			updateOutputConfiguration(s);
+		if (event->type == d->randrEvent + RRNotify) {
+			XRRNotifyEvent *rrn = (XRRNotifyEvent *) event;
+			CompScreen *s = findScreenAtDisplay(d, rrn->window);
+			updateOutputConfiguration(s, TRUE);
 		}
 		break;
 	}
@@ -522,7 +560,7 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 	WRAP(ps, s, drawWindow, pluginDrawWindow);
 
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-	if (pw->active[0] == pw->active[1])
+	if (pw->nLocals == 0)
 		return status;
 
 	glClear(GL_STENCIL_BUFFER_BIT);
@@ -532,7 +570,7 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+	for (unsigned long i = 0; i < pw->nLocals; ++i) {
 		if (pw->local[i].region == NULL)
 			continue;
 
@@ -566,13 +604,13 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
-	if (pw->active[0] == pw->active[1])
+	if (pw->nLocals == 0)
 		return;
 
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-	for (unsigned long i = 0; i < pw->active[1] - pw->active[0]; ++i) {
+	for (unsigned long i = 0; i < pw->nLocals; ++i) {
 		if (pw->local[i].region == NULL)
 			continue;
 
@@ -655,6 +693,7 @@ static CompBool pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *
 
 	pd->netColorProfiles = XInternAtom(d->display, "_NET_COLOR_PROFILES", False);
 	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
+	pd->netColorTarget = XInternAtom(d->display, "_NET_COLOR_TARGET", False);
 	pd->netColorType = XInternAtom(d->display, "_NET_COLOR_TYPE", False);
 
 	return TRUE;
@@ -678,10 +717,10 @@ static CompBool pluginInitScreen(CompPlugin *plugin, CompObject *object, void *p
 
 	/* XRandR setup code */
 
-	XRRSelectInput(s->display->display, s->root, RRScreenChangeNotifyMask);
+	XRRSelectInput(s->display->display, s->root, RROutputPropertyNotifyMask);
 
 	ps->nOutputs = 0;
-	updateOutputConfiguration(s);
+	updateOutputConfiguration(s, FALSE);
 
 	return TRUE;
 }
@@ -693,6 +732,10 @@ static CompBool pluginInitWindow(CompPlugin *plugin, CompObject *object, void *p
 
 	pw->nRegions = 0;
 	pw->active[0] = pw->active[1] = 0;
+
+	pw->output = NULL;
+
+	pw->nLocals = 0;
 
 	return TRUE;
 }

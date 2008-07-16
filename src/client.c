@@ -90,6 +90,9 @@ int main(int argc, char *argv[])
 	Atom netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
 	XChangeProperty(dpy, w, netColorRegions, netColorType, 8, PropModeReplace, (unsigned char *) &region, sizeof(XColorRegion));
 
+	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
+	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, "VGA", 4);
+
 	for (;;) {
 		XEvent event;
 		XNextEvent(dpy, &event);
