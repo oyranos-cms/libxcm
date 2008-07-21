@@ -1,0 +1,65 @@
+
+    net-color spec
+   ================
+
+The net-color spec defines a protocol which can be used by X11 clients to
+offload color correction and transformation into the compositing manager. The
+basic idea is to let X11 clients define regions and attach ICC profiles to them
+and then let the compositing manager do the color transformation.
+
+
+   Color Profile
+  ---------------
+
+A color profile is described by the following C structure:
+
+typedef struct {
+	uuid_t uuid;      /* UUID of the profile			*/
+	uint32_t size;    /* number of bytes following			*/
+} XColorProfile;
+
+It defines a single ICC profile that can be uploaded to the compositing manager
+and later referenced in color regions.
+
+
+   Color Region
+  --------------
+
+A color region is described by the following C structure:
+
+typedef struct {
+	uint32_t region;  /* XserverRegion				*/
+	uuid_t uuid;      /* UUID of the associated profile		*/
+} XColorRegion;
+
+It defines a region and the attached color profile. Color regions are attached
+to windows and used by the compositing manager to apply the proper color
+transformation. Windows can have an unlimited amount of regions attached, though
+only the first 2 * 2^32 can be referenced.
+
+
+   Atoms
+  -------
+
+ _NET_COLOR_PROFILES:
+
+Is used to upload color profiles to the compositing manager. Clients attach a
+a list of one or more XColorProfile to the root window. Compositing manager then
+fetches the list and saves the profiles in an internal database and deletes the
+property.
+TODO: Allow to delete profiles from the compositing manager.
+
+ _NET_COLOR_TARGET:
+
+Is attached to windows and specifies on which XRandR output the window should
+look correctly. The compositing manager uses the output's _ICC_PROFILE property
+to fetch the output device ICC profile and creates the appropriate device links.
+TODO: Automatic targes selection based on where the window is positioned.
+
+ _NET_COLOR_MANAGEMENT:
+
+Is a type of ClientMessage that the clients send to the root window. It is used
+to enable or disable the color management. By default the compositing manager
+does no color management. Clients need to enable it explicitely.
+TODO: Details of the ClientMessage format.
+

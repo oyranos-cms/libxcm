@@ -1,0 +1,26 @@
+
+    Compiz Plugin Structure
+   =========================
+
+This is a short description of the structure of compiz plugins and an overview
+how plugins are integrated into the compiz runtime.
+
+Each plugin has a single entry point: a function which returns a pointer to a
+VTable. The VTable contains the plugin name and function pointers to various
+initialization functions. These funtions are used to initialize the plugin
+itself, plugin settings and the four types of compiz objects (Core, Display,
+Screen and Window).
+
+The compiz objects are arranged in a hierarchical structure. These objects are
+fairly large C structures and hold various generic properties that are useful
+for all plugins. But a more important part are function pointers which can be
+'hooked' by plugins. These functions are called whenever compiz needs to draw,
+move, resize a window etc. When a plugin hooks such function, it can for example
+influence how a window is drawn or where to a window can be moved.
+
+When a plugin needs to save aditional data to a compiz object, such as plugin
+specific properties, it needs to create so-called 'private data'. Private data
+is a simple pointer to a C structure. To attach this pointer to compiz objects, 
+the plugin needs requests a 'private index', it is an index into a pointer array
+where the plugin can save the pointer.
+
