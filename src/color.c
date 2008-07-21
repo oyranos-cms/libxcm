@@ -178,6 +178,10 @@ static int getFetchTarget(CompTexture *texture)
 	}
 }
 
+/**
+ * The shader is the same for all windows and profiles. It only depends on the
+ * 3D texture and two environment variables.
+ */
 static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int unit)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -203,6 +207,9 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 	return ps->function;
 }
 
+/**
+ * Converts a server-side region to a client-side region.
+ */
 static Region convertRegion(Display *dpy, XserverRegion src)
 {
 	Region ret = XCreateRegion();
@@ -219,6 +226,9 @@ static Region convertRegion(Display *dpy, XserverRegion src)
 	return ret;
 }
 
+/**
+ * Generic function to fetch a window property.
+ */
 static void *fetchProperty(Display *dpy, Window w, Atom prop, Atom type, unsigned long *n)
 {
 	Atom actual;
@@ -233,6 +243,10 @@ static void *fetchProperty(Display *dpy, Window w, Atom prop, Atom type, unsigne
 	return NULL;
 }
 
+/**
+ * Called when new profiles have been attached to the root window. Fetches
+ * these and saves them in a local database.
+ */ 
 static void updateScreenProfiles(CompScreen *s)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -275,6 +289,10 @@ out:
 	XFree(data);
 }
 
+/**
+ * Called when new regions have been attached to a window. Fetches these and
+ * saves them in the local list.
+ */
 static void updateWindowRegions(CompWindow *w)
 {
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
@@ -317,6 +335,9 @@ out:
 	XFree(data);
 }
 
+/**
+ * Called when the window target (_NET_COLOR_TARGET) has been changed.
+ */
 static void updateWindowOutput(CompWindow *w)
 {
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
@@ -331,6 +352,9 @@ static void updateWindowOutput(CompWindow *w)
 	pw->output = fetchProperty(d->display, w->id, pd->netColorTarget, XA_STRING, &nBytes);
 }
 
+/**
+ * Search the profile database to find the profile with the given UUID.
+ */
 static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -345,6 +369,9 @@ static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 	return NULL;
 }
 
+/**
+ * Search the output list and return the associated profile.
+ */
 static void *findOutputProfile(CompScreen *s, const char *name)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -358,6 +385,11 @@ static void *findOutputProfile(CompScreen *s, const char *name)
 	return NULL;
 }
 
+/**
+ * Called when a ClientMessage is sent to the window. Update local copies
+ * and profile links. This is where the regions are prepared and the 3D texture
+ * generated ande
+ */
 static void updateWindowLocals(CompWindow *w, void *closure)
 {
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
@@ -438,6 +470,10 @@ out:
 	addWindowDamage(w);
 }
 
+/**
+ * Called when XRandR output configuration (or properties) change. Fetch
+ * output profiles (if available) or fall back to sRGB.
+ */
 static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
@@ -483,7 +519,9 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 		forEachWindowOnScreen(s, updateWindowLocals, NULL);
 }
 
-
+/**
+ * CompDisplay::handleEvent
+ */
 static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 {
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
@@ -526,6 +564,10 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 	}
 }
 
+/**
+ * Make region relative to the window. Uses static variables to prevent
+ * allocating and freeing the Region in pluginDrawWindow().
+ */
 static Region absoluteRegion(CompWindow *w, Region region)
 {
 	static REGION ret;
@@ -545,11 +587,12 @@ static Region absoluteRegion(CompWindow *w, Region region)
 		EXTENTS(&rects[i], &ret);
 	}
 
-	//compLogMessage(w->screen->display, "color", CompLogLevelWarn, "region %d %d %d %d", ret.extents.x1, ret.extents.x2, ret.extents.y1, ret.extents.y2);
-
 	return &ret;
 }
 
+/**
+ * CompScreen::drawWindow
+ */
 static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, const FragmentAttrib *attrib, Region region, unsigned int mask)
 {
 	CompScreen *s = w->screen;
@@ -559,21 +602,26 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 	Bool status = (*s->drawWindow) (w, transform, attrib, region, mask);
 	WRAP(ps, s, drawWindow, pluginDrawWindow);
 
+	/* If no regions have been enabled, just return as we're done */
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
 	if (pw->nLocals == 0)
 		return status;
 
+	/* Clear the stencil buffer with zero */
 	glClear(GL_STENCIL_BUFFER_BIT);
 
+	/* Disable color mask as we won't want to draw anything */
 	glEnable(GL_STENCIL_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
+	/* Replace the stencil value in places where we'd draw something */
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	for (unsigned long i = 0; i < pw->nLocals; ++i) {
 		if (pw->local[i].region == NULL)
 			continue;
 
+		/* Each region gets its own stencil value */
 		glStencilFunc(GL_ALWAYS, i + 1, ~0);
 
 		Region tmp = absoluteRegion(w, pw->local[i].region);
@@ -581,6 +629,7 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 		w->vCount = w->indexCount = 0;
 		(*w->screen->addWindowGeometry) (w, &w->matrix, 1, tmp, region);
 
+		/* If the geometry is non-empty, draw the window */
 		if (w->vCount > 0) {
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			(*w->drawWindowGeometry) (w);
@@ -588,12 +637,16 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 		}
 	}
 
+	/* Reset the color mask */
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glDisable(GL_STENCIL_TEST);
 
 	return status;
 }
 
+/**
+ * CompScreen::drawWindowTexture
+ */
 static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const FragmentAttrib *attrib, unsigned int mask)
 {
 	CompScreen *s = w->screen;
@@ -614,6 +667,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 		if (pw->local[i].region == NULL)
 			continue;
 
+		/* Set up the shader */
 		FragmentAttrib fa = *attrib;
 
 		int param = allocFragmentParameters(&fa, 2);
@@ -623,20 +677,25 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 		if (function)
 			addFragmentFunction(&fa, function);
 
+		/* Set the environment variables */
 		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 0, pw->local[i].scale, pw->local[i].scale, pw->local[i].scale, 1.0);
 		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 1, pw->local[i].offset, pw->local[i].offset, pw->local[i].offset, 0.0);
 
+		/* Activate the 3D texture */
 		(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
 		glEnable(GL_TEXTURE_3D);
 		glBindTexture(GL_TEXTURE_3D, pw->local[i].clutTexture);
 		(*s->activeTexture) (GL_TEXTURE0_ARB);
 
-		glStencilFunc(GL_EQUAL, 1, ~0);
+		/* Only draw where the stencil value matches 'i + 1' */
+		glStencilFunc(GL_EQUAL, i + 1, ~0);
 
+		/* Now draw the window texture */
 		UNWRAP(ps, s, drawWindowTexture);
 		(*s->drawWindowTexture) (w, texture, &fa, mask);
 		WRAP(ps, s, drawWindowTexture, pluginDrawWindowTexture);
 
+		/* Deactivate the 3D texture */
 		(*s->activeTexture) (GL_TEXTURE0_ARB + unit);
 		glBindTexture(GL_TEXTURE_3D, 0);
 		glDisable(GL_TEXTURE_3D);
@@ -645,6 +704,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 
 	glDisable(GL_STENCIL_TEST);
 
+	/* Not sure if really necessary */
 	addWindowDamage(w);
 }
 
