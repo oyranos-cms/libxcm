@@ -19,7 +19,8 @@ typedef struct {
 } XColorProfile;
 
 It defines a single ICC profile that can be uploaded to the compositing manager
-and later referenced in color regions.
+and later referenced in color regions. The actual profile data follows directly
+after the structure.
 
 
    Color Region
