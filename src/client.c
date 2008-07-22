@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "xcolor.h"
+#include <Xcolor.h>
 
 static void *readFile(const char *path, unsigned long *nBytes)
 {
@@ -68,28 +68,25 @@ int main(int argc, char *argv[])
 	unsigned long nBytes;
 	void *blob = readFile("profile.icc", &nBytes);
 
-	/* upload profile to the root window */
-	XColorProfile *profile = malloc(sizeof(XColorProfile) + nBytes);
+	/* upload profile to the display */
+	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
 	uuid_generate(profile->uuid);
-	profile->size = htonl(nBytes);
+	profile->length = nBytes;
 	memcpy(profile + 1, blob, nBytes);
 
-	Atom netColorType = XInternAtom(dpy, "_NET_COLOR_TYPE", False);
-	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
+	XcolorProfileUpload(dpy, profile);
 
-	XChangeProperty(dpy, XRootWindow(dpy, screen), netColorProfiles, netColorType, 8, PropModeReplace, (unsigned char *) profile, sizeof(XColorProfile) + nBytes);
-
-	/* upload regions */
+	/* upload regions to the window*/
 	XRectangle rec[2] = { { 50, 200, 80, 50 }, { 100, 100, 150, 100 } };
 	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
 
-	XColorRegion region;
+	XcolorRegion region;
 	region.region = htonl(reg);
 	uuid_copy(region.uuid, profile->uuid);
 
-	Atom netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
-	XChangeProperty(dpy, w, netColorRegions, netColorType, 8, PropModeReplace, (unsigned char *) &region, sizeof(XColorRegion));
+	XcolorRegionInsert(dpy, w, 0, &region, 1);
 
+	/* set the targe (to which output the colors will be matched) */
 	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
 	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, "VGA", 4);
 

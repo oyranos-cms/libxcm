@@ -61,7 +61,6 @@ typedef struct {
 	Atom netColorProfiles;
 	Atom netColorRegions;
 	Atom netColorTarget;
-	Atom netColorType;
 } PrivDisplay;
 
 typedef struct {
@@ -264,7 +263,7 @@ static void updateScreenProfiles(CompScreen *s)
 
 	/* fetch the profiles */
 	unsigned long nBytes;
-	void *data = fetchProperty(d->display, s->root, pd->netColorProfiles, pd->netColorType, &nBytes);
+	void *data = fetchProperty(d->display, s->root, pd->netColorProfiles, XA_CARDINAL, &nBytes);
 	if (data == NULL)
 		return;
 
@@ -310,7 +309,7 @@ static void updateWindowRegions(CompWindow *w)
 
 	/* fetch the regions */
 	unsigned long nBytes;
-	void *data = fetchProperty(d->display, w->id, pd->netColorRegions, pd->netColorType, &nBytes);
+	void *data = fetchProperty(d->display, w->id, pd->netColorRegions, XA_CARDINAL, &nBytes);
 	if (data == NULL)
 		return;     
 
@@ -754,7 +753,6 @@ static CompBool pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *
 	pd->netColorProfiles = XInternAtom(d->display, "_NET_COLOR_PROFILES", False);
 	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
 	pd->netColorTarget = XInternAtom(d->display, "_NET_COLOR_TARGET", False);
-	pd->netColorType = XInternAtom(d->display, "_NET_COLOR_TYPE", False);
 
 	return TRUE;
 }
