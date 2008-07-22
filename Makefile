@@ -1,25 +1,24 @@
 
-CFLAGS = -Wall -Iinclude -std=c99 -g -ggdb `pkg-config --cflags compiz`
-LIBS   = `pkg-config --libs compiz` -llcms -luuid
+CFLAGS = -Wall -Iinclude -std=c99 -g -ggdb
 
-OBJS   = src/color.o
 
-%.o: %.c
-	gcc $(CFLAGS) -fPIC -c -o $@ $<
+# The X11 client-side library
+libXcolor.so: src/Xcolor/Xcolor.c
+	gcc $(CFLAGS) -fPIC -shared -o $@ $<
 
-libXcolor.so: src/Xcolor/Xcolor.o
-	gcc -I src/Xcolor -luuid -fPIC -shared -o libXcolor.so $<
+# The compiz plugin
+libcolor.so: src/compiz/color.c
+	gcc $(CFLAGS) -fPIC -shared -o $@ $< `pkg-config --cflags --libs compiz` -llcms
 
-libcolor.so: $(OBJS)
-	gcc $(LIBS) -fPIC -shared -o $@ $<
+client: src/client.c
+	gcc $(CFLAGS) -o $@ $< `pkg-config --cflags --libs cairo xfixes x11` -L. -lXcolor -luuid
 
-all: libcolor.so libXcolor.so
-	gcc $(CFLAGS) -o client src/client.c -lX11 -luuid `pkg-config --cflags --libs cairo xfixes`  -L. -lXcolor
+all: libcolor.so libXcolor.so client
 
-install:
+install: libcolor.so
 	mkdir -p $(HOME)/.compiz/plugins
 	install libcolor.so $(HOME)/.compiz/plugins/libcolor.so
 
 clean:
-	rm -f $(OBJS) libcolor.so libXcolor.so
+	rm -f libcolor.so libXcolor.so client
 

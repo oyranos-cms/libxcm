@@ -16,7 +16,7 @@
 #include <stdarg.h>
 #include <lcms.h>
 
-#include "xcolor.h"
+#include <Xcolor.h>
 
 #define GRIDPOINTS 64
 static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
@@ -72,7 +72,7 @@ typedef struct {
 
 	/* profiles attached to the screen */
 	unsigned long nProfiles;
-	XColorProfile **profile;
+	XcolorProfile **profile;
 
 	/* compiz fragement function */
 	int function, param, unit;
@@ -85,7 +85,7 @@ typedef struct {
 typedef struct {
 	/* regions attached to the window */
 	unsigned long nRegions;
-	XColorRegion **region;
+	XcolorRegion **region;
 
 	/* stack range */
 	unsigned long active[2];
@@ -161,6 +161,37 @@ static void compObjectFreePrivate(CompObject *parent, CompObject *object)
 	object->privates[*privateIndex].ptr = NULL;
 
 	free(privateData);
+}
+
+/**
+ * Xcolor helper functions
+ */
+
+static inline XcolorProfile *XcolorProfileNext(XcolorProfile *profile)
+{
+	unsigned char *ptr = (unsigned char *) profile;
+	return (XcolorProfile *) (ptr + sizeof(XcolorProfile) + ntohl(profile->length));
+}
+
+static inline unsigned long XcolorProfileCount(void *data, unsigned long nBytes)
+{
+	unsigned long count = 0;
+
+	for (XcolorProfile *ptr = data; (void *) ptr < data + nBytes; ptr = XcolorProfileNext(ptr))
+		++count;
+
+	return count;
+}
+
+static inline XcolorRegion *XcolorRegionNext(XcolorRegion *region)
+{
+	unsigned char *ptr = (unsigned char *) region;
+	return (XcolorRegion *) (ptr + sizeof(XcolorRegion));
+}
+
+static inline unsigned long XcolorRegionCount(void *data, unsigned long nBytes)
+{
+	return nBytes / sizeof(XcolorRegion);
 }
 
 
@@ -268,16 +299,16 @@ static void updateScreenProfiles(CompScreen *s)
 		return;
 
 	/* allocate list */
-	unsigned long count = XColorProfileCount(data, nBytes);
-	ps->profile = malloc(count * sizeof(XColorProfile *));
+	unsigned long count = XcolorProfileCount(data, nBytes);
+	ps->profile = malloc(count * sizeof(XcolorProfile *));
 	if (ps->profile == NULL)
 		goto out;
 
 	/* fill in the pointers */
-	XColorProfile *ptr = data;
+	XcolorProfile *ptr = data;
 	for (unsigned long i = 0; i < count; ++i) {
 		ps->profile[i] = ptr;
-		ptr = XColorProfileNext(ptr);
+		ptr = XcolorProfileNext(ptr);
 	}
 
 	ps->nProfiles = count;
@@ -314,16 +345,16 @@ static void updateWindowRegions(CompWindow *w)
 		return;     
 
 	/* allocate the list */
-	unsigned long count = XColorRegionCount(data, nBytes);
-	pw->region = malloc(count * sizeof(XColorRegion *));
+	unsigned long count = XcolorRegionCount(data, nBytes);
+	pw->region = malloc(count * sizeof(XcolorRegion *));
 	if (pw->region == NULL)
 		goto out;
 
 	/* fill in the pointers */
-	XColorRegion *ptr = data;
+	XcolorRegion *ptr = data;
 	for (unsigned long i = 0; i < count; ++i) {
 		pw->region[i] = ptr;
-		ptr = XColorRegionNext(ptr);
+		ptr = XcolorRegionNext(ptr);
 	}
 
 	pw->nRegions = count;
@@ -360,7 +391,7 @@ static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 
 	for (unsigned long i = 0; i < ps->nProfiles; ++i) {
 		if (uuid_compare(uuid, ps->profile[i]->uuid) == 0) {
-			*nBytes = ntohl(ps->profile[i]->size);
+			*nBytes = ntohl(ps->profile[i]->length);
 			return ps->profile[i] + 1;
 		}
 	}
