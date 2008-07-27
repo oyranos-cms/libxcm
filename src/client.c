@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
 
 	XcolorRegion region;
-	region.region = htonl(reg);
+	region.region = reg;
 	uuid_copy(region.uuid, profile->uuid);
 
 	XcolorRegionInsert(dpy, w, 0, &region, 1);
