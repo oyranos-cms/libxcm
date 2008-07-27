@@ -18,6 +18,11 @@
 
 #include <Xcolor.h>
 
+
+/* Uncomment the following line if you want to enable debugging output */
+// #define PLUGIN_DEBUG 1
+
+
 #define GRIDPOINTS 64
 static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 
@@ -234,6 +239,10 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 	ps->param = param;
 	ps->unit = unit;
 
+#if defined(PLUGIN_DEBUG)
+	compLogMessage(s->display, "color", CompLogLevelDebug, "Shader compiled: %d/%d/%d", ps->function, param, unit);
+#endif
+
 	return ps->function;
 }
 
@@ -313,6 +322,10 @@ static void updateScreenProfiles(CompScreen *s)
 
 	ps->nProfiles = count;
 
+#if defined(PLUGIN_DEBUG)
+	compLogMessage(d, "color", CompLogLevelDebug, "Updated screen profiles, %d total now", count);
+#endif
+
 	return;
 
 out:
@@ -359,6 +372,10 @@ static void updateWindowRegions(CompWindow *w)
 
 	pw->nRegions = count;
 
+#if defined(PLUGIN_DEBUG)
+	compLogMessage(d, "color", CompLogLevelDebug, "Updated window regions, %d total now", count);
+#endif
+
 	return;
 
 out:
@@ -380,6 +397,10 @@ static void updateWindowOutput(CompWindow *w)
 
 	unsigned long nBytes;
 	pw->output = fetchProperty(d->display, w->id, pd->netColorTarget, XA_STRING, &nBytes);
+
+#if defined(_NET_COLOR_DEBUG)
+	compLogMessage(d, "color", CompLogLevelDebug, "Updated window output, target is %s", pw->output);
+#endif
 }
 
 /**
@@ -396,6 +417,12 @@ static void *findProfileBlob(CompScreen *s, uuid_t uuid, unsigned long *nBytes)
 		}
 	}
 
+#if defined(PLUGIN_DEBUG)
+	char uuid_string[37];
+	uuid_unparse(uuid, uuid_string);
+	compLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile with UUID '%s'", uuid_string);
+#endif
+
 	return NULL;
 }
 
@@ -411,6 +438,10 @@ static void *findOutputProfile(CompScreen *s, const char *name)
 			return ps->output[i].profile;
 		}
 	}
+
+#if defined(PLUGIN_DEBUG)
+	compLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile for output '%s'", name);
+#endif
 
 	return NULL;
 }
@@ -496,6 +527,11 @@ static void updateWindowLocals(CompWindow *w, void *closure)
 
 	pw->nLocals = pw->active[1];
 
+#if defined(PLUGIN_DEBUG)
+	compLogMessage(w->screen->display, "color", CompLogLevelDebug, "Updated window locals. Active range is between %d and %d (out of %d regions total)",
+		       pw->active[0], pw->active[0] + pw->active[1], pw->nRegions);
+#endif
+
 out:
 	addWindowDamage(w);
 }
@@ -547,6 +583,10 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 
 	if (updateWindows)
 		forEachWindowOnScreen(s, updateWindowLocals, NULL);
+
+#if defined(PLUGIN_DEBUG)
+	compLogMessage(s->display, "color", CompLogLevelDebug, "Updated screen outputs, %d total now", ps->nOutputs);
+#endif
 }
 
 /**
