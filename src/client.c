@@ -1,6 +1,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/keysymdef.h>
 
 #include <X11/extensions/Xfixes.h>
 
@@ -90,6 +91,9 @@ int main(int argc, char *argv[])
 	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
 	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, "VGA", 4);
 
+	/* When the escape key is pressed, the application cleans up all resources and exits. */
+	KeyCode escape = XKeysymToKeycode(dpy, XStringToKeysym("Escape"));
+
 	for (;;) {
 		XEvent event;
 		XNextEvent(dpy, &event);
@@ -118,6 +122,9 @@ int main(int argc, char *argv[])
 			cairo_set_source_rgba(cr, 0, 0, 1, 0.40);
 			cairo_fill(cr);
 		} else if (event.type == KeyPress) {
+			if (event.xkey.keycode == escape)
+				break;
+		     
 			XClientMessageEvent xev;
 			static long enable = 0;
 
@@ -136,6 +143,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	/* Delete the profile. The ref-count inside the compiz plugin drops to zero
+	 * and the profile resources will be freed. */
+	profile->length = 0;
+	XcolorProfileDelete(dpy, profile);
 
 	XDestroyWindow(dpy, w);
 	XCloseDisplay(dpy);

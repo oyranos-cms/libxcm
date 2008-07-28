@@ -22,7 +22,7 @@
 
 
 /* Uncomment the following line if you want to enable debugging output */
-// #define PLUGIN_DEBUG 1
+#define PLUGIN_DEBUG 1
 
 
 #define GRIDPOINTS 64
@@ -49,7 +49,7 @@ typedef struct {
 
 	/* These members are only valid when this region is part of the
 	 * active stack range. */
-	Region xRegion;
+Region xRegion;
 	GLuint glTexture;
 	GLfloat scale, offset;
 } PrivColorRegion;
@@ -355,7 +355,7 @@ static void updateScreenProfiles(CompScreen *s)
 		if (ptr == NULL)
 			goto out;
 
-		memset(ptr + ps->nProfiles, 0, usedSlots + count - ps->nProfiles);
+		memset(ptr + ps->nProfiles, 0, (usedSlots + count - ps->nProfiles) * sizeof(PrivColorProfile));
 
 		ps->nProfiles = usedSlots + count;
 		ps->profile = ptr;
@@ -375,7 +375,7 @@ static void updateScreenProfiles(CompScreen *s)
 		ps->nProfiles = ps->nProfiles / 2;
 		ps->profile = ptr;
 
-		memset(ptr + usedSlots, 0, ps->nProfiles - usedSlots);
+		memset(ptr + usedSlots, 0, (ps->nProfiles - usedSlots) * sizeof(PrivColorProfile));
 	}
 
 	/* Copy the profiles into the array, and create the lcms handles. */
@@ -424,7 +424,8 @@ static void updateScreenProfiles(CompScreen *s)
 	}
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(d, "color", CompLogLevelDebug, "Updated screen profiles, %d existing plus %d new in %d slots", usedSlots, count, ps->nProfiles);
+	compLogMessage(d, "color", CompLogLevelDebug, "Updated screen profiles, %d existing plus %d updates leading to %d profiles in %d slots",
+		       usedSlots, count, screenProfileCount(ps), ps->nProfiles);
 #endif
 
 out:
