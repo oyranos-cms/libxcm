@@ -7,20 +7,19 @@
 
 #include <stdint.h>
 #include <arpa/inet.h>
-#include <uuid/uuid.h>
 
 #include <stdlib.h>
 #include <string.h>
 
 
 typedef struct {
-	uuid_t uuid;      /* UUID of the profile		        */
+	uint8_t md5[16];  /* MD5 of the profile		                */
 	uint32_t length;  /* number of bytes following		        */
 } XcolorProfile;
 
 typedef struct {
 	uint32_t region;  /* XserverRegion				*/
-	uuid_t uuid;      /* UUID of the associated profile	        */
+	uint8_t md5[16];  /* MD5 of the associated profile	        */
 } XcolorRegion;
 
 int XcolorProfileUpload(Display *dpy, XcolorProfile *profile);

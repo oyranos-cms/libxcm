@@ -69,9 +69,14 @@ int main(int argc, char *argv[])
 	unsigned long nBytes;
 	void *blob = readFile("profile.icc", &nBytes);
 
-	/* upload profile to the display */
+	/* Create a XcolorProfile object that will be uploaded to the display */
 	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
-	uuid_generate(profile->uuid);
+
+	/* Fake MD5, real code should extract the MD5 from the ICC profile. See
+	 * for example oyProfileGetMD5_() */
+	for (int i = 0; i < 16; ++i)
+		profile->md5[i] = i;
+
 	profile->length = nBytes;
 	memcpy(profile + 1, blob, nBytes);
 
@@ -83,7 +88,7 @@ int main(int argc, char *argv[])
 
 	XcolorRegion region;
 	region.region = reg;
-	uuid_copy(region.uuid, profile->uuid);
+	memcpy(region.md5, profile->md5, 16);
 
 	XcolorRegionInsert(dpy, w, 0, &region, 1);
 

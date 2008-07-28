@@ -33,7 +33,7 @@ typedef CompBool (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, 
 
 
 typedef struct {
-	uuid_t uuid;
+	uint8_t md5[16];
 	cmsHPROFILE lcmsProfile;
 
 	unsigned long refCount;
@@ -49,7 +49,7 @@ typedef struct {
 
 	/* These members are only valid when this region is part of the
 	 * active stack range. */
-Region xRegion;
+	Region xRegion;
 	GLuint glTexture;
 	GLfloat scale, offset;
 } PrivColorRegion;
@@ -76,7 +76,7 @@ typedef struct {
 	HandleEventProc handleEvent;
 
 	/* ClientMessage sent by the application */
-	Atom netColorManagement;
+Atom netColorManagement;
 
 	/* Window properties */
 	Atom netColorProfiles;
@@ -213,6 +213,19 @@ static inline unsigned long XcolorRegionCount(void *data, unsigned long nBytes)
 
 
 /**
+ * Helper function to convert a MD5 into a readable string.
+ */
+static const char *md5string(const uint8_t md5[16])
+{
+	static char buffer[33];
+
+	for (int i = 0; i < 16; ++i)
+		sprintf(buffer + i * 2, "%02x", md5[i]);
+
+	return buffer;
+}
+
+/**
  * Here begins the real code
  */
 
@@ -311,19 +324,17 @@ static unsigned long screenProfileCount(PrivScreen *ps)
  * Returns the array index at which the profile is, if not found then returns
  * PrivScreen::nProfiles
  */
-static unsigned long findProfileIndex(CompScreen *s, uuid_t uuid)
+static unsigned long findProfileIndex(CompScreen *s, const uint8_t md5[16])
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
 
 	for (unsigned long i = 0; i < ps->nProfiles; ++i) {
-		if (ps->profile[i].refCount > 0 && uuid_compare(uuid, ps->profile[i].uuid) == 0)
+		if (ps->profile[i].refCount > 0 && memcmp(md5, ps->profile[i].md5, 16) == 0)
 			return i;
 	}
 
 #if defined(PLUGIN_DEBUG)
-	char uuid_string[37];
-	uuid_unparse(uuid, uuid_string);
-	compLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile with UUID '%s'", uuid_string);
+	compLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile with MD5 '%s'", md5string(md5));
 #endif
 
 	return ps->nProfiles;
@@ -381,7 +392,7 @@ static void updateScreenProfiles(CompScreen *s)
 	/* Copy the profiles into the array, and create the lcms handles. */
 	XcolorProfile *profile = data;
 	for (unsigned long i = 0; i < count; ++i) {
-		unsigned long index = findProfileIndex(s, profile->uuid);
+		unsigned long index = findProfileIndex(s, profile->md5);
 
 		/* XcolorProfile::length == 0 means the clients wants to delete the profile. */
 		if (ntohl(profile->length) == 0) {
@@ -409,7 +420,7 @@ static void updateScreenProfiles(CompScreen *s)
 						goto out;
 					}
 
-					uuid_copy(ps->profile[i].uuid, profile->uuid);
+					memcpy(ps->profile[i].md5, profile->md5, 16);
 					ps->profile[i].refCount = 1;
 
 					break;
@@ -476,7 +487,7 @@ static void updateWindowRegions(CompWindow *w)
 
 		/* Locate the lcms profile. If not availabe, simply set PrivColorRegion::lcmsRegion
 		 * to NULL so that it will be ignored during the rendering. */
-		unsigned long index = findProfileIndex(w->screen, region->uuid);
+		unsigned long index = findProfileIndex(w->screen, region->md5);
 		pw->region[i].lcmsProfile = index == ps->nProfiles ? NULL : ps->profile[index].lcmsProfile;
 
 		region = XcolorRegionNext(region);

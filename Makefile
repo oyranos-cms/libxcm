@@ -11,7 +11,7 @@ libcolor.so: src/compiz/color.c
 	gcc $(CFLAGS) -fPIC -shared -o $@ $< `pkg-config --cflags --libs compiz` -llcms
 
 client: src/client.c
-	gcc $(CFLAGS) -o $@ $< `pkg-config --cflags --libs cairo xfixes x11` -L. -lXcolor -luuid
+	gcc $(CFLAGS) -o $@ $< `pkg-config --cflags --libs cairo xfixes x11` -L. -lXcolor
 
 all: libcolor.so libXcolor.so client
 
