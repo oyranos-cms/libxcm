@@ -25,6 +25,10 @@
 #define PLUGIN_DEBUG 1
 
 
+/**
+ * The 3D lookup texture has 64 points in each dimension, using 16 bit integers.
+ * That means each active region will use 1.5MiB of texture memory.
+ */
 #define GRIDPOINTS 64
 static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 
@@ -32,6 +36,11 @@ static GLushort clut[GRIDPOINTS][GRIDPOINTS][GRIDPOINTS][3];
 typedef CompBool (*dispatchObjectProc) (CompPlugin *plugin, CompObject *object, void *privateData);
 
 
+/**
+ * When a profile is uploaded into the root window, the plugin fetches the property
+ * and creates a lcms profile object. Each profile has a reference count to allow
+ * clients to share profiles. When the ref-count drops to zero, the profile is released.
+ */
 typedef struct {
 	uint8_t md5[16];
 	cmsHPROFILE lcmsProfile;
@@ -39,6 +48,16 @@ typedef struct {
 	unsigned long refCount;
 } PrivColorProfile;
 
+/**
+ * The XserverRegion is dereferenced only when the client sends a _NET_COLOR_MANAGEMENT
+ * ClientMessage to its window. This allows clients to change the region as the window
+ * is resized and later send _N_C_M to tell the plugin to re-fetch the region from the
+ * server.
+ * The profile is resolved as soon as the client uploads the regions into the window.
+ * That means clients need to upload profiles first and then the regions. Otherwise
+ * the plugin won't be able to find the profile and no color transformation will
+ * be done.
+ */
 typedef struct {
 	/* The server-side region. Only after the client sends a ClientMessage to the window
 	 * it is fetched to compiz. */
@@ -54,6 +73,10 @@ typedef struct {
 	GLfloat scale, offset;
 } PrivColorRegion;
 
+/**
+ * Output profiles are currently only fetched using XRandR. For backwards compatibility
+ * the code should fall back to root window properties (_ICC_PROFILE).
+ */
 typedef struct {
 	char name[32];
 	cmsHPROFILE lcmsProfile;
@@ -181,7 +204,8 @@ static void compObjectFreePrivate(CompObject *parent, CompObject *object)
 }
 
 /**
- * Xcolor helper functions
+ * Xcolor helper functions. I didn't really want to put them into the Xcolor library.
+ * Other window managers are free to copy those when needed.
  */
 
 static inline XcolorProfile *XcolorProfileNext(XcolorProfile *profile)
@@ -457,8 +481,10 @@ static void updateWindowRegions(CompWindow *w)
 
 	/* free existing data structures */
 	for (unsigned long i = 0; i < pw->nRegions; ++i) {
-		XDestroyRegion(pw->region[i].xRegion);
-		glDeleteTextures(1, &pw->region[i].glTexture);
+		if (pw->region[i].glTexture != 0) {
+			XDestroyRegion(pw->region[i].xRegion);
+			glDeleteTextures(1, &pw->region[i].glTexture);
+		}
 	}
 
 	if (pw->nRegions)
