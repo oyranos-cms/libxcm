@@ -529,6 +529,8 @@ out:
 	XFree(data);
 }
 
+static void updateWindowStack(CompWindow *w, void *closure);
+
 /**
  * Called when the window target (_NET_COLOR_TARGET) has been changed.
  */
@@ -548,6 +550,8 @@ static void updateWindowOutput(CompWindow *w)
 #if defined(_NET_COLOR_DEBUG)
 	compLogMessage(d, "color", CompLogLevelDebug, "Updated window output, target is %s", pw->output);
 #endif
+
+	updateWindowStack(w, NULL);
 }
 
 /**

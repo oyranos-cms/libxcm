@@ -1,9 +1,12 @@
 
+#define _BSD_SOURCE
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/keysymdef.h>
 
 #include <X11/extensions/Xfixes.h>
+#include <X11/extensions/Xrandr.h>
 
 #include <cairo.h>
 #include <cairo-xlib.h>
@@ -92,12 +95,30 @@ int main(int argc, char *argv[])
 
 	XcolorRegionInsert(dpy, w, 0, &region, 1);
 
-	/* set the targe (to which output the colors will be matched) */
+	/* Here the code fetches the names of all outputs. Later the target can be changed
+	 * by a key press. */
+	XRRScreenResources *res = XRRGetScreenResources(dpy, XRootWindow(dpy, screen));
+
+	unsigned long activeOutput = 0, nOutputs = res->noutput;
+	char *outputName[nOutputs];
+
+	for (unsigned long i = 0; i < nOutputs; ++i) {
+		XRROutputInfo *oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
+		outputName[i] = strdup(oinfo->name);
+		XRRFreeOutputInfo(oinfo);
+	}
+
+	XRRFreeScreenResources(res);
+
 	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
-	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, "VGA", 4);
+	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], 4);
 
 	/* When the escape key is pressed, the application cleans up all resources and exits. */
 	KeyCode escape = XKeysymToKeycode(dpy, XStringToKeysym("Escape"));
+
+	/* When the delete key is pressed, the application switches the target output. */
+        KeyCode delete = XKeysymToKeycode(dpy, XStringToKeysym("Delete"));
+
 
 	for (;;) {
 		XEvent event;
@@ -127,24 +148,32 @@ int main(int argc, char *argv[])
 			cairo_set_source_rgba(cr, 0, 0, 1, 0.40);
 			cairo_fill(cr);
 		} else if (event.type == KeyPress) {
-			if (event.xkey.keycode == escape)
+			if (event.xkey.keycode == escape) {
 				break;
-		     
-			XClientMessageEvent xev;
-			static long enable = 0;
+			} else if (event.xkey.keycode == delete) {
+				if (++activeOutput == nOutputs)
+					activeOutput = 0;
 
-			xev.type = ClientMessage;
-			xev.window = w;
-			xev.message_type = XInternAtom(dpy, "_NET_COLOR_MANAGEMENT", False);
-			xev.format = 32;
+				XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], strlen(outputName[activeOutput]));
 
-			++enable;
-			xev.data.l[0] = 0;
-			xev.data.l[1] = enable % 2;
+				printf("Changed target output to %s\n", outputName[activeOutput]);
+			} else {
+				XClientMessageEvent xev;
+				static long enable = 0;
 
-			XSendEvent(dpy, RootWindow(dpy, screen), False, ExposureMask, (XEvent *) &xev);
+				xev.type = ClientMessage;
+				xev.window = w;
+				xev.message_type = XInternAtom(dpy, "_NET_COLOR_MANAGEMENT", False);
+				xev.format = 32;
+				
+				++enable;
+				xev.data.l[0] = 0;
+				xev.data.l[1] = enable % 2;
 
-			printf("Sent color manangement request: %li\n", enable % 2);
+				XSendEvent(dpy, RootWindow(dpy, screen), False, ExposureMask, (XEvent *) &xev);
+				
+				printf("Sent color manangement request: %li\n", enable % 2);
+			}
 		}
 	}
 
