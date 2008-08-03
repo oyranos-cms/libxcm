@@ -158,21 +158,12 @@ int main(int argc, char *argv[])
 
 				printf("Changed target output to %s\n", outputName[activeOutput]);
 			} else {
-				XClientMessageEvent xev;
-				static long enable = 0;
+				static long count = 0;
+			    
+				count = (count + 1) % 2;
+				XcolorRegionActivate(dpy, w, 0, count);
 
-				xev.type = ClientMessage;
-				xev.window = w;
-				xev.message_type = XInternAtom(dpy, "_NET_COLOR_MANAGEMENT", False);
-				xev.format = 32;
-				
-				++enable;
-				xev.data.l[0] = 0;
-				xev.data.l[1] = enable % 2;
-
-				XSendEvent(dpy, RootWindow(dpy, screen), False, ExposureMask, (XEvent *) &xev);
-				
-				printf("Sent color manangement request: %li\n", enable % 2);
+				printf("Activated regions 0 - %li\n", count);
 			}
 		}
 	}

@@ -79,4 +79,13 @@ XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegion
  */
 int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned long count);
 
+
+/**
+ *    XcolorRegionActivate
+ * Activates 'count' regions starting at positiong 'start' in the stack. Unlike
+ * the other functions it does not check whether 'start + count' extends beyond
+ * the stack end. To disable all regions pass zero to 'count'.
+ */
+int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned long count);
+
 #endif /* __XCOLOR_H__ */
