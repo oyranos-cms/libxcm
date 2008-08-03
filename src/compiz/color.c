@@ -687,10 +687,10 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 		      &actualType, &actualFormat, &n, &left, &data);
 
 		if (result == Success && n > 0) {
-			printf("Output '%s' has attached profile.\n", oinfo->name);
+			compLogMessage(s->display, "color", CompLogLevelInfo, "Output %s: extracted profile from RandR", oinfo->name);
 			ps->output[i].lcmsProfile = cmsOpenProfileFromMem(data, n);
 		} else {
-			printf("Assuming sRGB profile for output '%s'\n", oinfo->name);
+			compLogMessage(s->display, "color", CompLogLevelInfo, "Output %s: assuming sRGB profile", oinfo->name);
 			ps->output[i].lcmsProfile = cmsCreate_sRGBProfile();
 		}
 
