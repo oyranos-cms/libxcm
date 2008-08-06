@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	XcolorProfileUpload(dpy, profile);
 
 	/* upload regions to the window*/
-	XRectangle rec[2] = { { 50, 200, 80, 50 }, { 100, 100, 150, 100 } };
+	XRectangle rec[2] = { { 50, 25, 200, 175 }, { 25, 175, 100, 100 } };
 	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
 
 	XcolorRegion region;
