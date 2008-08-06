@@ -852,20 +852,20 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	glEnable(GL_STENCIL_TEST);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
+	/* Set up the shader */
+	FragmentAttrib fa = *attrib;
+
+	int param = allocFragmentParameters(&fa, 2);
+	int unit = allocFragmentTextureUnits(&fa, 1);
+
+	int function = getProfileShader(s, texture, param, unit);
+	if (function)
+		addFragmentFunction(&fa, function);
+
 	for (unsigned long i = 0; i < pw->active[1]; ++i) {
 		PrivColorRegion *reg = pw->region + pw->active[0] + i;
 		if (reg->glTexture == 0)
 			continue;
-
-		/* Set up the shader */
-		FragmentAttrib fa = *attrib;
-
-		int param = allocFragmentParameters(&fa, 2);
-		int unit = allocFragmentTextureUnits(&fa, 1);
-
-		int function = getProfileShader(s, texture, param, unit);
-		if (function)
-			addFragmentFunction(&fa, function);
 
 		/* Set the environment variables */
 		glProgramEnvParameter4dARB(GL_FRAGMENT_PROGRAM_ARB, param + 0, reg->scale, reg->scale, reg->scale, 1.0);
