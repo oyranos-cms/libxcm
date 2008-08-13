@@ -7,6 +7,7 @@
 
 #include <X11/extensions/Xfixes.h>
 #include <X11/extensions/Xrandr.h>
+#include <X11/extensions/Xinerama.h>
 
 #include <cairo.h>
 #include <cairo-xlib.h>
@@ -39,8 +40,25 @@ static void *readFile(const char *path, unsigned long *nBytes)
 	return ret;	
 }
 
+/* Force Xinerama screen detection instead of RandR. */
+static int forceXinerama = 0;
+
 int main(int argc, char *argv[])
 {
+	/* Parse commandline options. */
+	int c;
+	while ((c = getopt(argc, argv, "x")) != -1) {
+		switch(c) {
+		case 'x':
+			forceXinerama = 1;
+			break;
+		default:
+			printf("Usage: %s [-x]\n", argv[0]);
+			return -1;
+		}
+	}
+
+	/* Open the display and create our window. */
 	Display *dpy = XOpenDisplay(NULL);
 
 	int screen = DefaultScreen(dpy);
@@ -72,11 +90,11 @@ int main(int argc, char *argv[])
 	unsigned long nBytes;
 	void *blob = readFile("profile.icc", &nBytes);
 
-	/* Create a XcolorProfile object that will be uploaded to the display */
+	/* Create a XcolorProfile object that will be uploaded to the display. */
 	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
 
 	/* Fake MD5, real code should extract the MD5 from the ICC profile. See
-	 * for example oyProfileGetMD5_() */
+	 * for example oyProfileGetMD5_(). */
 	for (int i = 0; i < 16; ++i)
 		profile->md5[i] = i;
 
@@ -85,7 +103,7 @@ int main(int argc, char *argv[])
 
 	XcolorProfileUpload(dpy, profile);
 
-	/* upload regions to the window*/
+	/* Upload the region to the window. */
 	XRectangle rec[2] = { { 50, 25, 200, 175 }, { 25, 175, 100, 100 } };
 	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
 
@@ -95,23 +113,51 @@ int main(int argc, char *argv[])
 
 	XcolorRegionInsert(dpy, w, 0, &region, 1);
 
-	/* Here the code fetches the names of all outputs. Later the target can be changed
-	 * by a key press. */
-	XRRScreenResources *res = XRRGetScreenResources(dpy, XRootWindow(dpy, screen));
+	unsigned long activeOutput = 0, nOutputs = 0;
+	char *outputName[4];
+	
+	/* To query the output layout first try to use RandR, if that fails try Xinerama. */
+	int rrEventBase, rrErrorBase;
+	if (XRRQueryExtension(dpy, &rrEventBase, &rrErrorBase) == True && !forceXinerama) {
+		XRRScreenResources *res = XRRGetScreenResources(dpy, XRootWindow(dpy, screen));
 
-	unsigned long activeOutput = 0, nOutputs = res->noutput;
-	char *outputName[nOutputs];
+		printf("Found %d RandR outputs:\n", res->noutput);
+		for (unsigned long i = 0; i < res->noutput; ++i) {
+			XRROutputInfo *oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
+			outputName[i] = strdup(oinfo->name);
+			printf("  %s\n", outputName[i]);
+			XRRFreeOutputInfo(oinfo);
+		}
 
-	for (unsigned long i = 0; i < nOutputs; ++i) {
-		XRROutputInfo *oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
-		outputName[i] = strdup(oinfo->name);
-		XRRFreeOutputInfo(oinfo);
+		nOutputs = res->noutput;
+		
+		XRRFreeScreenResources(res);
+	} else {
+		int xiEventBase, xiErrorBase;
+		if (XineramaQueryExtension(dpy, &xiEventBase, &xiErrorBase) == False) {
+			printf("Neither RandR nor Xinerama available!\n");
+			return -1;
+		}
+
+		int nScreens;
+		XineramaScreenInfo *screen = XineramaQueryScreens(dpy, &nScreens);
+
+		printf("Found %d Xinerama screens:\n", nScreens);
+		for (int i = 0; i < nScreens; ++i) {
+			char name[128];
+			snprintf(name, 128, "Xinerama-Screen-%d", i);
+			outputName[i] = strdup(name);
+			printf("  %s\n", outputName[i]);
+		}
+
+		nOutputs = nScreens;
+
+		XFree(screen);
 	}
-
-	XRRFreeScreenResources(res);
+		
 
 	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
-	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], 4);
+	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], strlen(outputName[activeOutput]));
 
 	/* When the escape key is pressed, the application cleans up all resources and exits. */
 	KeyCode escape = XKeysymToKeycode(dpy, XStringToKeysym("Escape"));
