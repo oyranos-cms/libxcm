@@ -99,7 +99,7 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 
 	/* Security check to ensure that the client doesn't try to delete regions
 	 * beyond the stack end. */
-	if (start + count >= nRegions) {
+	if (start + count > nRegions) {
 		XFree(region);
 		return -1;
 	}
@@ -107,8 +107,13 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 	/* Remove the regions and close the gap. */
 	memmove(region + start, region + start + count, (nRegions - start - count) * sizeof(XcolorRegion));
 
-	XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
-	XFree(region);
+  if(nRegions - count)
+  	XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
+  else
+    XDeleteProperty( dpy, win, netColorRegions );
+
+  XFree(region);
+
 
 	return 0;	
 }
