@@ -1,3 +1,16 @@
+/**
+ *  @file     color.c
+ *
+ *  @brief    a compiz colour management plug-in
+ *
+ *  @author   Tomas Carnecky
+ *  @par Copyright:
+ *            2008 (C) Tomas Carnecky, 2009 (C) Kai-Uwe Behrmann
+ *  @par License:
+ *            new BSD <http://www.opensource.org/licenses/bsd-license.php>
+ *  @since    2008/06/09
+ */
+
 
 #include <assert.h>
 
@@ -99,7 +112,7 @@ typedef struct {
 	HandleEventProc handleEvent;
 
 	/* ClientMessage sent by the application */
-Atom netColorManagement;
+	Atom netColorManagement;
 
 	/* Window properties */
 	Atom netColorProfiles;
@@ -325,6 +338,11 @@ static void *fetchProperty(Display *dpy, Window w, Atom prop, Atom type, unsigne
 	unsigned char *data;
 
 	int result = XGetWindowProperty(dpy, w, prop, 0, ~0, delete, type, &actual, &format, n, &left, &data);
+#if defined(PLUGIN_DEBUG)
+	printf( "%s:%d %s delete: %d %s %lu\n", __FILE__,__LINE__,
+                XGetAtomName( dpy, prop ), delete,
+                (result == Success) ? "fine" : "err", *n );
+#endif
 	if (result == Success)
 		return (void *) data;
 
@@ -603,14 +621,21 @@ static void updateWindowStack(CompWindow *w, void *closure)
 		 * Because of PrivColorRegion::glTexture == 0 the region will later be skippend when rendering the window. */
 
 		cmsHPROFILE srcProfile = pw->region[pw->active[0] + i].lcmsProfile;
+
+		/* support device links from client to trasnport complex things */
+		icProfileClassSignature pclass_sig = cmsGetDeviceClass( srcProfile );
+
 		if (srcProfile == NULL)
 			continue;
+		int device_link = (pclass_sig == icSigLinkClass);
 
 		cmsHPROFILE dstProfile = findOutputProfile(w->screen, pw->output);
-		if (dstProfile == NULL)
+		if (!device_link && dstProfile == NULL)
 			continue;
 
-		cmsHTRANSFORM xform = cmsCreateTransform(srcProfile, TYPE_RGB_16, dstProfile, TYPE_RGB_16, INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
+		cmsHTRANSFORM xform = cmsCreateTransform(srcProfile, TYPE_RGB_16,
+			device_link ? 0 : dstProfile, TYPE_RGB_16,
+			INTENT_PERCEPTUAL, cmsFLAGS_NOTPRECALC);
 		if (xform == NULL)
 			continue;
 
@@ -720,6 +745,13 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 
 	switch (event->type) {
 	case PropertyNotify:
+#if defined(PLUGIN_DEBUG)
+		if (event->xproperty.atom == pd->netColorProfiles ||
+				event->xproperty.atom == pd->netColorRegions ||
+				event->xproperty.atom == pd->netColorTarget )
+			printf( "%s:%d PropertyNotify: %s\n", __FILE__,__LINE__,
+  	         	XGetAtomName( event->xany.display, event->xproperty.atom ) );
+#endif
 		if (event->xproperty.atom == pd->netColorProfiles) {
 			CompScreen *s = findScreenAtDisplay(d, event->xproperty.window);
 			updateScreenProfiles(s);
@@ -733,6 +765,10 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 		break;
 	case ClientMessage:
 		if (event->xclient.message_type == pd->netColorManagement) {
+#if defined(PLUGIN_DEBUG)
+			printf( "%s:%d ClientMessage: %s\n", __FILE__,__LINE__,
+  	         	XGetAtomName( event->xany.display, event->xclient.message_type) );
+#endif
 			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
 			PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
 
@@ -746,6 +782,9 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 		if (event->type == d->randrEvent + RRNotify) {
 			XRRNotifyEvent *rrn = (XRRNotifyEvent *) event;
 			CompScreen *s = findScreenAtDisplay(d, rrn->window);
+#if defined(PLUGIN_DEBUG)
+			printf( "%s:%d XRRNotifyEvent\n", __FILE__,__LINE__ );
+#endif
 			updateOutputConfiguration(s, TRUE);
 		}
 		break;
