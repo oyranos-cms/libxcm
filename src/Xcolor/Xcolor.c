@@ -62,7 +62,7 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 
 	/* Make space for the new regions and copy them to the array. */
 	if (nRegs)
-		memmove(ptr + pos + nRegions, ptr + pos, nRegions * sizeof(XcolorRegion));
+		memmove(ptr + pos + nRegs, ptr + pos, nRegions * sizeof(XcolorRegion));
 	memcpy(ptr + pos, region, nRegions * sizeof(XcolorRegion));
 
 	XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
