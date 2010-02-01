@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
 	Colormap cmap = XCreateColormap(dpy, RootWindow(dpy, screen), vis, AllocNone);
 
 	XSetWindowAttributes attrs;
+        memset( &attrs, 0, sizeof(XSetWindowAttributes) );
 	attrs.colormap = cmap;
 	attrs.border_pixel = 0;
 	attrs.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask;
@@ -82,36 +83,11 @@ int main(int argc, char *argv[])
 
 	cairo_scale(cr, 300, 300);
 
+        XFlush( dpy );
 
 	/**
 	 * Color management
 	 */
-
-	unsigned long nBytes;
-	void *blob = readFile("profile.icc", &nBytes);
-
-	/* Create a XcolorProfile object that will be uploaded to the display. */
-	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
-
-	/* Fake MD5, real code should extract the MD5 from the ICC profile. See
-	 * for example oyProfileGetMD5_(). */
-	for (int i = 0; i < 16; ++i)
-		profile->md5[i] = i;
-
-	profile->length = nBytes;
-	memcpy(profile + 1, blob, nBytes);
-
-	XcolorProfileUpload(dpy, profile);
-
-	/* Upload the region to the window. */
-	XRectangle rec[2] = { { 50, 25, 200, 175 }, { 25, 175, 100, 100 } };
-	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
-
-	XcolorRegion region;
-	region.region = reg;
-	memcpy(region.md5, profile->md5, 16);
-
-	XcolorRegionInsert(dpy, w, 0, &region, 1);
 
 	unsigned long activeOutput = 0, nOutputs = 0;
 	char *outputName[4];
@@ -159,6 +135,32 @@ int main(int argc, char *argv[])
 	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
 	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], strlen(outputName[activeOutput]));
 
+	unsigned long nBytes;
+	void *blob = readFile("profile.icc", &nBytes);
+
+	/* Create a XcolorProfile object that will be uploaded to the display. */
+	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
+
+	/* Fake MD5, real code should extract the MD5 from the ICC profile. See
+	 * for example oyProfileGetMD5_(). */
+	for (int i = 0; i < 16; ++i)
+		profile->md5[i] = i;
+
+	profile->length = nBytes;
+	memcpy(profile + 1, blob, nBytes);
+
+	XcolorProfileUpload(dpy, profile);
+
+	/* Upload the region to the window. */
+	XRectangle rec[3] = { { 50, 25, 200, 175 }, { 25, 175, 100, 100 },{0,0,0,0} };
+	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
+
+	XcolorRegion region;
+	region.region = reg;
+	memcpy(region.md5, profile->md5, 16);
+
+	XcolorRegionInsert(dpy, w, 0, &region, 1);
+
 	/* When the escape key is pressed, the application cleans up all resources and exits. */
 	KeyCode escape = XKeysymToKeycode(dpy, XStringToKeysym("Escape"));
 
@@ -205,11 +207,12 @@ int main(int argc, char *argv[])
 				printf("Changed target output to %s\n", outputName[activeOutput]);
 			} else {
 				static long count = 0;
+				int res = 0;
 			    
 				count = (count + 1) % 2;
-				XcolorRegionActivate(dpy, w, 0, count);
+				res = XcolorRegionActivate(dpy, w, 0, count);
 
-				printf("Activated regions 0 - %li\n", count);
+				printf("Activated regions 0 - %li %d\n", count, res);
 			}
 		}
 	}
