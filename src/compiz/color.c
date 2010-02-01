@@ -34,6 +34,15 @@
 #include <Xcolor.h>
 
 
+#define OY_COMPIZ_VERSION (COMPIZ_VERSION_MAJOR * 10000 + COMPIZ_VERSION_MINOR * 100 + COMPIZ_VERSION_MICRO)
+#if OY_COMPIZ_VERSION < 800
+#define oyCompLogMessage(disp_, plug_in_name, debug_level, format_, ... ) \
+        compLogMessage( plug_in_name, debug_level, format_, __VA_ARGS__ )
+#else
+#define oyCompLogMessage(disp_, plug_in_name, debug_level, format_, ... ) \
+        compLogMessage( plug_in_name, debug_level, format_, __VA_ARGS__ )
+#endif
+
 /* Uncomment the following line if you want to enable debugging output */
 #define PLUGIN_DEBUG 1
 
@@ -231,7 +240,7 @@ static inline unsigned long XcolorProfileCount(void *data, unsigned long nBytes)
 {
 	unsigned long count = 0;
 
-	for (XcolorProfile *ptr = data; (void *) ptr < data + nBytes; ptr = XcolorProfileNext(ptr))
+	for (XcolorProfile *ptr = data; (intptr_t) ptr < (intptr_t)data + nBytes; ptr = XcolorProfileNext(ptr))
 		++count;
 
 	return count;
@@ -302,7 +311,7 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 	ps->unit = unit;
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(s->display, "color", CompLogLevelDebug, "Shader compiled: %d/%d/%d", ps->function, param, unit);
+	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Shader compiled: %d/%d/%d", ps->function, param, unit);
 #endif
 
 	return ps->function;
@@ -376,7 +385,7 @@ static unsigned long findProfileIndex(CompScreen *s, const uint8_t md5[16])
 	}
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile with MD5 '%s'", md5string(md5));
+	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile with MD5 '%s'", md5string(md5));
 #endif
 
 	return ps->nProfiles;
@@ -395,7 +404,11 @@ static void updateScreenProfiles(CompScreen *s)
 
 	/* Fetch the profiles */
 	unsigned long nBytes;
-	void *data = fetchProperty(d->display, s->root, pd->netColorProfiles, XA_CARDINAL, &nBytes, True);
+        int screen = DefaultScreen( s->display->display );
+	void *data = fetchProperty(d->display,
+                                   XRootWindow( s->display->display, screen ),
+                                   pd->netColorProfiles,
+                                   XA_CARDINAL, &nBytes, True);
 	if (data == NULL)
 		return;
 
@@ -458,7 +471,7 @@ static void updateScreenProfiles(CompScreen *s)
 
 					/* If creating the lcms profile fails, don't try to parse any further profiles and just quit. */
 					if (ps->profile[i].lcmsProfile == NULL) {
-						compLogMessage(d, "color", CompLogLevelWarn, "Couldn't create lcms profile");
+						oyCompLogMessage(d, "color", CompLogLevelWarn, "Couldn't create lcms profile%s", "");
 						goto out;
 					}
 
@@ -477,7 +490,7 @@ static void updateScreenProfiles(CompScreen *s)
 	}
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(d, "color", CompLogLevelDebug, "Updated screen profiles, %d existing plus %d updates leading to %d profiles in %d slots",
+	oyCompLogMessage(d, "color", CompLogLevelDebug, "Updated screen profiles, %d existing plus %d updates leading to %d profiles in %d slots",
 		       usedSlots, count, screenProfileCount(ps), ps->nProfiles);
 #endif
 
@@ -540,7 +553,7 @@ static void updateWindowRegions(CompWindow *w)
 	pw->nRegions = count;
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(d, "color", CompLogLevelDebug, "Updated window regions, %d total now", count);
+	oyCompLogMessage(d, "color", CompLogLevelDebug, "Updated window regions, %d total now", count);
 #endif
 
 out:
@@ -566,7 +579,7 @@ static void updateWindowOutput(CompWindow *w)
 	pw->output = fetchProperty(d->display, w->id, pd->netColorTarget, XA_STRING, &nBytes, False);
 
 #if defined(_NET_COLOR_DEBUG)
-	compLogMessage(d, "color", CompLogLevelDebug, "Updated window output, target is %s", pw->output);
+	oyCompLogMessage(d, "color", CompLogLevelDebug, "Updated window output, target is %s", pw->output);
 #endif
 
 	updateWindowStack(w, NULL);
@@ -586,7 +599,7 @@ static void *findOutputProfile(CompScreen *s, const char *name)
 	}
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile for output '%s'", name);
+	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile for output '%s'", name);
 #endif
 
 	return NULL;
@@ -672,7 +685,7 @@ static void updateWindowStack(CompWindow *w, void *closure)
 	}
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(w->screen->display, "color", CompLogLevelDebug, "Created window transformation textures. Active range is between %d and %d (out of %d regions total)",
+	oyCompLogMessage(w->screen->display, "color", CompLogLevelDebug, "Created window transformation textures. Active range is between %d and %d (out of %d regions total)",
 		       pw->active[0], pw->active[0] + pw->active[1], pw->nRegions);
 #endif
 
@@ -686,6 +699,7 @@ static void updateWindowStack(CompWindow *w, void *closure)
 static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+        int screen = DefaultScreen( s->display->display );
 
 	if (ps->nOutputs > 0) {
 		for (unsigned long i = 0; i < ps->nOutputs; ++i)
@@ -694,7 +708,8 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 		free(ps->output);
 	}
 
-	XRRScreenResources *res = XRRGetScreenResources(s->display->display, s->root);
+	XRRScreenResources *res = XRRGetScreenResources(s->display->display,
+                                    XRootWindow( s->display->display, screen ));
 
 	ps->nOutputs = res->noutput;
 	ps->output = malloc(ps->nOutputs * sizeof(PrivColorOutput));
@@ -712,10 +727,10 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 		      &actualType, &actualFormat, &n, &left, &data);
 
 		if (result == Success && n > 0) {
-			compLogMessage(s->display, "color", CompLogLevelInfo, "Output %s: extracted profile from RandR", oinfo->name);
+			oyCompLogMessage(s->display, "color", CompLogLevelInfo, "Output %s: extracted profile from RandR", oinfo->name);
 			ps->output[i].lcmsProfile = cmsOpenProfileFromMem(data, n);
 		} else {
-			compLogMessage(s->display, "color", CompLogLevelInfo, "Output %s: assuming sRGB profile", oinfo->name);
+			oyCompLogMessage(s->display, "color", CompLogLevelInfo, "Output %s: assuming sRGB profile", oinfo->name);
 			ps->output[i].lcmsProfile = cmsCreate_sRGBProfile();
 		}
 
@@ -728,7 +743,7 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 		forEachWindowOnScreen(s, updateWindowStack, NULL);
 
 #if defined(PLUGIN_DEBUG)
-	compLogMessage(s->display, "color", CompLogLevelDebug, "Updated screen outputs, %d total now", ps->nOutputs);
+	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Updated screen outputs, %d total now", ps->nOutputs);
 #endif
 }
 
@@ -991,6 +1006,7 @@ static CompBool pluginInitScreen(CompPlugin *plugin, CompObject *object, void *p
 {
 	CompScreen *s = (CompScreen *) object;
 	PrivScreen *ps = privateData;
+        int screen = DefaultScreen( s->display->display );
 
 	GLint stencilBits = 0;
 	glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
@@ -1007,7 +1023,9 @@ static CompBool pluginInitScreen(CompPlugin *plugin, CompObject *object, void *p
 
 	/* XRandR setup code */
 
-	XRRSelectInput(s->display->display, s->root, RROutputPropertyNotifyMask);
+	XRRSelectInput(s->display->display,
+                       XRootWindow( s->display->display, screen ),
+                       RROutputPropertyNotifyMask);
 
 	ps->nOutputs = 0;
 	updateOutputConfiguration(s, FALSE);
