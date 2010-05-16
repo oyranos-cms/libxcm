@@ -82,7 +82,7 @@ capabilities:
   - NCM  _NET_COLOR_MANAGEMENT
   - NCR  _NET_COLOR_REGIONS
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
-The fourth section contains the server name identifier.
+The fourth section contains the server servers name identifier.
 
 As of this specification the third section must contain NCR and the 
 supported _ICC_PROFILE in X version. NCT is optional.
