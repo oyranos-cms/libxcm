@@ -1,6 +1,6 @@
 Version 0.2.0
 
-Kai-Uwe Behrmann (8):
+Kai-Uwe Behrmann (10):
 	* [build]: link -lX11 to libXcolor.so
 	* [Xc]: XcolorRegionDelete allow real delete
 	* [Xc]: fix wrong memcpy bug
@@ -9,6 +9,8 @@ Kai-Uwe Behrmann (8):
 	* [exmpl]: fix some bugs
 	* [build]: use pkg-config for lcms detection
 	* [docu]: Draft 1 for net-color spec 0.2
+	* [docu]: add distribution files
+	* [build]: add distribution Makefile
 
 Tomas Carnecky (41):
 	Initial import.
