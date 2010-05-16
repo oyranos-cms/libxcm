@@ -8,7 +8,7 @@ libXcolor.so: src/Xcolor/Xcolor.c
 
 # The compiz plugin
 libcolor.so: src/compiz/color.c
-	gcc $(CFLAGS) -fPIC -shared -o $@ $< `pkg-config --cflags --libs compiz` -llcms
+	gcc $(CFLAGS) -fPIC -shared -o $@ $< `pkg-config --cflags --libs compiz lcms`
 
 client: src/client.c
 	gcc $(CFLAGS) -o $@ $< `pkg-config --cflags --libs cairo x11 xfixes xrandr xinerama` -L. -lXcolor
