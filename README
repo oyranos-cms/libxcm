@@ -1,0 +1,22 @@
+libXcolor:
+
+    The libXcolor library is a reference implementation of the net-color spec.
+    It allows to attach colour regions to X windows to communicate with colour
+    servers.
+
+
+Internet:
+    sources: git clone git://www.oyranos.org/git/xcolor
+    www:     OpenICC http://www.freedesktop.org/wiki/OpenIcc
+    email:   http://lists.freedesktop.org/mailman/listinfo/openicc
+
+
+Dependencies:
+    Xorg www.x.org
+
+
+Building:
+    $ make
+    $ make install
+
+

@@ -1,0 +1,55 @@
+Version 0.2.0
+
+Kai-Uwe Behrmann (8):
+	* [build]: link -lX11 to libXcolor.so
+	* [Xc]: XcolorRegionDelete allow real delete
+	* [Xc]: fix wrong memcpy bug
+	* [color]: add device link support
+	* [color]: fix compilation for compiz-0.8.4
+	* [exmpl]: fix some bugs
+	* [build]: use pkg-config for lcms detection
+	* [docu]: Draft 1 for net-color spec 0.2
+
+Tomas Carnecky (41):
+	Initial import.
+	Better visualization of the color transformation.
+	Use the compiz fragment API
+	Use stencil buffer instead of scissors. This fixes the problem with the wobbly plugin.
+	Using dynamic rectangles now. Added simple client that shows communication between application and compositing manager.
+	Fix potential crash
+	Fetch all regions from the window property and use all of those.
+	addDataOpToFunctionData() already supports vararg
+	The sample clients need xfixes libs and cflags
+	Fix memory leak when fetching the window regions
+	Add the XColor header.
+	Use the _NET_COLOR_PROFILES to store profiles in the root window.
+	Use XColorRegion to communicate the window regions.
+	Changed meaning of _NET_COLOR_MANAGEMENT. Now used to activate or deactivate parts of the region stack.
+	client: Upload profile into the root window.
+	Change pluginDrawWindow() to use the local region stack.
+	Change pluginDrawWindowTexture() to use the local region stack.
+	Remove debugging fprintf().
+	Add preliminary XRandR output support.
+	Fix handling of privates and allow objects to fail initialization.
+	Listen to XRandR events and update outputs accordingly.
+	Use the correct XRandR output property name.
+	Don't crash if something goes wrong inside lcms.
+	Let the client decide to which output device the colors should be converted.
+	Add compiz plugin and net-color documentation
+	Add comments to functions and code.
+	Clarify the XColorProfile format.
+	Xcolor: client-side API for managing profiles and regions.
+	Reorganize files, clean up Makefile, swith the compiz plugin to the new Xcolor API
+	Add a define that can be used to enable debugging output.
+	Big reorganization of internal structures in the compiz plugin.
+	Fix deletition of profiles.
+	Replace UUID with MD5, as suggested by Kai-Uwe.
+	Add some comments to the internal structures.
+	client: Change target output at keypress.
+	Replaced printf() with compLogMessage().
+	Add function descriptions to the Xcolor header.
+	Add a function for activating stack regions.
+	Don't create the shader for each region separately.
+	Increase the size of the color-managed region in the sample client.
+	Add Xinerama screen detection to the sample client.
+
