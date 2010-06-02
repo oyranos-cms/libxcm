@@ -13,21 +13,15 @@ endif
 libdir=$(prefix)lib$(LIB64)
 includedir=$(prefix)/include/
 
-CFLAGS = -Wall -Iinclude -std=c99 -g -ggdb -pedantic -fPIC
-
+CFLAGS_ = $(CFLAGS) -Wall -Iinclude -std=c99 -g -ggdb -pedantic -fPIC
+LDFLAGS_= $(LDFLAGS)
 
 # The X11 client-side library
 libXcolor.so.$(VERSION): src/Xcolor/Xcolor.c
-	gcc $(CFLAGS) -fPIC -shared -o $@ $< -lX11
+	gcc $(CFLAGS_) -fPIC -shared -o $@ $< $(LDFLAGS_) -lX11
 	ln -s libXcolor.so.$(VERSION) libXcolor.so.$(VERSION_MAJOR)
 	ln -s libXcolor.so.$(VERSION) libXcolor.so
 
-# The compiz plugin
-libcolor.so: src/compiz/color.c
-	gcc $(CFLAGS) -fPIC -shared -o $@ $< `pkg-config --cflags --libs compiz lcms`
-
-client: src/client.c
-	gcc $(CFLAGS) -o $@ $< `pkg-config --cflags --libs cairo x11 xfixes xrandr xinerama` -L. -lXcolor
 
 all: libXcolor.so
 
@@ -38,7 +32,7 @@ install: libXcolor.so
 	install include/Xcolor.h $(DESTDIR)$(includedir)
 
 clean:
-	rm -f libcolor.so libXcolor.so client
+	rm -f libXcolor.so libXcolor.so.$(VERSION) libXcolor.so.$(VERSION_MAJOR)
 
 dist-gzip:
 	echo create distribution package ...
