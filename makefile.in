@@ -48,6 +48,10 @@ DOKU =  AUTHORS \
         README
 SUB_DOKU = \
 	docs/net-color-spec
+DIST_FILES = \
+	Doxyfile
+MAN1 =
+MAN3 =  $(TARGET_BASE).3x doc/man/man3/*
 
 TOP_SOURCES =
 SOURCES =  \
@@ -79,7 +83,7 @@ CONFIG_FILES = \
 
 ALL_FILES = \
 	$(DOKU) \
-	$(ICONS) \
+	$(DIST_FILES) \
 	$(TOP_SOURCES) \
 	$(TOP_CHEADERS) \
 	$(MAN1) $(MAN3)
@@ -167,11 +171,16 @@ install-main:	install_bin install_docu
 # synonymes
 install_doc:	install_docu
 
-install_docu:
+install_docu:	docu
 	test -d $(DESTDIR)$(docdir) || mkdir -p $(DESTDIR)$(docdir)
 	-cd $(SRCDIR); $(INSTALL) -m 644 $(DOKU) $(SUB_DOKU) $(DESTDIR)$(docdir)
+	mkdir -p $(DESTDIR)$(mandir)/man3
+	cd $(SRCDIR) && \
+	  $(INSTALL) -m 644 $(MAN3) $(DESTDIR)$(mandir)/man3
+	
 
-
+docu:	Doxyfile
+	doxygen
 
 # build a source distribution package
 dist: targz
