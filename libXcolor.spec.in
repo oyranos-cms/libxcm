@@ -1,0 +1,93 @@
+Summary: X Color Management Library
+Name: libXcolor
+License: BSD
+Group: Development/Libraries/Other
+URL: http://www.oyranos.org
+Vendor: Kai-Uwe Behrmann
+#BuildArch: %{_arch}
+#%ifos linux
+#%endif 
+BuildRoot: %{_tmppath}/%{name}-root
+Prefix:    %{_prefix}
+
+
+%if 0%{?suse_version} > 0
+BuildRequires:     gcc-c++ gettext pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel
+%endif
+%if 0%{?suse_version} > 910
+#BuildRequires: gcc-c++ gettext doxygen fltk-threaded fltk-threaded-devel xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  pkgconfig libpng-devel libjpeg-devel
+BuildRequires:  bash bind-utils binutils bison bzip2 coreutils cpio cyrus-sasl diffutils e2fsprogs file filesystem findutils gcc gcc-c++ glibc glibc-devel grep groff gzip less make man mktemp patch perl pkgconfig popt readline rpm sed tar timezone unzip util-linux zlib zlib-devel
+%endif
+%if 0%{?suse_version} > 1010
+BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel
+%endif
+%if 0%{?mandriva_version} > 0
+BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig xdg-utils
+%endif
+%if 0%{?fedora_version} > 0
+BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils
+%endif
+%if 0%{?debian_version} > 0
+BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils
+%endif
+
+
+
+%package      devel
+Summary:   Headers, Configuration and static Libs + Documentation
+Group:     Development/Libraries/Other
+Requires:  %{name}
+
+
+%description
+The library allows to attach color regions to windows for colour manageging
+them.
+
+%description devel
+The library allows to attach color regions to windows for colour manageging
+them.
+
+
+
+%prep
+%setup -n %{name}-%{version}
+
+%build
+%configure --enable-debug
+
+%install
+rm -rf %{buildroot}
+make
+make DESTDIR=%{buildroot} install-main
+rm -fr %{buildroot}/%{_datadir}/doc/%{name}
+
+
+%clean
+rm -rf %{buildroot}
+
+%post
+ldconfig
+
+%postun
+ldconfig
+
+%files
+%defattr(-, root, root)
+%doc AUTHORS COPYING ChangeLog README
+%{_libdir}/%{name}.so.*
+
+%files devel
+%defattr(-, root, root)
+%doc AUTHORS COPYING ChangeLog README
+%{_libdir}/%{name}.so
+%{_includedir}/*
+%{_libdir}/pkgconfig/*
+%{_libdir}/%{name}.a
+%doc docs/net-color-spec
+
+
+%changelog
+* Thu Jun 03 2010 Kai-Uwe Behrmann
+- initial
+
+
