@@ -1,0 +1,48 @@
+.\"
+.\" $XFree86: xc/lib/Xfixes/Xfixes.man,v 1.1 2002/11/30 06:21:45 keithp Exp $
+.\"
+.\" Copyright © 2010 Kai-Uwe Behrmann, member of the OpenICC Project
+.\"
+.\" Permission to use, copy, modify, distribute, and sell this software and its
+.\" documentation for any purpose is hereby granted without fee, provided that
+.\" the above copyright notice appear in all copies and that both that
+.\" copyright notice and this permission notice appear in supporting
+.\" documentation, and that the name of Keith Packard not be used in
+.\" advertising or publicity pertaining to distribution of the software without
+.\" specific, written prior permission.  Keith Packard makes no
+.\" representations about the suitability of this software for any purpose.  It
+.\" is provided "as is" without express or implied warranty.
+.\"
+.\" KEITH PACKARD DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+.\" INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+.\" EVENT SHALL KEITH PACKARD BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+.\" CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+.\" DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+.\" TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+.\" PERFORMANCE OF THIS SOFTWARE.
+.\"
+.de TQ
+.br
+.ns
+.TP \\$1
+..
+.TH XCOLOR 3 "Version 0.2" "XFree86"
+
+.SH NAME
+Xcolor \- color region handling for X11 windows
+.SH SYNTAX
+\&#include <X11/Xcolor.h>
+.nf    
+.SH DESCRIPTION
+.B Xcolor
+is a simple library designed to support window color region and ICC profile 
+handling. The detailed description is covered in the net-color-spec. 
+.SH RESTRICTIONS
+.B Xcolor
+will remain upward compatible after a 1.0 release.
+.SH AUTHORS
+Tomas Carnecky, at time member of the OpenICC Project,
+Kai-Uwe Behrmann, member of the OpenICC and Oyranos Projects.
+.SH "SEE ALSO"
+Xcolor(3) XcolorProfile(3) XcolorRegion(3)
+
