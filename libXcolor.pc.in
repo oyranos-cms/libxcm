@@ -1,6 +1,6 @@
 
 Name: libXcolor
-Description: X Colour Management Extension
+Description: X Colour Management Library
 Libs: -L${libdir} -llibXcolor
 Cflags: -I${includedir}
 
