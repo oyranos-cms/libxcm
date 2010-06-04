@@ -1,0 +1,78 @@
+.TH "Xcolor Core API's" 3 "4 Jun 2010" "Version 0.2.2" "Xcolor" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Xcolor Core API's \- 
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBXcolorProfile\fP"
+.br
+.ti -1c
+.RI "struct \fBXcolorRegion\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBXcolorProfileUpload\fP (Display *dpy, \fBXcolorProfile\fP *profile)"
+.br
+.RI "\fIUploads the profile into all screens of the display. \fP"
+.ti -1c
+.RI "int \fBXcolorProfileDelete\fP (Display *dpy, \fBXcolorProfile\fP *profile)"
+.br
+.RI "\fIDecreases the ref-count of the profile. \fP"
+.ti -1c
+.RI "int \fBXcolorRegionInsert\fP (Display *dpy, Window win, unsigned long pos, \fBXcolorRegion\fP *region, unsigned long nRegions)"
+.br
+.RI "\fIInserts the supplied regions into the stack. \fP"
+.ti -1c
+.RI "\fBXcolorRegion\fP * \fBXcolorRegionFetch\fP (Display *dpy, Window win, unsigned long *nRegions)"
+.br
+.RI "\fIFetches the existing regions. \fP"
+.ti -1c
+.RI "int \fBXcolorRegionDelete\fP (Display *dpy, Window win, unsigned long start, unsigned long count)"
+.br
+.RI "\fIDeletes regions. \fP"
+.ti -1c
+.RI "int \fBXcolorRegionActivate\fP (Display *dpy, Window win, unsigned long start, unsigned long count)"
+.br
+.RI "\fIActivates regions. \fP"
+.in -1c
+.SH "Function Documentation"
+.PP 
+.SS "int XcolorProfileDelete (Display * dpy, \fBXcolorProfile\fP * profile)"
+.PP
+Decreases the ref-count of the profile. 
+.PP
+Function XcolorProfileDelete You shouldn't use the profile anymore after this call because it could have been removed from the internal database in the compositing manager. If you do, nothing bad will happen, just that color management won't work on regions that use this profile. 
+.SS "int XcolorProfileUpload (Display * dpy, \fBXcolorProfile\fP * profile)"
+.PP
+Uploads the profile into all screens of the display. 
+.PP
+Function XcolorProfileUpload Uploads the profile into all screens of the display. Profiles are ref-counted inside the compositing manager, so make sure to call \fBXcolorProfileDelete()\fP before your application exits or when you don't need the profile anymore. 
+.SS "int XcolorRegionActivate (Display * dpy, Window win, unsigned long start, unsigned long count)"
+.PP
+Activates regions. 
+.PP
+Function XcolorRegionActivate Activates 'count' regions starting at positiong 'start' in the stack. Unlike the other functions it does not check whether 'start + count' extends beyond the stack end. To disable all regions pass zero to 'count'. 
+.SS "int XcolorRegionDelete (Display * dpy, Window win, unsigned long start, unsigned long count)"
+.PP
+Deletes regions. 
+.PP
+Function XcolorRegionDelete Deletes 'count' regions starting at 'start' in the stack. If 'start + count' in beyond the stack end, nothing will be done and the function returns '-1'. 
+.SS "\fBXcolorRegion\fP* XcolorRegionFetch (Display * dpy, Window win, unsigned long * nRegions)"
+.PP
+Fetches the existing regions. 
+.PP
+Function XcolorRegionFetch Fetches the existing regions and returns an array of 'XcolorRegion'. After you're done, free the array using XFree(). The number of regions is put into 'nRegions'. 
+.SS "int XcolorRegionInsert (Display * dpy, Window win, unsigned long pos, \fBXcolorRegion\fP * region, unsigned long nRegions)"
+.PP
+Inserts the supplied regions into the stack. 
+.PP
+Function XcolorRegionInsert Inserts the supplied regions into the stack at the position 'pos', shifting the existing profiles upwards in the stack. If 'pos' is beyond the stack end, nothing will be done and the function returns '-1'. 
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Xcolor from the source code.
