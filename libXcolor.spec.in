@@ -83,6 +83,7 @@ ldconfig
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/%{name}.a
+%{_mandir}/*
 %doc docs/net-color-spec
 
 
