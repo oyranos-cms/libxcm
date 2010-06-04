@@ -5,8 +5,7 @@
 int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 {
 	/* XcolorProfile::length is in network byte-order, swap it now */
-	uint32_t length = profile->length;
-	profile->length = htonl(profile->length);
+	uint32_t length = htonl(profile->length);
 
 	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
 
@@ -14,15 +13,13 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile) + length);
 	}
 
-	profile->length = length;
-
 	return 0;
 }
 
 int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 {
 	/* To delete a profile, send the header with a zero-length. */
-	uint32_t length = profile->length;
+	uint32_t length = htonl(profile->length);
 	profile->length = 0;
 
 	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
@@ -30,8 +27,6 @@ int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 	for (int i = 0; i < ScreenCount(dpy); ++i) {
 		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile));
 	}
-
-	profile->length = length;
 
 	return 0;
 }
