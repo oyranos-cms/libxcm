@@ -18,7 +18,7 @@
  * profile. The actual data follows right after the structure.
  */
 typedef struct {
-	uint8_t md5[16];  /* MD5 of the profile		                */
+	uint8_t md5[16];  /* ICC MD5 of the profile	                */
 	uint32_t length;  /* number of bytes following		        */
 } XcolorProfile;
 
