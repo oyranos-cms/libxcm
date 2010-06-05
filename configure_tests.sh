@@ -708,13 +708,14 @@ if [ -n "$FTGL" ] && [ $FTGL -gt 0 ]; then
   fi
 fi
 
-if [ -z "$fltkconfig" ]; then
-  # add /usr/X11R6/bin to path for Fedora
-  fltkconfig=fltk-config
-  PATH=$PATH:/usr/X11R6/bin; export PATH
-  echo_="add fltk-config"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-fi
 if [ -n "$FLTK" ] && [ $FLTK -gt 0 ]; then
+  if [ -z "$fltkconfig" ]; then
+    # add /usr/X11R6/bin to path for Fedora
+    fltkconfig=fltk-config
+    PATH=$PATH:/usr/X11R6/bin; export PATH
+    echo_="add fltk-config"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+  fi
+
   FLTK_="`$fltkconfig --api-version 2>>$CONF_LOG | sed \"$STRIPOPT\"`"
   if [ $? = 0 ] && [ -n "$FLTK_" ]; then
     # check for utf-8 capability in version 1.3 and higher
