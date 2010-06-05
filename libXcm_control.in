@@ -1,5 +1,5 @@
-Source: libXcolor
-Package: libXcolor
+Source: libXcm
+Package: libXcm
 Priority: optional
 Section: graphics
 Installed-Size: 17104
