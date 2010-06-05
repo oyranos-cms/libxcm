@@ -106,7 +106,7 @@ $(LIBSONAMEFULL):	$(OBJECTS) $(LIBNAME)
 	$(CC) -I./ $(CFLAGS_) $(LINK_FLAGS_DYNAMIC)$(dyld_libdir)$@ \
 	-o $(LIBSONAMEFULL) \
 	$(OBJECTS) \
-	-L$(libdir) $(LDLIBS) $(m)
+	-L$(libdir) $(LDLIBS) $(m) $(X11_LIBS)
 	$(RM)  $(LIBSONAME)
 	$(LNK) $(LIBSONAMEFULL) $(LIBSONAME)
 	$(RM)  $(LIBSO)
