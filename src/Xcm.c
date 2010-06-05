@@ -1,5 +1,5 @@
 
-#include <Xcolor.h>
+#include <Xcm.h>
 
 
 int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)

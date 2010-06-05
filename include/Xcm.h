@@ -12,7 +12,7 @@
 #include <string.h>
 
 
-/** \addtogroup Xcolor Xcolor Core API's
+/** \addtogroup Xcm X Color Management Core API's
 
  *  @{
  */
@@ -101,7 +101,7 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned long count);
 
 /** 
- *  @} *//*Xcolor
+ *  @} *//*Xcm
  */
 
 

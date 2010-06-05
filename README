@@ -1,6 +1,6 @@
-libXcolor:
+libXcm:
 
-    The libXcolor library is a reference implementation of the net-color spec.
+    The libXcm library is a reference implementation of the net-color spec.
     It allows to attach colour regions to X windows to communicate with colour
     servers.
 

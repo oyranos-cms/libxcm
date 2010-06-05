@@ -1,6 +1,6 @@
 
-Name: libXcolor
+Name: libXcm
 Description: X Colour Management Library
-Libs: -L${libdir} -llibXcolor
+Libs: -L${libdir} -lXcm
 Cflags: -I${includedir}
 
