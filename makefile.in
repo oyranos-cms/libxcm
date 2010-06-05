@@ -20,7 +20,7 @@ LIBSO = $(LIB)$(TARGET)$(SO)$(LIBEXT)
 LIBNAME = $(LIB)$(TARGET).a
 
 
-INCL= -I/usr/include -I$(includedir) -I/usr/X11R6/include -I$(SRCDIR) \
+INCL= -I/usr/include -I$(includedir) -I/usr/X11R6/include -I$(SRCDIR)/include \
 	$(X_H) $(OS_INCL)
 
 LDLIBS = $(LDFLAGS) -L$(libdir) -L. \
