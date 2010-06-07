@@ -4,6 +4,7 @@ TARGET_BASE=Xcm
 TARGET=lib$TARGET_BASE
 TARGET_NAME=lib$TARGET_BASE
 MACRO_NAME=XCM
+TARGET_MINI=xcm
 
 ERROR=0
 WARNING=0
@@ -18,7 +19,7 @@ CONF_TEMP_SH=/dev/null
 CONF_LOG=config.log
 SPEC=$TARGET.spec
 DEB="$TARGET"_control
-PKGC=$TARGET.pc
+PKGC=$TARGET_MINI.pc
 VERS_H="$TARGET"_version.h
 zeile="$0 $@"
 MAKEFILE_DIR="."; export MAKEFILE_DIR
@@ -34,7 +35,7 @@ test -f error.tmp && rm error.tmp
 
 VERSION_A=0
 VERSION_B=2
-VERSION_C=4
+VERSION_C=5
 VERSION_ABI_A=1
 VERSION_ABI_B=0
 RELEASE=0
@@ -184,7 +185,7 @@ test -n "$INFOECHO" && $INFOECHO "   --exec-prefix=[\$prefix]              packa
 test -n "$INFOECHO" && $INFOECHO "   --bindir=[\$exec-prefix/bin]          binary installation path"
 test -n "$INFOECHO" && $INFOECHO "   --sbindir=[\$exec-prefix/sbin]        super user binary installation path"
 test -n "$INFOECHO" && $INFOECHO "   --libdir=[\$exec-prefix/lib]          main library installation path"
-test -n "$INFOECHO" && $INFOECHO "   --includedir=[\$prefix/include/X11]   include file installation"
+test -n "$INFOECHO" && $INFOECHO "   --includedir=[\$prefix/include(+/X11)] include file installation"
 test -n "$INFOECHO" && $INFOECHO "                                        automatic appends oyranos/"
 test -n "$INFOECHO" && $INFOECHO "   --datadir=[\$prefix/data]             application data base path"
 test -n "$INFOECHO" && $INFOECHO "   --mandir=[\$datadir/man]              manual installation path"
@@ -345,6 +346,7 @@ test -n "$ECHO" && $ECHO "" >> $CONF_H
 test -n "$ECHO" && $ECHO "" >> $CONF
 test -n "$ECHO" && $ECHO "TARGET = $TARGET" >> $CONF
 test -n "$ECHO" && $ECHO "TARGET_BASE = $TARGET_BASE" >> $CONF
+test -n "$ECHO" && $ECHO "TARGET_MINI = $TARGET_MINI" >> $CONF
 
 if [ -n "$ECHO" ]; then
   echo_="#                                                              #"
@@ -491,7 +493,7 @@ if [ -z "$libdir" ]; then
   libdir="$exec_prefix/$LIBDIR"
 fi
 if [ -z "$includedir" ]; then
-  includedir="$prefix/include/X11"
+  includedir="$prefix/include"
 fi
 if [ -z "$datadir" ]; then
   datadir="$prefix/share"

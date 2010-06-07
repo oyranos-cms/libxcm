@@ -40,12 +40,12 @@ Requires:  %{name}
 
 
 %description
-The library allows to attach color regions to windows for colour manageging
-them.
+The library allows to attach color regions to windows for colour management.
+
 
 %description devel
-The library allows to attach color regions to windows for colour manageging
-them.
+The library allows to attach color regions to windows for colour managing
+them. The package contains headers and other development files.
 
 
 

@@ -77,7 +77,7 @@ CONFIG_FILES = \
 	$(SRCDIR)/configure \
 	$(SRCDIR)/configure_tests.sh \
 	$(SRCDIR)/makefile.in \
-	$(SRCDIR)/$(TARGET).pc.in \
+	$(SRCDIR)/$(TARGET_MINI).pc.in \
 	$(SRCDIR)/$(TARGET).spec.in \
 	$(SRCDIR)/$(TARGET)_control.in
 
@@ -136,7 +136,7 @@ install_bin:	all uninstall_bin
 	echo Installing binaries ...
 	mkdir -p $(DESTDIR)$(libdir)
 	mkdir -p $(DESTDIR)$(libdir)/pkgconfig
-	$(INSTALL) -m 644 $(TARGET).pc $(DESTDIR)$(libdir)/pkgconfig/
+	$(INSTALL) -m 644 $(TARGET_MINI).pc $(DESTDIR)$(libdir)/pkgconfig/
 	for lib in $(LIBRARIES); do \
 	   test -f $(LIB)$${lib}$(SO).$(VERSION)$(LIBEXT) && \
 		($(INSTALL) -m 755 $(LIB)$${lib}$(SO).$(VERSION)$(LIBEXT) \
@@ -157,8 +157,8 @@ install_bin:	all uninstall_bin
 		) || echo ""; \
            fi; \
 	done
-	test -d $(DESTDIR)$(includedir) || mkdir -p $(DESTDIR)$(includedir)
-	cd $(SRCDIR); $(INSTALL) -m 644 $(CHEADERS) $(DESTDIR)$(includedir)
+	test -d $(DESTDIR)$(includedir)/X11 || mkdir -p $(DESTDIR)$(includedir)/X11
+	cd $(SRCDIR); $(INSTALL) -m 644 $(CHEADERS) $(DESTDIR)$(includedir)/X11
 	echo ... binary Installation finished
 
 # install recursive
@@ -227,7 +227,7 @@ uninstall_bin:
 	          $(DESTDIR)$(libdir)/$(LIB)$${lib}$(SO)$(LIBEXT) \
 	          $(DESTDIR)$(libdir)/$(LIB)$${lib}.a; \
 	done
-	$(RM)   $(DESTDIR)$(includedir)/$(TARGET_BASE).h
+	$(RM)   $(DESTDIR)$(includedir)/X11/$(TARGET_BASE).h
 	echo ... done uninstalling binaries
 	
 
@@ -248,7 +248,7 @@ uninstall_docu:
 # remove in this directory
 distclean: clean
 	-$(RM) Makefile
-	-$(RM) mkdepend cobjects config.h $(TARGET).pc $(TARGET).spec
+	-$(RM) mkdepend cobjects config.h $(TARGET_MINI).pc $(TARGET).spec
 	-$(RM) config.log $(TARGET)_version.h
 	-$(RM) config.log.h config.tmp.sh testset.txt
 
