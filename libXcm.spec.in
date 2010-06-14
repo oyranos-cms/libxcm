@@ -22,7 +22,7 @@ BuildRequires:  bash bind-utils binutils bison bzip2 coreutils cpio cyrus-sasl d
 BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel
 %endif
 %if 0%{?mandriva_version} > 0
-BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig xdg-utils
+BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig
 %endif
 %if 0%{?fedora_version} > 0
 BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils
