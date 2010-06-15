@@ -35,7 +35,7 @@ test -f error.tmp && rm error.tmp
 
 VERSION_A=0
 VERSION_B=2
-VERSION_C=5
+VERSION_C=6
 VERSION_ABI_A=1
 VERSION_ABI_B=0
 RELEASE=0
