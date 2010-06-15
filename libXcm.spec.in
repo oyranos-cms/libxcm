@@ -1,6 +1,6 @@
 Summary: X Color Management Library
 Name: libXcm
-License: BSD
+License: MIT
 Group: Development/Libraries/Other
 URL: http://www.oyranos.org
 Vendor: Kai-Uwe Behrmann
@@ -12,7 +12,7 @@ Prefix:    %{_prefix}
 
 
 %if 0%{?suse_version} > 0
-BuildRequires:     gcc-c++ gettext pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel
+BuildRequires:     gcc-c++ gettext pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel doxygen
 %endif
 %if 0%{?suse_version} > 910
 #BuildRequires: gcc-c++ gettext doxygen fltk-threaded fltk-threaded-devel xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  pkgconfig libpng-devel libjpeg-devel
@@ -22,24 +22,30 @@ BuildRequires:  bash bind-utils binutils bison bzip2 coreutils cpio cyrus-sasl d
 BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel
 %endif
 %if 0%{?mandriva_version} > 0
-BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig
+BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig doxygen
 %endif
 %if 0%{?fedora_version} > 0
-BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils
+BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils doxygen libXfixes-devel
 %endif
 %if 0%{?debian_version} > 0
-BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils
+BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils doxygen
 %endif
 
 
+%package      -n %{name}0
+Summary:   X Color Management Library
+Group:     Development/Libraries/Other
 
 %package      devel
 Summary:   Headers, Configuration and static Libs + Documentation
 Group:     Development/Libraries/Other
-Requires:  %{name}
+Requires:  %{name}0
 
 
 %description
+The library allows to attach color regions to windows for colour management.
+
+%description -n %{name}0
 The library allows to attach color regions to windows for colour management.
 
 
@@ -65,25 +71,24 @@ rm -fr %{buildroot}/%{_datadir}/doc/%{name}
 %clean
 rm -rf %{buildroot}
 
-%post
+%post -n %{name}0
 ldconfig
 
-%postun
+%postun -n %{name}0
 ldconfig
 
-%files
+%files -n %{name}0
 %defattr(-, root, root)
-%doc AUTHORS COPYING ChangeLog README
 %{_libdir}/%{name}.so.*
 
 %files devel
 %defattr(-, root, root)
 %doc AUTHORS COPYING ChangeLog README
 %{_libdir}/%{name}.so
-%{_includedir}/*
+%{_includedir}/X11/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/%{name}.a
-%{_mandir}/*
+%{_mandir}/man3/*
 %doc docs/net-color-spec
 
 
