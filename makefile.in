@@ -103,7 +103,7 @@ time:
 # build all objects and libraries, link the headers to $(TARGET)
 $(LIBSONAMEFULL):	$(OBJECTS) $(LIBNAME)
 	echo Linking $@ ...
-	$(CC) -I./ $(CFLAGS_) $(LINK_FLAGS_DYNAMIC)$(dyld_libdir)$@ \
+	$(CC) -I./ $(CFLAGS_) $(LINK_FLAGS_DYNAMIC)$(dyld_libdir)$(LIBSONAME) \
 	-o $(LIBSONAMEFULL) \
 	$(OBJECTS) \
 	-L$(libdir) $(LDLIBS) $(m) $(X11_LIBS)
