@@ -62,7 +62,6 @@ them. The package contains headers and other development files.
 %configure --enable-debug
 
 %install
-rm -rf %{buildroot}
 make
 make DESTDIR=%{buildroot} install-main
 rm -fr %{buildroot}/%{_datadir}/doc/%{name}
