@@ -74,12 +74,12 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./
+INPUT                  = ./ src/ include/
 FILE_PATTERNS          = Xcm.c \
                          doxymentation \
                          Xcm.h
-RECURSIVE              = YES
-EXCLUDE                = 
+RECURSIVE              = NO
+EXCLUDE                =
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       = 
 EXAMPLE_PATH           = 
