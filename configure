@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 TARGET_BASE=Xcm
 TARGET=lib$TARGET_BASE
