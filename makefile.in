@@ -132,6 +132,7 @@ check:	all install_bin
 
 
 # the copy part for this directory level
+install-bin:	install_bin
 install_bin:	all uninstall_bin
 	echo Installing binaries ...
 	mkdir -p $(DESTDIR)$(libdir)
@@ -170,6 +171,7 @@ install-main:	install_bin install_docu
 
 # synonymes
 install_doc:	install_docu
+install-docs:	install_docu
 
 install_docu:	docu
 	test -d $(DESTDIR)$(docdir) || mkdir -p $(DESTDIR)$(docdir)
@@ -218,9 +220,10 @@ deb:	dist
 uninstall:	uninstall_bin uninstall_docu
 	echo ... $@ done
 
+uninstall-bin:
 uninstall_bin:
 	echo Uninstalling binaries ...
-	$(RM)   $(DESTDIR)$(libdir)/pkgconfig/$(TARGET).pc
+	$(RM)   $(DESTDIR)$(libdir)/pkgconfig/$(TARGET_MINI).pc
 	for lib in $(LIBRARIES); do \
 	    $(RM) $(DESTDIR)$(libdir)/$(LIB)$${lib}$(SO).$(VERSION)$(LIBEXT) \
 	          $(DESTDIR)$(libdir)/$(LIB)$${lib}$(SO).$(VERSION_A)$(LIBEXT) \
@@ -230,7 +233,7 @@ uninstall_bin:
 	$(RM)   $(DESTDIR)$(includedir)/X11/$(TARGET_BASE).h
 	echo ... done uninstalling binaries
 	
-
+uninstall-docs:	uninstall_docu
 uninstall_docu:
 	echo Uninstalling docu ...
 	for file in $(DOKU); do \
@@ -375,11 +378,12 @@ copy_files:
 
 help:
 	echo "... all :        build the binaries"
-	echo "  non default build targets:"
+	echo "non default build targets:"
 	echo "... check :      do a test build and run it"
 	echo "... "
 	echo "... install :    install the binaries, include files and data"
-	echo "... install_bin: install only binaries"
+	echo "... install-bin: install only binaries"
+	echo "... install-docs: install only documentation"
 	echo "... uninstall"
 	echo "... clean :      remove binaries, object files and most processed data"
 	echo "... distclean :  remove all files processed from configure scripts"
