@@ -1,16 +1,45 @@
-Version 0.2.0
+libXcm-0.2.6
 
-Kai-Uwe Behrmann (10):
+Kai-Uwe Behrmann (39):
 	* [build]: link -lX11 to libXcolor.so
 	* [Xc]: XcolorRegionDelete allow real delete
 	* [Xc]: fix wrong memcpy bug
 	* [color]: add device link support
-	* [color]: fix compilation for compiz-0.8.4
+	* [color] fix compilation for compiz-0.8.4
 	* [exmpl]: fix some bugs
 	* [build]: use pkg-config for lcms detection
 	* [docu]: Draft 1 for net-color spec 0.2
 	* [docu]: add distribution files
 	* [build]: add distribution Makefile
+	* [docu]: minor clearification
+	* [docu]: fix typo
+	* [build]: support CFLAGS LDFLAGS
+	* [build]: rename sources
+	* [docu]: refere to ICC for MD5 computation
+	* [build]: rename old Makefile
+	* [conf]: support pkgconfig, RPM, configure
+	* [docu]: clearify description
+	* [docu]: add man pages
+	* [Xc]: sync endianess handling
+	* [docu]: better formatting
+	* [build]: add man pages to RPM
+	* [build]: distribute and install man pages
+	* [docu]: reference other man pages
+	* [conf]: remove unneeded check
+	* [build]: set local include path
+	* [conf]: bump to 0.2.3
+	* [build]: link again to X11
+	* [conf]: rename to libXcm
+	* [build]: fix the debian package name
+	* [build]: install header into X11/; rename pkgcfg
+	* [docu]: add Doxyfile
+	* [conf]: show actual includedir
+	* [build]: fix for mandriva 2007
+	* [build]: RPM spec file fixes
+	* [build]: correct soname
+	* [build]: add requirement for RPM devel package
+	* [build]: omit RPM buildroot cleaning
+	* [conf]: bump version
 
 Tomas Carnecky (41):
 	Initial import.
