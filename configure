@@ -783,6 +783,8 @@ test -n "$ECHO" && $ECHO "VERSION_L = $VERSION_L" >> $CONF
 test -n "$ECHO" && $ECHO "RELEASE = $RELEASE" >> $CONF
 test -n "$ECHO" && $ECHO "" >> $CONF
 
+test -n "$ECHO" && $ECHO "PROJECT_NUMBER         = $VERSION" > Doxyfile
+test -n "$ECHO" && cat Doxyfile.in >> Doxyfile
 
 test -n "$ECHO" && $ECHO "#ifndef "$MACRONAME"_VERSION_H" >> $VERS_H
 test -n "$ECHO" && $ECHO "#define "$MACRONAME"_VERSION_H" >> $VERS_H
