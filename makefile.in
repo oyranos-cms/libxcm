@@ -49,7 +49,7 @@ DOKU =  AUTHORS \
 SUB_DOKU = \
 	docs/net-color-spec
 DIST_FILES = \
-	Doxyfile
+	Doxyfile.in
 MAN1 =
 MAN3 =  $(TARGET_BASE).3x doc/man/man3/*
 
