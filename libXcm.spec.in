@@ -1,9 +1,9 @@
-Summary: X Color Management Library
-Name: libXcm
-License: MIT
-Group: Development/Libraries/Other
-URL: http://www.oyranos.org
-Vendor: Kai-Uwe Behrmann
+Summary:        X Color Management Library
+Name:           libXcm
+License:        MIT
+Group:          System Environment/Libraries
+URL:            http://www.oyranos.org
+Vendor:         Kai-Uwe Behrmann
 #BuildArch: %{_arch}
 #%ifos linux
 #%endif 
@@ -25,7 +25,8 @@ BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x
 BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig doxygen
 %endif
 %if 0%{?fedora_version} > 0
-BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils doxygen libXfixes-devel
+BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils doxygen libXfixes-devel xorg-x11-proto-devel xorg-x11-xtrans-devel
+
 %endif
 %if 0%{?debian_version} > 0
 BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils doxygen
@@ -43,15 +44,20 @@ Requires:  %{name}0 = %{version}
 
 
 %description
-The library allows to attach color regions to windows for colour management.
+The libXcm library is a reference implementation of the net-color spec.
+It allows to attach colour regions to X windows to communicate with colour
+servers.
 
 %description -n %{name}0
-The library allows to attach color regions to windows for colour management.
-
+The libXcm library is a reference implementation of the net-color spec.
+It allows to attach colour regions to X windows to communicate with colour
+servers.
 
 %description devel
-The library allows to attach color regions to windows for colour managing
-them. The package contains headers and other development files.
+The libXcm library is a reference implementation of the net-color spec.
+It allows to attach colour regions to X windows to communicate with colour
+servers.
+The package contains headers and other development files.
 
 
 
@@ -59,22 +65,27 @@ them. The package contains headers and other development files.
 %setup -n %{name}-%{version}
 
 %build
-%configure --enable-debug
+%configure --disable-static
+make %{?_smp_mflags}
 
 %install
-make
 make DESTDIR=%{buildroot} install-main
+
+#Remove installed doc
 rm -fr %{buildroot}/%{_datadir}/doc/%{name}
+
+#Fix timestamp to prevent multilibs conflict
+touch -r ChangeLog doc/man/*
 
 
 %clean
-rm -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 
-%post -n %{name}0
-ldconfig
 
-%postun -n %{name}0
-ldconfig
+%post -n %{name}0 -p /sbin/ldconfig
+
+%postun -n %{name}0 -p /sbin/ldconfig
+
 
 %files -n %{name}0
 %defattr(-, root, root)
@@ -83,15 +94,17 @@ ldconfig
 %files devel
 %defattr(-, root, root)
 %doc AUTHORS COPYING ChangeLog README
-%{_libdir}/%{name}.so
-%{_includedir}/X11/*
-%{_libdir}/pkgconfig/*
-%{_libdir}/%{name}.a
-%{_mandir}/man3/*
 %doc docs/net-color-spec
+%{_libdir}/%{name}.so
+%{_includedir}/X11/Xcm.h
+%{_libdir}/pkgconfig/xcm.pc
+%{_mandir}/man3/*.3*
 
 
 %changelog
+* Mon Jul 19 2010 Kai-Uwe Behrmann
+- sync with Nicolas Chauvet <kwizart@gmail.com> - 0.2.6-2
+
 * Thu Jun 03 2010 Kai-Uwe Behrmann
 - initial
 
