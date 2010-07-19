@@ -51,7 +51,7 @@ SUB_DOKU = \
 DIST_FILES = \
 	Doxyfile.in
 MAN1 =
-MAN3 =  $(TARGET_BASE).3x doc/man/man3/*
+MAN3 =  lib$(TARGET_BASE).3 doc/man/man3/*
 
 TOP_SOURCES =
 SOURCES =  \
