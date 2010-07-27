@@ -1,3 +1,17 @@
+libXcm-0.2.7
+
+Kai-Uwe Behrmann (10):
+	* [docu]: limit doxygen search paths
+	* [docu]: update ChangeLog
+	* [doku]: rename Doxyfile for automatic updates
+	* [conf]: generate Doxyfile
+	* [build]: add install-docs, install-bin targets
+	* [docu]: update man pages
+	* [conf]: distribute Doxyfile.in
+	* [conf]: bump version
+	* [build]: sync with Nicolas Chauvet alias kwizart
+	* [docu]: rename Xcm.3x to libXcm.3
+
 libXcm-0.2.6
 
 Kai-Uwe Behrmann (39):
