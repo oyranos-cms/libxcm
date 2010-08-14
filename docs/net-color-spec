@@ -16,11 +16,13 @@ Draft for Revision 0.2  2010-05-16  Kai-Uwe Behrmann
                                       _NET_COLOR_PROFILES from this version,
                                       add _NET_COLOR_REGIONS and
                                       _NET_COLOR_DESKTOP
+Draft 2  Revision 0.2   2010-08-14  Kai-Uwe Behrmann
+                                      add _ICC_DEVICE_PROFILE(_xxx)
 
    Introduction
   --------------
 
-The net-color spec defines a protocol which can be used by X11 clients to
+The net-color spec defines a protocol, which can be used by X11 clients to
 offload color correction and transformation into the compositing manager. The
 basic idea is to communicate client side regions to the X11 server.
 The regions can of this version have no ICC profile attached, which means
@@ -90,6 +92,37 @@ supported _ICC_PROFILE in X version. NCT is optional.
 A example of a valid atom might look like:
 _NET_COLOR_DESKTOP(STRING) = "4518 1274001512 |NCR|V0.3| compiz_colour_desktop"
 
+ _ICC_DEVICE_PROFILE(_xxx):
+
+The atom will hold a native ICC profile with the exposed device 
+characteristics at the compositing window manager level. 
+The colour server shall if no _ICC_DEVICE_PROFILE(_xxx) is set, copy the 
+_ICC_PROFILE(_xxx) profiles to each equivalent _ICC_DEVICE_PROFILE(_xxx) atom.
+The _ICC_PROFILE(_xxx) profiles shall be replaced by a sRGB ICC profile.
+The counting in the atoms (_xxx) name section follows the rules outlined in 
+the ICC Profile in X recommendation. After finishing the session the the old
+state has to be recovered by copying any _ICC_DEVICE_PROFILE(_xxx) atoms 
+content into the appropriate _ICC_PROFILE(_xxx) atoms and removing all
+_ICC_DEVICE_PROFILE(_xxx) atoms.
+The colour server must be aware about change property events indicating that
+a _ICC_PROFILE(_xxx) atom has changed by a external application and needs to
+move that profile to the appropriate _ICC_DEVICE_PROFILE(_xxx) atom and set
+the _ICC_PROFILE(_xxx) atom to sRGB as well.
+The modification of the _ICC_DEVICE_PROFILE(_xxx) atoms by external applications
+is undefined.
+
+
+   Discussion
+  ------------
+
+Elder desktop applications might not be aware of the capabilities exposed 
+through a implementation of this recommendation. Thus a way is needed to enshure
+backward compatibility. The _ICC_DEVICE_PROFILE(_xxx) atom provides a means to
+expose capable clients the desired information about the monitor characteristics
+at the discussed level. The _ICC_PROFILE(_xxx) atom is maintained to enshure the
+desired backward compatibility.
+
+
    References
   ------------
 
@@ -97,19 +130,9 @@ _NET_COLOR_DESKTOP(STRING) = "4518 1274001512 |NCR|V0.3| compiz_colour_desktop"
 2. International Color Consortium (http://www.color.org)
 3. _ICC_Profile in X (http://www.freedesktop.org/wiki/Specifications/icc_profiles_in_x_spec)
 4. Xcolor reference implementation (git clone git://www.oyranos.org/git/xcolor)
-5. colour_deskop colour server for compiz (git clone git://www.oyranos.org/git/oyranos)
+5. CompIcc colour server for compiz (http://sourceforge.net/apps/mediawiki/compicc/index.php?title=Main_Page)
 6. xcmsevents monitor tool (git clone git://www.oyranos.org/git/oyranos)
 
-
-   Todo
-  ------
-
-The relation to the _ICC_Profile in X spec is undefined in that a monitor 
-profile as provided by the _ICC_PROFILE(_xxx) atom is for unaware applications
-not correct during the run of the color server. Necessarily a double color
-conversion will happen for net-color spec unaware applications, which is a 
-clear conflict. A _ICC_DEVICE_PROFILE(_xxx) atom during color server run is 
-in discussion.
 
 
 2008 (c) Tomas Carnecky, 2010 (c) Kai-Uwe Behrmann
