@@ -1,3 +1,19 @@
+/*  @file Xcm.c
+ *
+ *  libXcm  Xorg Colour Management
+ *
+ *  @par Copyright:
+ *            2008 (C) Tomas Carnecky
+ *            2008-2010 (C) Kai-Uwe Behrmann
+ *
+ *  @brief    net-color spec helpers
+ *  @internal
+ *  @author   Tomas Carnecky
+ *            Kai-Uwe Behrmann <ku.b@gmx.de>
+ *  @par License:
+ *            MIT <http://www.opensource.org/licenses/mit-license.php>
+ *  @since    2008/04/00
+ */
 
 #include <Xcm.h>
 
