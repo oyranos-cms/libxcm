@@ -34,15 +34,14 @@ export CONF_H CONF CONF_TEMP_SH CONF_LOG
 test -f error.tmp && rm error.tmp
 
 VERSION_A=0
-VERSION_B=2
-VERSION_C=8
+VERSION_B=3
+VERSION_C=0
 VERSION_ABI_A=1
 VERSION_ABI_B=0
 RELEASE=0
 START_MONTH=05
 START_YEAR=2008
-DEVEL_MONTH=06
-DEVEL_MONTH=7 # numeric
+DEVEL_MONTH=10 # numeric
 DEVEL_YEAR=2010
 GIT_MASTER="`cat $ROOT_DIR/.git/refs/heads/master`"
 time="`date +%y%m%d.%H%M%S`"
@@ -74,8 +73,8 @@ rpm=0
 static=1
 verbose=1
 X11=0
-X_ADD_2="X11 Xfixes"
-LIBS_TEST=""
+X_ADD_2="X11 Xfixes Xmu"
+LIBS_TEST="m"
 
 STRIPOPT="sed s/-O.//"
 

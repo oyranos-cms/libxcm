@@ -44,19 +44,20 @@ Requires:  %{name}0 = %{version}
 
 
 %description
-The libXcm library is a reference implementation of the net-color spec.
+The libXcm library is colour management helper for Xorg. It contains a 
+reference implementation of the net-color spec.
 It allows to attach colour regions to X windows to communicate with colour
-servers.
+servers. A EDID parser and a observer tool are included.
 
 %description -n %{name}0
 The libXcm library is a reference implementation of the net-color spec.
 It allows to attach colour regions to X windows to communicate with colour
-servers.
+servers. A EDID parser and a colour management event observer are included.
 
 %description devel
 The libXcm library is a reference implementation of the net-color spec.
 It allows to attach colour regions to X windows to communicate with colour
-servers.
+servers. A EDID parser and a colour management event observer are included.
 The package contains headers and other development files.
 
 
@@ -87,6 +88,10 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n %{name}0 -p /sbin/ldconfig
 
 
+%files -n %{name}
+%defattr(-, root, root)
+%{_bindir}/xcmsevents
+
 %files -n %{name}0
 %defattr(-, root, root)
 %{_libdir}/%{name}.so.*
@@ -96,12 +101,17 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS COPYING ChangeLog README
 %doc docs/net-color-spec
 %{_libdir}/%{name}.so
-%{_includedir}/X11/Xcm.h
+%{_includedir}/X11/Xcm/*.h
 %{_libdir}/pkgconfig/xcm.pc
 %{_mandir}/man3/*.3*
 
 
 %changelog
+* Fri Oct 01 2010 Kai-Uwe Behrmann
+- include EDID parser - 0.3.0
+- install xcmsevents tool
+- headers move to a own sub directory
+
 * Mon Jul 19 2010 Kai-Uwe Behrmann
 - sync with Nicolas Chauvet <kwizart@gmail.com> - 0.2.6-2
 

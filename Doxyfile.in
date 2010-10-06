@@ -75,8 +75,12 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = ./ src/ include/
 FILE_PATTERNS          = Xcm.c \
+                         XcmEvents.c \
+                         XcmEdidParse.c \
                          doxymentation \
-                         Xcm.h
+                         Xcm.h \
+                         XcmEvents.h \
+                         XcmEdidParse.h
 RECURSIVE              = NO
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = YES

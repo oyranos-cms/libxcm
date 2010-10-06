@@ -27,10 +27,15 @@ LDLIBS = $(LDFLAGS) -L$(libdir) -L. \
 	 $(c)
 
 CHEADERS = \
-	include/$(TARGET_BASE).h
+	include/$(TARGET_BASE).h \
+	include/$(TARGET_BASE)EdidParse.h \
+	include/$(TARGET_BASE)Events.h
 CFILES = \
-	src/$(TARGET_BASE).c
+	src/$(TARGET_BASE).c \
+	src/$(TARGET_BASE)EdidParse.c \
+	src/$(TARGET_BASE)Events.c
 
+XCMSEVENTS_CFILES = src/xcmsevents/xcmsevents.c
 
 TEST_CPP = \
 	tests/dl_test.cxx \
@@ -55,20 +60,27 @@ MAN3 =  lib$(TARGET_BASE).3 doc/man/man3/*
 
 TOP_SOURCES =
 SOURCES =  \
-		$(TOP_SOURCES)
+	$(TOP_SOURCES) \
+	$(CFILES) \
+	$(XCMSEVENTS_CFILES)
 
 
 # we need these files to generate explicite targets for out of tree builds
 COBJECTS = \
-	$(CFILES:.c=.o)
+	$(CFILES:.c=.o) \
+	$(XCMSEVENTS_CFILES:.c=.o)
 CXXOBJECTS =	$(CXXFILES)
 
 OBJECTS = $(CPPFILES:.cpp=.o) $(CXXFILES:.cxx=.o) $(CFILES:.c=.o)
+XCMSEVENTS_OBJECTS = $(XCMSEVENTS_CFILES:.c=.o)
 
-CLEAN_OBJECTS = $(OBJECTS)
+CLEAN_OBJECTS = \
+	$(OBJECTS) \
+	$(XCMSEVENTS_CFILES:.c=.o)
 
 SUB_OBJECTS = \
-	$(CFILES:.c=.o)
+	$(CFILES:.c=.o) \
+	$(XCMSEVENTS_CFILES:.c=.o)
 
 INCL_DEP = $(SOURCES)
 
@@ -90,7 +102,8 @@ ALL_FILES = \
 
 # build all what is needed to run the libraries, helpers
 all:	config.log.h mkdepend \
-	$(LIBSONAMEFULL)
+	$(LIBSONAMEFULL) \
+	xcmsevents
 	echo ... $@ done
 
 # get time stamp
@@ -122,8 +135,13 @@ $(LIBNAME):	$(OBJECTS)
 		$(OBJECTS)
 	$(RANLIB) $(LIBNAME)
 
+xcmsevents:	 $(XCMSEVENTS_OBJECTS) $(LIBSONAMEFULL)
+	echo Linking $@ ...
+	$(CC) -I./ $(CFLAGS_) \
+	-o $@ $(XCMSEVENTS_OBJECTS) $(LIBSONAMEFULL) $(m) \
+	-L$(libdir) $(LDLIBS) $(m) $(X11_LIBS)
 
-check:	all install_bin
+check:	all
 	echo current git version is:
 	n=0; for i in `cd $(SRCDIR); git rev-list master`; do if [ $${n} -eq 0 ]; then echo git id:$${i}; fi; n=1; done
 
@@ -133,8 +151,10 @@ check:	all install_bin
 
 # the copy part for this directory level
 install-bin:	install_bin
-install_bin:	all uninstall_bin
+install_bin:	all
 	echo Installing binaries ...
+	mkdir -p $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 xcmsevents $(DESTDIR)$(bindir)
 	mkdir -p $(DESTDIR)$(libdir)
 	mkdir -p $(DESTDIR)$(libdir)/pkgconfig
 	$(INSTALL) -m 644 $(TARGET_MINI).pc $(DESTDIR)$(libdir)/pkgconfig/
@@ -158,8 +178,8 @@ install_bin:	all uninstall_bin
 		) || echo ""; \
            fi; \
 	done
-	test -d $(DESTDIR)$(includedir)/X11 || mkdir -p $(DESTDIR)$(includedir)/X11
-	cd $(SRCDIR); $(INSTALL) -m 644 $(CHEADERS) $(DESTDIR)$(includedir)/X11
+	test -d $(DESTDIR)$(includedir)/X11 || mkdir -p $(DESTDIR)$(includedir)/X11/Xcm
+	cd $(SRCDIR); $(INSTALL) -m 644 $(CHEADERS) $(DESTDIR)$(includedir)/X11/Xcm
 	echo ... binary Installation finished
 
 # install recursive
@@ -230,7 +250,7 @@ uninstall_bin:
 	          $(DESTDIR)$(libdir)/$(LIB)$${lib}$(SO)$(LIBEXT) \
 	          $(DESTDIR)$(libdir)/$(LIB)$${lib}.a; \
 	done
-	$(RM)   $(DESTDIR)$(includedir)/X11/$(TARGET_BASE).h
+	$(RM)   $(DESTDIR)$(includedir)/X11/$(TARGET_BASE)/$(TARGET_BASE)*.h
 	echo ... done uninstalling binaries
 	
 uninstall-docs:	uninstall_docu
@@ -256,7 +276,7 @@ distclean: clean
 	-$(RM) config.log.h config.tmp.sh testset.txt
 
 clean:
-	-$(RM) $(OBJECTS)
+	-$(RM) $(CLEAN_OBJECTS)
 	-for lib in $(LIBRARIES); do \
 	   $(RM) $(LIB)$${lib}$(SO).$(VERSION)$(LIBEXT) \
 	         $(LIB)$${lib}$(SO).$(VERSION_A)$(LIBEXT) \
@@ -278,7 +298,7 @@ depend:	cdepend
 	    incl_src="$${incl_src} $(SRCDIR)/$${file}"; done; \
 	  $(MAKEDEPEND) -I./ -I$(SRCDIR) $(INCL) $${incl_src} >> mkdepend)
 	-for file in $(SUB_OBJECTS); do \
-	   obj=`echo $${file} | sed 's%src/%% ; s%FL/%% ; s%tests/%%'`; \
+	   obj=`echo $${file} | sed 's%src/%% ; s%xcmsevents/%%'`; \
 	   cat mkdepend | sed s%$${obj}%$${file}% > mkdepend.tmp; \
 	   mv mkdepend.tmp mkdepend; \
          done
@@ -371,6 +391,9 @@ copy_files:
 	mkdir $(DESTDIR)/src
 	cd $(SRCDIR) && \
 	  $(COPY) $(CFILES) $(DESTDIR)/src
+	mkdir $(DESTDIR)/src/xcmsevents
+	cd $(SRCDIR) && \
+	  $(COPY) $(XCMSEVENTS_CFILES) $(DESTDIR)/src/xcmsevents
 	mkdir $(DESTDIR)/tests
 	cd $(SRCDIR) && \
 	  $(COPY) $(TEST_FILES) $(DESTDIR)/tests
