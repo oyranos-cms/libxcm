@@ -93,25 +93,49 @@ const char *      XcmEdidErrorToString(XCM_EDID_ERROR_e    error );
 XCM_EDID_ERROR_e  XcmEdidPrintString ( void              * edid,
                                        char             ** text,
                                        void             *(*alloc)(size_t sz) );
+/** \addtogroup XcmEdidParse
+ *
+ *  @{
+ */
 
+/** full length vendor, string */
 #define XCM_EDID_KEY_VENDOR               "vendor"
+/** full length device model, string */
 #define XCM_EDID_KEY_MODEL                "model"
+/** full length device serial number, string */
 #define XCM_EDID_KEY_SERIAL               "serial"
+/** colorimetric primary red CIE*xyY x component, double */
 #define XCM_EDID_KEY_REDx                 "redx"
+/** colorimetric primary red CIE*xyY y component, double */
 #define XCM_EDID_KEY_REDy                 "redy"
+/** colorimetric primary green CIE*xyY x component, double */
 #define XCM_EDID_KEY_GREENx               "greenx"
+/** colorimetric primary green CIE*xyY y component, double */
 #define XCM_EDID_KEY_GREENy               "greeny"
+/** colorimetric primary blue CIE*xyY x component, double */
 #define XCM_EDID_KEY_BLUEx                "bluex"
+/** colorimetric primary blue CIE*xyY y component, double */
 #define XCM_EDID_KEY_BLUEy                "bluey"
+/** colorimetric primary white CIE*xyY x component, double */
 #define XCM_EDID_KEY_WHITEy               "whitex"
+/** colorimetric primary white CIE*xyY y component, double */
 #define XCM_EDID_KEY_WHITEx               "whitey"
+/** colorimetric single gamma for all channels, double */
 #define XCM_EDID_KEY_GAMMA                "gamma"
+/** manufactur week, integer */
 #define XCM_EDID_KEY_WEEK                 "week"
+/** manufactur year, integer */
 #define XCM_EDID_KEY_YEAR                 "year"
+/** manufacturer ID, integer */
 #define XCM_EDID_KEY_MNFT_ID              "mnft_id"
+/** model ID, integer */
 #define XCM_EDID_KEY_MODEL_ID             "model_id"
+/** manufacturer ID, string */
 #define XCM_EDID_KEY_MNFT                 "mnft"
+/** full length manufacturer, string */
 #define XCM_EDID_KEY_MANUFACTURER         "manufacturer"
+
+/* @} XcmEdidParse */
 
 #ifdef __cplusplus
 } /* extern "C" */

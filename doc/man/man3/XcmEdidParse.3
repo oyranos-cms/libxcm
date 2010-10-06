@@ -3,6 +3,64 @@
 .nh
 .SH NAME
 X Color Management EDID data block parsing API's \- 
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_VENDOR\fP   'vendor'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_MODEL\fP   'model'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_SERIAL\fP   'serial'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_REDx\fP   'redx'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_REDy\fP   'redy'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_GREENx\fP   'greenx'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_GREENy\fP   'greeny'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_BLUEx\fP   'bluex'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_BLUEy\fP   'bluey'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_WHITEy\fP   'whitex'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_WHITEx\fP   'whitey'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_GAMMA\fP   'gamma'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_WEEK\fP   'week'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_YEAR\fP   'year'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_MNFT_ID\fP   'mnft_id'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_MODEL_ID\fP   'model_id'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_MNFT\fP   'mnft'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_MANUFACTURER\fP   'manufacturer'"
+.br
+.in -1c
 .SS "Functions"
 
 .in +1c
@@ -25,7 +83,63 @@ X Color Management EDID data block parsing API's \-
 .in -1c
 .SH "Detailed Description"
 .PP 
-The user is responsible to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property. The data block is passes to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
+The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property. The data block is passes to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
+.SH "Define Documentation"
+.PP 
+.SS "#define XCM_EDID_KEY_BLUEx   'bluex'"
+.PP
+colorimetric primary blue CIE*xyY x component, double 
+.SS "#define XCM_EDID_KEY_BLUEy   'bluey'"
+.PP
+colorimetric primary blue CIE*xyY y component, double 
+.SS "#define XCM_EDID_KEY_GAMMA   'gamma'"
+.PP
+colorimetric single gamma for all channels, double 
+.SS "#define XCM_EDID_KEY_GREENx   'greenx'"
+.PP
+colorimetric primary green CIE*xyY x component, double 
+.SS "#define XCM_EDID_KEY_GREENy   'greeny'"
+.PP
+colorimetric primary green CIE*xyY y component, double 
+.SS "#define XCM_EDID_KEY_MANUFACTURER   'manufacturer'"
+.PP
+full length manufacturer, string 
+.SS "#define XCM_EDID_KEY_MNFT   'mnft'"
+.PP
+manufacturer ID, string 
+.SS "#define XCM_EDID_KEY_MNFT_ID   'mnft_id'"
+.PP
+manufacturer ID, integer 
+.SS "#define XCM_EDID_KEY_MODEL   'model'"
+.PP
+full length device model, string 
+.SS "#define XCM_EDID_KEY_MODEL_ID   'model_id'"
+.PP
+model ID, integer 
+.SS "#define XCM_EDID_KEY_REDx   'redx'"
+.PP
+colorimetric primary red CIE*xyY x component, double 
+.SS "#define XCM_EDID_KEY_REDy   'redy'"
+.PP
+colorimetric primary red CIE*xyY y component, double 
+.SS "#define XCM_EDID_KEY_SERIAL   'serial'"
+.PP
+full length device serial number, string 
+.SS "#define XCM_EDID_KEY_VENDOR   'vendor'"
+.PP
+full length vendor, string 
+.SS "#define XCM_EDID_KEY_WEEK   'week'"
+.PP
+manufactur week, integer 
+.SS "#define XCM_EDID_KEY_WHITEx   'whitey'"
+.PP
+colorimetric primary white CIE*xyY y component, double 
+.SS "#define XCM_EDID_KEY_WHITEy   'whitex'"
+.PP
+colorimetric primary white CIE*xyY x component, double 
+.SS "#define XCM_EDID_KEY_YEAR   'year'"
+.PP
+manufactur year, integer 
 .SH "Function Documentation"
 .PP 
 .SS "const char* XcmEdidErrorToString (XCM_EDID_ERROR_e error)"

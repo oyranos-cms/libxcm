@@ -26,14 +26,19 @@
 
  *  @{
  *
- *  The user is responsible to pass in a valid EDID block. This can be obtained
- *  per a root window X atom or a XRandR output property. The data block is 
- *  passes to XcmEdidParse(). This function generates a list of key value pairs,
+ *  The purpouse of this API is to obtain basic and displayable device 
+ *  identification strings and colorimetric informations contained in the EDID
+ *  data block sent by monitors.
+ *
+ *  The user has to pass in a valid EDID block. This can be obtained
+ *  per a root window X atom or a XRandR output property and is not part of
+ *  this API. The data block is passed to XcmEdidParse(). This function 
+ *  generates a list of key value pairs,
  *  with some first rough interpretation. The key/values are useable for 
  *  data bases, ICC profile generation or device identification.
  *  The returned XcmEdidKeyValue_s list elements can be individually read and
  *  worked with. Please look as well on the XcmEdidPrintString() function
- *  as a small example on how to use the API.
+ *  and examples/edid-parse/ as a small example on how to use the API.
  *  XcmEdidFree() releases allocated list memory.
  *
  */
@@ -91,6 +96,9 @@ void         XcmEdidSetText          ( XcmEdidKeyValue_s * entry,
 
 /** Function XcmEdidParse
  *  @brief   EDID to key/value pair transformation
+ *
+ *  The function performs no verification of the data block other than the
+ *  first eight byte block signature.
  *
  *  @param[in]     edid                EDID data block 128 or 256 bytes long
  *  @param[out]    list                the key/value data structures
