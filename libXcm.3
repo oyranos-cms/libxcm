@@ -24,23 +24,28 @@
 .ns
 .TP \\$1
 ..
-.TH XCM 3 "Version 0.2" "XFree86"
+.TH XCM 3 "Version 0.3" "XFree86"
 
 .SH NAME
-Xcm \- color region handling for X11 windows
+Xcm \- X11 Colour Management functions
 .SH SYNTAX
-\&#include <X11/Xcm.h>
+\&#include <X11/Xcm/Xcm.h> /* colour region handling */
+
+\&#include <X11/Xcm/XcmEvents.h> /* CM event observation */
+
+\&#include <X11/Xcm/XcmEdidParse.h.h> /* EDID parsing */
 .nf    
 .SH DESCRIPTION
 .B Xcm
-is a simple library designed to support window color region and ICC profile 
-handling. The detailed description is covered in the net-color-spec. 
+is a simple library designed to support window color region handling, ICC 
+profile handling, EDID parsing and colour management event observation. 
+The detailed description for region handling is covered in the net-color-spec. 
 .SH RESTRICTIONS
 .B Xcm
 will remain upward compatible after a 1.0 release.
 .SH AUTHORS
-Tomas Carnecky, at time member of the OpenICC Project,
+Tomas Carnecky for the net-color part, at time member of the OpenICC Project,
 Kai-Uwe Behrmann, member of the OpenICC and Oyranos Projects.
 .SH "SEE ALSO"
-Xcm(3) XcolorProfile(3) XcolorRegion(3)
+Xcm(3) XcolorProfile(3) XcolorRegion(3) XcmEdidParse(3) XcmEvents(3)
 

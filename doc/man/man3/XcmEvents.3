@@ -1,0 +1,535 @@
+.TH "X Color Management Event API's" 3 "6 Oct 2010" "Version 0.3.0" "Xcm" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+X Color Management Event API's \- 
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBXCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE\fP   '_ICC_DEVICE_PROFILE'"
+.br
+.RI "\fInet-color spec atoms \fP"
+.ti -1c
+.RI "#define \fBXCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE\fP   '_ICC_PROFILE'"
+.br
+.RI "\fI_ICC_PROFILE_(xxx) in X spec atoms \fP"
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef struct XcmeContext_s_ \fBXcmeContext_s\fP"
+.br
+.RI "\fIcontext for parsing events \fP"
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBXCME_MSG_e\fP { \fBXCME_MSG_TITLE\fP =  400, \fBXCME_MSG_COPYRIGHT\fP, \fBXCME_MSG_INFO\fP, \fBXCME_MSG_SYSTEM\fP, \fBXCME_MSG_DISPLAY_ERROR\fP, \fBXCME_MSG_DISPLAY_EVENT\fP, \fBXCME_MSG_DISPLAY_STATUS\fP }"
+.br
+.RI "\fIcustomisable signals for a observer \fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBXcmMessage\fP (\fBXCME_MSG_e\fP code, const void *context, const char *format,...)"
+.br
+.RI "\fIdefault message function \fP"
+.ti -1c
+.RI "int \fBXcmMessageFuncSet\fP (XcmMessage_f message_func)"
+.br
+.RI "\fIset a message function to customise messages \fP"
+.ti -1c
+.RI "const char * \fBxcmePrintWindowName\fP (Display *display, Window w)"
+.br
+.RI "\fIreturn a short window description text \fP"
+.ti -1c
+.RI "void \fBXcmICCprofileGetNameFuncSet\fP (XcmICCprofileGetName_f getName)"
+.br
+.RI "\fIplugin more informations capabilities for ICC profiles \fP"
+.ti -1c
+.RI "void \fBXcmICCprofileFromMD5FuncSet\fP (XcmICCprofileGetFromMD5_f fromMD5)"
+.br
+.RI "\fIplugin more informations capabilities for ICC profiles \fP"
+.ti -1c
+.RI "void \fBxcmePrintWindowRegions\fP (Display *display, Window w, int always)"
+.br
+.RI "\fIsend a message about window regions \fP"
+.ti -1c
+.RI "\fBXcmeContext_s\fP * \fBXcmeContext_New\fP ()"
+.br
+.RI "\fIallocate a event observer context structure \fP"
+.ti -1c
+.RI "\fBXcmeContext_s\fP * \fBXcmeContext_Create\fP (const char *display_name)"
+.br
+.RI "\fIallocate and initialise a event observer context structure \fP"
+.ti -1c
+.RI "int \fBXcmeContext_Setup\fP (\fBXcmeContext_s\fP *c, const char *display_name)"
+.br
+.RI "\fIallocate and initialise a event observer context structure \fP"
+.ti -1c
+.RI "int \fBXcmeContext_Release\fP (\fBXcmeContext_s\fP **c)"
+.br
+.RI "\fIclean owned resources \fP"
+.ti -1c
+.RI "int \fBXcmeContext_InLoop\fP (\fBXcmeContext_s\fP *c, XEvent *event)"
+.br
+.RI "\fIcheck for colour management events \fP"
+.ti -1c
+.RI "Display * \fBXcmeContext_DisplayGet\fP (\fBXcmeContext_s\fP *c)"
+.br
+.RI "\fIreturn the Display \fP"
+.ti -1c
+.RI "int \fBXcmeContext_DisplaySet\fP (\fBXcmeContext_s\fP *c, Display *display)"
+.br
+.RI "\fIset a custom X11 Display \fP"
+.ti -1c
+.RI "int \fBXcmeContext_WindowSet\fP (\fBXcmeContext_s\fP *c, Window window)"
+.br
+.RI "\fIset a custom X11 Window \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+The observer context can be allocated and setup through XcmeContext_Create. You can pass in a own X11 Display handle through \fBXcmeContext_New()\fP, \fBXcmeContext_DisplaySet()\fP and \fBXcmeContext_Setup()\fP. The events can be processed by passing all XEvents to \fBXcmeContext_InLoop()\fP from inside your X event handling loop. To release allocated resources call \fBXcmeContext_Release()\fP. For a examle look at the xcmsevents application, which is distributed along the sources.
+.PP
+XcmEvents.h
+.PP
+A small X11 colour management event observer.
+.PP
+\fBLicense:\fP.RS 4
+MIT <http://www.opensource.org/licenses/mit-license.php> 
+.RE
+.PP
+\fBCopyright:\fP.RS 4
+2009-2010 - Kai-Uwe Behrmann <ku.b@gmx.de> 
+.RE
+.PP
+
+.SH "Define Documentation"
+.PP 
+.SS "#define XCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE   '_ICC_DEVICE_PROFILE'"
+.PP
+net-color spec atoms 
+.PP
+.SS "#define XCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE   '_ICC_PROFILE'"
+.PP
+_ICC_PROFILE_(xxx) in X spec atoms 
+.PP
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct XcmeContext_s_ \fBXcmeContext_s\fP"
+.PP
+context for parsing events 
+.PP
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBXCME_MSG_e\fP"
+.PP
+customisable signals for a observer 
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIXCME_MSG_TITLE \fP\fP
+basic library title 
+.TP
+\fB\fIXCME_MSG_COPYRIGHT \fP\fP
+Copyright infos. 
+.TP
+\fB\fIXCME_MSG_INFO \fP\fP
+normaly ignored 
+.TP
+\fB\fIXCME_MSG_SYSTEM \fP\fP
+forwarded system message 
+.TP
+\fB\fIXCME_MSG_DISPLAY_ERROR \fP\fP
+errors during run 
+.TP
+\fB\fIXCME_MSG_DISPLAY_EVENT \fP\fP
+event smessage 
+.TP
+\fB\fIXCME_MSG_DISPLAY_STATUS \fP\fP
+initial status infos 
+.SH "Function Documentation"
+.PP 
+.SS "\fBXcmeContext_s\fP * XcmeContext_Create (const char * display_name)"
+.PP
+allocate and initialise a event observer context structure 
+.PP
+Function XcmeContext_Create The context is needed to observe colour management events.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdisplay_name\fP a valid X11 display name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+the context
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "Display * XcmeContext_DisplayGet (\fBXcmeContext_s\fP * c)"
+.PP
+return the Display 
+.PP
+Function XcmeContext_DisplayGet 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP a event observer context 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+the X11 display
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/10/01 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "int XcmeContext_DisplaySet (\fBXcmeContext_s\fP * c, Display * display)"
+.PP
+set a custom X11 Display 
+.PP
+Function XcmeContext_DisplaySet 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP a event observer context 
+.br
+\fIdisplay\fP the custom X11 display 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/10/01 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "int XcmeContext_InLoop (\fBXcmeContext_s\fP * c, XEvent * event)"
+.PP
+check for colour management events 
+.PP
+Function XcmeContext_InLoop This function needs to be called inside the X11 event loop, to observe the related events and send messages about them.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP a event observer context 
+.br
+\fIevent\fP a X event handle 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+- 0: success
+.IP "\(bu" 2
+1: error
+.PP
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "\fBXcmeContext_s\fP * XcmeContext_New ()"
+.PP
+allocate a event observer context structure 
+.PP
+Function XcmeContext_New The context is needed to observe colour management events. After the allocation the context needs initialisation.
+.PP
+\fBReturns:\fP
+.RS 4
+the context
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "int XcmeContext_Release (\fBXcmeContext_s\fP ** c)"
+.PP
+clean owned resources 
+.PP
+Function XcmeContext_Release 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP a event observer context
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "int XcmeContext_Setup (\fBXcmeContext_s\fP * c, const char * display_name)"
+.PP
+allocate and initialise a event observer context structure 
+.PP
+Function XcmeContext_Setup The initialised context is needed for observing colour management events.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP a event observer context A existing X11 display will be honoured. 
+.br
+\fIdisplay_name\fP a valid X11 display name or NULL; With a existing X11 display inside c, this option will be ignored.
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "int XcmeContext_WindowSet (\fBXcmeContext_s\fP * c, Window window)"
+.PP
+set a custom X11 Window 
+.PP
+Function xcmeContext_WindowSet 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIc\fP a event observer context 
+.br
+\fIwindow\fP the custom X11 window 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/10/01 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "const char* xcmePrintWindowName (Display * display, Window w)"
+.PP
+return a short window description text 
+.PP
+.SS "void xcmePrintWindowRegions (Display * display, Window w, int always)"
+.PP
+send a message about window regions 
+.PP
+Function xcmePrintWindowRegions The function informs about _NET_COLOR_REGIONS atom.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdisplay\fP X display 
+.br
+\fIw\fP X window 
+.br
+\fIalways\fP send always a message, even for a empty property
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "void XcmICCprofileFromMD5FuncSet (XcmICCprofileGetFromMD5_f fromMD5)"
+.PP
+plugin more informations capabilities for ICC profiles 
+.PP
+Function XcmICCprofileFromMD5FuncSet 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfromMD5\fP a function to resolve a ICC profile in ICC profile paths from a md5 hash sum
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/10/01 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/02 
+.RE
+.PP
+
+.SS "void XcmICCprofileGetNameFuncSet (XcmICCprofileGetName_f getName)"
+.PP
+plugin more informations capabilities for ICC profiles 
+.PP
+Function XcmICCprofileGetNameFuncSet 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIgetName\fP get internal and external profile name
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/10/01 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/02 
+.RE
+.PP
+
+.SS "int XcmMessage (\fBXCME_MSG_e\fP code, const void * context, const char * format,  ...)"
+.PP
+default message function 
+.PP
+Function XcmMessage Messages are printed out to stdout console text stream.
+.PP
+\fBReturns:\fP
+.RS 4
+- 0: fine
+.IP "\(bu" 2
+1: error
+.PP
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2008/04/03 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "int XcmMessageFuncSet (XcmMessage_f message_func)"
+.PP
+set a message function to customise messages 
+.PP
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Xcm from the source code.

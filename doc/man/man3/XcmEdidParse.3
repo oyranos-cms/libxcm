@@ -1,0 +1,169 @@
+.TH "X Color Management EDID data block parsing API's" 3 "6 Oct 2010" "Version 0.3.0" "Xcm" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+X Color Management EDID data block parsing API's \- 
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "XCM_EDID_ERROR_e \fBXcmEdidParse\fP (void *edid, XcmEdidKeyValue_s **list, int *count)"
+.br
+.RI "\fIEDID to key/value pair transformation. \fP"
+.ti -1c
+.RI "XCM_EDID_ERROR_e \fBXcmEdidFree\fP (XcmEdidKeyValue_s **list)"
+.br
+.RI "\fIfree library allocated list \fP"
+.ti -1c
+.RI "const char * \fBXcmEdidErrorToString\fP (XCM_EDID_ERROR_e error)"
+.br
+.RI "\fIconvert enum into a meaningful text string \fP"
+.ti -1c
+.RI "XCM_EDID_ERROR_e \fBXcmEdidPrintString\fP (void *edid, char **text, void *(*alloc)(size_t sz))"
+.br
+.RI "\fIconvert a EDID block into text \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+The user is responsible to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property. The data block is passes to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
+.SH "Function Documentation"
+.PP 
+.SS "const char* XcmEdidErrorToString (XCM_EDID_ERROR_e error)"
+.PP
+convert enum into a meaningful text string 
+.PP
+Function XcmEdidErrorToString 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIerror\fP the error 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+library owned error text string
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/12/12 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "XCM_EDID_ERROR_e XcmEdidFree (XcmEdidKeyValue_s ** list)"
+.PP
+free library allocated list 
+.PP
+Function XcmEdidFree 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlist\fP the key/value data structures 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error code
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/12/12 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "XCM_EDID_ERROR_e XcmEdidParse (void * edid, XcmEdidKeyValue_s ** list, int * count)"
+.PP
+EDID to key/value pair transformation. 
+.PP
+Function XcmEdidParse 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIedid\fP EDID data block 128 or 256 bytes long 
+.br
+\fIlist\fP the key/value data structures 
+.br
+\fIcount\fP pass in a pointer to a int. gives the number of elements in list 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error code
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/12/12 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SS "XCM_EDID_ERROR_e XcmEdidPrintString (void * edid, char ** text, void *(*)(size_t sz) alloc)"
+.PP
+convert a EDID block into text 
+.PP
+Function XcmEdidPrintString 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIerror\fP the EDID data block 
+.br
+\fItext\fP the resulting text string 
+.br
+\fIalloc\fP a user provided function to allocate text 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error code
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.3.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/12/12 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/10/01 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Xcm from the source code.
