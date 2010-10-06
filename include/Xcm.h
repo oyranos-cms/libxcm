@@ -1,3 +1,19 @@
+/*  @file Xcm.h
+ *
+ *  libXcm  Xorg Colour Management
+ *
+ *  @par Copyright:
+ *            2008 (C) Tomas Carnecky
+ *            2008-2010 (C) Kai-Uwe Behrmann
+ *
+ *  @brief    net-color spec helpers
+ *  @internal
+ *  @author   Tomas Carnecky
+ *            Kai-Uwe Behrmann <ku.b@gmx.de>
+ *  @par License:
+ *            MIT <http://www.opensource.org/licenses/mit-license.php>
+ *  @since    2008/04/00
+ */
 
 #ifndef __XCOLOR_H__
 #define __XCOLOR_H__
@@ -10,6 +26,10 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 
 /** \addtogroup Xcm X Color Management Core API's
@@ -103,6 +123,10 @@ int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned
 /** 
  *  @} *//*Xcm
  */
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 
 #endif /* __XCOLOR_H__ */
