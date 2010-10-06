@@ -36,6 +36,9 @@ CFILES = \
 	src/$(TARGET_BASE)Events.c
 
 XCMSEVENTS_CFILES = src/xcmsevents/xcmsevents.c
+XCM_EDID_PARSE_FILES = \
+	examples/edid-parse/makefile \
+	examples/edid-parse/edid_parse.c
 
 TEST_CPP = \
 	tests/dl_test.cxx \
@@ -63,7 +66,6 @@ SOURCES =  \
 	$(TOP_SOURCES) \
 	$(CFILES) \
 	$(XCMSEVENTS_CFILES)
-
 
 # we need these files to generate explicite targets for out of tree builds
 COBJECTS = \
@@ -394,6 +396,9 @@ copy_files:
 	mkdir $(DESTDIR)/src/xcmsevents
 	cd $(SRCDIR) && \
 	  $(COPY) $(XCMSEVENTS_CFILES) $(DESTDIR)/src/xcmsevents
+	mkdir -p $(DESTDIR)/examples/edid-parse
+	cd $(SRCDIR) && \
+	  $(COPY) $(XCM_EDID_PARSE_FILES) $(DESTDIR)/examples/edid-parse
 	mkdir $(DESTDIR)/tests
 	cd $(SRCDIR) && \
 	  $(COPY) $(TEST_FILES) $(DESTDIR)/tests
