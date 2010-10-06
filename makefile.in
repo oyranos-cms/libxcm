@@ -58,8 +58,10 @@ SUB_DOKU = \
 	docs/net-color-spec
 DIST_FILES = \
 	Doxyfile.in
+MAN3_GENERATED = doc/man/man3/*
+MAN3_HAND = lib$(TARGET_BASE).3
 MAN1 =
-MAN3 =  lib$(TARGET_BASE).3 doc/man/man3/*
+MAN3 =  $(MAN3_HAND) $(MAN3_GENERATED)
 
 TOP_SOURCES =
 SOURCES =  \
@@ -100,7 +102,7 @@ ALL_FILES = \
 	$(DIST_FILES) \
 	$(TOP_SOURCES) \
 	$(TOP_CHEADERS) \
-	$(MAN1) $(MAN3)
+	$(MAN1) $(MAN3_HAND)
 
 # build all what is needed to run the libraries, helpers
 all:	config.log.h mkdepend \
@@ -402,6 +404,9 @@ copy_files:
 	mkdir $(DESTDIR)/tests
 	cd $(SRCDIR) && \
 	  $(COPY) $(TEST_FILES) $(DESTDIR)/tests
+	mkdir -p $(DESTDIR)/doc/man/man3
+	cd $(SRCDIR) && \
+          $(COPY) $(MAN3_GENERATED) $(DESTDIR)/doc/man/man3
 	echo ... $@ done
 
 help:
