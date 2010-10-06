@@ -1,3 +1,9 @@
-main author:   Tomas Carnecky
-bug fixes/maintainance:
-               Kai-Uwe Behrmann <www.behrmann.name>
+net-color spec (first implementation): 
+                Tomas Carnecky
+
+XcmEdidParse, XcmEvents, maintainance:
+                Kai-Uwe Behrmann <www.behrmann.name>
+
+XcmEdidParse (some decoding):
+                Soren Sandmann <sandmann@redhat.com>
+
