@@ -1,3 +1,24 @@
+libXcm-0.3.0
+
+Kai-Uwe Behrmann (17):
+	* [docu]: update ChangeLog
+	* [conf]: bump to 0.2.8
+	* [docu]: Draft 2 for net-color spec 0.2
+	* [core]: add C++ guards, add MIT license
+	* [core]: add XcmEdidParse and XcmEvents APIs
+	* [docu]: update to new APIs
+	* [docu]: add license to Xcm.c
+	* [core]: add missed header
+	* [core]: add xcmsevents tool from Oyranos
+	* [tools]: add edid-parse tool/example
+	* [exmpl]: move edid-parse to own directory
+	* [exmpl]: directory move
+	* [build]: source package edid-parse example
+	* [build]: correct man page source packaging
+	* [docu]: describe EDID key's
+	* [docu]: update XcmEdidParse man page
+	* [docu]: update AUTHORS and README
+
 libXcm-0.2.7
 
 Kai-Uwe Behrmann (10):
