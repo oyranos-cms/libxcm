@@ -83,7 +83,9 @@ X Color Management EDID data block parsing API's \-
 .in -1c
 .SH "Detailed Description"
 .PP 
-The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property. The data block is passes to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
+The purpouse of this API is to obtain basic and displayable device identification strings and colorimetric informations contained in the EDID data block sent by monitors.
+.PP
+The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
 .SH "Define Documentation"
 .PP 
 .SS "#define XCM_EDID_KEY_BLUEx   'bluex'"
@@ -210,7 +212,7 @@ libXcm: 0.3.0
 .PP
 EDID to key/value pair transformation. 
 .PP
-Function XcmEdidParse 
+Function XcmEdidParse The function performs no verification of the data block other than the first eight byte block signature.
 .PP
 \fBParameters:\fP
 .RS 4
