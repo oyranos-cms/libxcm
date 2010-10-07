@@ -101,6 +101,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS COPYING ChangeLog README
 %doc docs/net-color-spec
 %{_libdir}/%{name}.so
+%dir %{_includedir}/X11/Xcm
 %{_includedir}/X11/Xcm/*.h
 %{_libdir}/pkgconfig/xcm.pc
 %{_mandir}/man3/*.3*
