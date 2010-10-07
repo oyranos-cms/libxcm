@@ -569,7 +569,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
   M( XCME_MSG_TITLE, 0,
      "libXcm basied X11 colour management system events observer%s", "");
   M( XCME_MSG_COPYRIGHT, 0,
-     "(c) 2009-2010 - Kai-Uwe Behrmann  License: newBSD%s", "" );
+     "(c) 2009-2010 - Kai-Uwe Behrmann  License: MIT%s", "" );
   DS( "atom: \"_NET_COLOR_PROFILES\": %d", (int)c->aProfile );
   DS( "atom: \"_NET_COLOR_TARGET\": %d", (int)c->aTarget );
   DS( "atom: \"_NET_COLOR_MANAGEMENT\": %d", (int)c->aCM );

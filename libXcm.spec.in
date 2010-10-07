@@ -88,10 +88,6 @@ rm -rf $RPM_BUILD_ROOT
 %postun -n %{name}0 -p /sbin/ldconfig
 
 
-%files -n %{name}
-%defattr(-, root, root)
-%{_bindir}/xcmsevents
-
 %files -n %{name}0
 %defattr(-, root, root)
 %{_libdir}/%{name}.so.*
@@ -110,7 +106,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Oct 01 2010 Kai-Uwe Behrmann
 - include EDID parser - 0.3.0
-- install xcmsevents tool
+- include Xcm Events API
 - headers move to a own sub directory
 
 * Mon Jul 19 2010 Kai-Uwe Behrmann

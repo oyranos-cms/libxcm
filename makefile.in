@@ -35,11 +35,6 @@ CFILES = \
 	src/$(TARGET_BASE)EdidParse.c \
 	src/$(TARGET_BASE)Events.c
 
-XCMSEVENTS_CFILES = src/xcmsevents/xcmsevents.c
-XCM_EDID_PARSE_FILES = \
-	examples/edid-parse/makefile \
-	examples/edid-parse/edid_parse.c
-
 TEST_CPP = \
 	tests/dl_test.cxx \
 	tests/intptr_test.c \
@@ -66,25 +61,20 @@ MAN3 =  $(MAN3_HAND) $(MAN3_GENERATED)
 TOP_SOURCES =
 SOURCES =  \
 	$(TOP_SOURCES) \
-	$(CFILES) \
-	$(XCMSEVENTS_CFILES)
+	$(CFILES)
 
 # we need these files to generate explicite targets for out of tree builds
 COBJECTS = \
-	$(CFILES:.c=.o) \
-	$(XCMSEVENTS_CFILES:.c=.o)
+	$(CFILES:.c=.o)
 CXXOBJECTS =	$(CXXFILES)
 
 OBJECTS = $(CPPFILES:.cpp=.o) $(CXXFILES:.cxx=.o) $(CFILES:.c=.o)
-XCMSEVENTS_OBJECTS = $(XCMSEVENTS_CFILES:.c=.o)
 
 CLEAN_OBJECTS = \
-	$(OBJECTS) \
-	$(XCMSEVENTS_CFILES:.c=.o)
+	$(OBJECTS)
 
 SUB_OBJECTS = \
-	$(CFILES:.c=.o) \
-	$(XCMSEVENTS_CFILES:.c=.o)
+	$(CFILES:.c=.o)
 
 INCL_DEP = $(SOURCES)
 
@@ -106,8 +96,7 @@ ALL_FILES = \
 
 # build all what is needed to run the libraries, helpers
 all:	config.log.h mkdepend \
-	$(LIBSONAMEFULL) \
-	xcmsevents
+	$(LIBSONAMEFULL)
 	echo ... $@ done
 
 # get time stamp
@@ -139,12 +128,6 @@ $(LIBNAME):	$(OBJECTS)
 		$(OBJECTS)
 	$(RANLIB) $(LIBNAME)
 
-xcmsevents:	 $(XCMSEVENTS_OBJECTS) $(LIBSONAMEFULL)
-	echo Linking $@ ...
-	$(CC) -I./ $(CFLAGS_) \
-	-o $@ $(XCMSEVENTS_OBJECTS) $(LIBSONAMEFULL) $(m) \
-	-L$(libdir) $(LDLIBS) $(m) $(X11_LIBS)
-
 check:	all
 	echo current git version is:
 	n=0; for i in `cd $(SRCDIR); git rev-list master`; do if [ $${n} -eq 0 ]; then echo git id:$${i}; fi; n=1; done
@@ -157,8 +140,6 @@ check:	all
 install-bin:	install_bin
 install_bin:	all
 	echo Installing binaries ...
-	mkdir -p $(DESTDIR)$(bindir)
-	$(INSTALL) -m 755 xcmsevents $(DESTDIR)$(bindir)
 	mkdir -p $(DESTDIR)$(libdir)
 	mkdir -p $(DESTDIR)$(libdir)/pkgconfig
 	$(INSTALL) -m 644 $(TARGET_MINI).pc $(DESTDIR)$(libdir)/pkgconfig/
@@ -395,12 +376,6 @@ copy_files:
 	mkdir $(DESTDIR)/src
 	cd $(SRCDIR) && \
 	  $(COPY) $(CFILES) $(DESTDIR)/src
-	mkdir $(DESTDIR)/src/xcmsevents
-	cd $(SRCDIR) && \
-	  $(COPY) $(XCMSEVENTS_CFILES) $(DESTDIR)/src/xcmsevents
-	mkdir -p $(DESTDIR)/examples/edid-parse
-	cd $(SRCDIR) && \
-	  $(COPY) $(XCM_EDID_PARSE_FILES) $(DESTDIR)/examples/edid-parse
 	mkdir $(DESTDIR)/tests
 	cd $(SRCDIR) && \
 	  $(COPY) $(TEST_FILES) $(DESTDIR)/tests
