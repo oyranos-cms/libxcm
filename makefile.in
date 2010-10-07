@@ -182,12 +182,12 @@ install_bin:	all
 		) || echo ""; \
            fi; \
 	done
-	test -d $(DESTDIR)$(includedir)/X11 || mkdir -p $(DESTDIR)$(includedir)/X11/Xcm
+	test -d $(DESTDIR)$(includedir)/X11/Xcm || mkdir -p $(DESTDIR)$(includedir)/X11/Xcm
 	cd $(SRCDIR); $(INSTALL) -m 644 $(CHEADERS) $(DESTDIR)$(includedir)/X11/Xcm
 	echo ... binary Installation finished
 
 # install recursive
-install:	uninstall install-main
+install:	install-main
 	echo ... $@ done
 
 install-main:	install_bin install_docu
