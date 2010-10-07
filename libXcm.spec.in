@@ -12,24 +12,23 @@ Prefix:    %{_prefix}
 
 
 %if 0%{?suse_version} > 0
-BuildRequires:     gcc-c++ gettext pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel doxygen
+BuildRequires:     gcc-c++ pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel
 %endif
 %if 0%{?suse_version} > 910
-#BuildRequires: gcc-c++ gettext doxygen fltk-threaded fltk-threaded-devel xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  pkgconfig libpng-devel libjpeg-devel
 BuildRequires:  bash bind-utils binutils bison bzip2 coreutils cpio cyrus-sasl diffutils e2fsprogs file filesystem findutils gcc gcc-c++ glibc glibc-devel grep groff gzip less make man mktemp patch perl pkgconfig popt readline rpm sed tar timezone unzip util-linux zlib zlib-devel
 %endif
 %if 0%{?suse_version} > 1010
-BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel
+BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel xorg-x11-libXmu-devel
 %endif
 %if 0%{?mandriva_version} > 0
-BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig doxygen
+BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig libxorg-x11-devel
 %endif
 %if 0%{?fedora_version} > 0
-BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils doxygen libXfixes-devel xorg-x11-proto-devel xorg-x11-xtrans-devel
+BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils  libXfixes-devel xorg-x11-proto-devel xorg-x11-xtrans-devel libXmu-devel
 
 %endif
 %if 0%{?debian_version} > 0
-BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils doxygen
+BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils 
 %endif
 
 
