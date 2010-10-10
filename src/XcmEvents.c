@@ -664,8 +664,14 @@ void         XcmStringAdd_           ( char             ** text,
                                        void               (dealloc_func)(void*))
 {
   char * text_copy = NULL;
+  int len = 0;
 
-  text_copy = allocate_func(strlen(*text) + strlen(append) + 1);
+  if(text && *text)
+    len += strlen(*text);
+  if(append)
+    len += strlen(append);
+
+  text_copy = allocate_func(len + 1);
   if(text_copy)
     sprintf( text_copy, "%s%s", *text?*text:"", append?append:"" );
 
