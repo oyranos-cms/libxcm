@@ -134,6 +134,18 @@ XCM_EDID_ERROR_e  XcmEdidPrintString ( void              * edid,
 #define XCM_EDID_KEY_MNFT                 "mnft"
 /** full length manufacturer, string */
 #define XCM_EDID_KEY_MANUFACTURER         "manufacturer"
+/** transfer value for red component, double */
+#define XCM_EDID_KEY_A3RED                "a3red"
+/** transfer value for red component, double */
+#define XCM_EDID_KEY_A2RED                "a2red"
+/** transfer value for green component, double */
+#define XCM_EDID_KEY_A3GREEN              "a3green"
+/** transfer value for green component, double */
+#define XCM_EDID_KEY_A2GREEN              "a2green"
+/** transfer value for blue component, double */
+#define XCM_EDID_KEY_A3BLUE               "a3blue"
+/** transfer value for blue component, double */
+#define XCM_EDID_KEY_A2BLUE               "a2blue"
 
 /* @} XcmEdidParse */
 

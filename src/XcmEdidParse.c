@@ -58,35 +58,36 @@ int          XcmBigEndian()
 }
 
 static
-uint16_t     XcmValueInt16           ( uint16_t            val )
+uint16_t     XcmValueUInt16Swap        ( uint16_t          val )
+{
+  uint8_t * bytes = (uint8_t*)&val, 
+            new_val[2];
+  {
+    new_val[0] = bytes[1];
+    new_val[1] = bytes[0];
+    val = (*((uint16_t*)new_val));
+  }
+  return val;
+}
+
+static
+int16_t      XcmValueInt16Swap         ( int16_t           val )
+{
+  uint8_t * bytes = (uint8_t*)&val, 
+            new_val[2];
+  {
+    new_val[0] = bytes[1];
+    new_val[1] = bytes[0];
+    val = (*((int16_t*)new_val));
+  }
+  return val;
+}
+
+static
+uint16_t     XcmValueUInt16           ( uint16_t            val )
 {
   if(!XcmBigEndian())
-  {
-  # define BYTES 2
-  # define KORB  4
-    unsigned char        *temp  = (unsigned char*) &val;
-    unsigned char  korb[KORB];
-    int i;
-    char ser[4];
-    for (i = 0; i < KORB ; i++ )
-      korb[i] = (int) 0;  /* empty */
-
-    {
-    int klein = 0,
-        gross = BYTES - 1;
-    for (; klein < BYTES ; klein++ ) {
-      korb[klein] = temp[gross--];
-    }
-    }
-
-    {
-    uint16_t *erg = (uint16_t*) &korb[0];
-
-  # undef BYTES
-  # undef KORB
-    return *erg;
-    }
-  } else
+    val = XcmValueUInt16Swap(val);
   return val;
 }
 
@@ -152,12 +153,13 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   char * t = 0;
   int len, i, j;
   char mnf[4];
-  char ser[4];
   uint16_t mnft_id = 0, model_id = 0, week = 0, year = 0;
   char * serial = 0, * manufacturer = 0, * model = 0, * vendor = 0,
        * mnft = 0;
   double c[9] = {0,0,0,0,0,0,0,0,0};
+  double a[6] = {0,0,0,0,0,0};
   int pos = 0;
+  int has_cmd = 0;
   XcmEdid_s * edi = edid;
 
 
@@ -186,14 +188,10 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
           (char)(edi->mnft_id[1] & 31) + 'A' - 1 );
 
   /* MSB */
-  mnft_id = XcmValueInt16( *((uint16_t*)&edi->mnft_id[0]) );
+  mnft_id = XcmValueUInt16( *((uint16_t*)&edi->mnft_id[0]) );
   /* LSB */
   if(XcmBigEndian())
-  {
-    ser[0] = edi->model_id[1];
-    ser[1] = edi->model_id[0];
-    model_id = (*((uint16_t*)ser));
-  }
+    model_id = XcmValueUInt16Swap(*((uint16_t*)edi->model_id));
   else
     model_id = (*((uint16_t*)edi->model_id));
 
@@ -218,7 +216,18 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
 
     if(block[0] == 0 && block[1] == 0 && block[2] == 0)
     {
-      if( block[3] == 255 ) { /* serial */
+             if( block[3] == 249 ) { /* CMD */
+        if(block[5] == 3)
+        {
+          uint16_t v;
+          has_cmd = 1;
+          for(j = 0; j < 6; ++j)
+          {
+            v = XcmValueInt16Swap(*((int16_t*)&block[6+2*j]));
+            a[j] = v / 100.0;
+          }
+        }
+      } else if( block[3] == 255 ) { /* serial */
         target = &serial;
       } else if( block[3] == 254 ) { /* vendor */
         target = &vendor;
@@ -273,6 +282,16 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_BLUEy, c[5] );
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_WHITEy, c[6] );
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_WHITEx, c[7] );
+
+  if( has_cmd == 1 )
+  {
+    XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_A3RED, a[0] );
+    XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_A2RED, a[1] );
+    XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_A3GREEN, a[2] );
+    XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_A2GREEN, a[3] );
+    XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_A3BLUE, a[4] );
+    XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_A2BLUE, a[5] );
+  }
 
   /* Gamma */
   if (edi->gamma_factor == 0xFF)
