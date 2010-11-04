@@ -47,7 +47,7 @@ static int
 decode_color_characteristics (const unsigned char *edid, double * c);
 
 static
-int          edidBigEndian()
+int          XcmBigEndian()
 {
   int big = 0;
   char testc[2] = {0,0};
@@ -56,6 +56,40 @@ int          edidBigEndian()
   big = testc[1];
   return big;
 }
+
+static
+uint16_t     XcmValueInt16           ( uint16_t            val )
+{
+  if(!XcmBigEndian())
+  {
+  # define BYTES 2
+  # define KORB  4
+    unsigned char        *temp  = (unsigned char*) &val;
+    unsigned char  korb[KORB];
+    int i;
+    char ser[4];
+    for (i = 0; i < KORB ; i++ )
+      korb[i] = (int) 0;  /* empty */
+
+    {
+    int klein = 0,
+        gross = BYTES - 1;
+    for (; klein < BYTES ; klein++ ) {
+      korb[klein] = temp[gross--];
+    }
+    }
+
+    {
+    uint16_t *erg = (uint16_t*) &korb[0];
+
+  # undef BYTES
+  # undef KORB
+    return *erg;
+    }
+  } else
+  return val;
+}
+
 
 static
 void         XcmEdidSetInt           ( XcmEdidKeyValue_s * entry,
@@ -116,7 +150,7 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
 {
   XCM_EDID_ERROR_e error = XCM_EDID_OK;
   char * t = 0;
-  int len, i;
+  int len, i, j;
   char mnf[4];
   char ser[4];
   uint16_t mnft_id = 0, model_id = 0, week = 0, year = 0;
@@ -152,16 +186,9 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
           (char)(edi->mnft_id[1] & 31) + 'A' - 1 );
 
   /* MSB */
-  if(!edidBigEndian())
-  {
-    ser[0] = edi->mnft_id[1];
-    ser[1] = edi->mnft_id[0];
-    mnft_id = (*((uint16_t*)ser));
-  }
-  else
-    mnft_id = (*((uint16_t*)edi->mnft_id));
+  mnft_id = XcmValueInt16( *((uint16_t*)&edi->mnft_id[0]) );
   /* LSB */
-  if(edidBigEndian())
+  if(XcmBigEndian())
   {
     ser[0] = edi->model_id[1];
     ser[1] = edi->model_id[0];
