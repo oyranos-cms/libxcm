@@ -31,8 +31,9 @@ CHEADERS = \
 	include/$(TARGET_BASE)EdidParse.h \
 	include/$(TARGET_BASE)Events.h
 CFILES = \
+	src/$(TARGET_BASE)EdidParse.c
+X11_CFILES = \
 	src/$(TARGET_BASE).c \
-	src/$(TARGET_BASE)EdidParse.c \
 	src/$(TARGET_BASE)Events.c
 
 TEST_CPP = \
@@ -61,20 +62,26 @@ MAN3 =  $(MAN3_HAND) $(MAN3_GENERATED)
 TOP_SOURCES =
 SOURCES =  \
 	$(TOP_SOURCES) \
-	$(CFILES)
+	$(CFILES) \
+	$(X11_CFILES)
 
 # we need these files to generate explicite targets for out of tree builds
 COBJECTS = \
 	$(CFILES:.c=.o)
 CXXOBJECTS =	$(CXXFILES)
+X11_COBJECTS = $(X11_CFILES:.c=.o)
 
-OBJECTS = $(CPPFILES:.cpp=.o) $(CXXFILES:.cxx=.o) $(CFILES:.c=.o)
+#ifdef X11
+X11_OBJECTS = $(X11_COBJECTS)
+#endif
+OBJECTS = $(CPPFILES:.cpp=.o) $(CXXFILES:.cxx=.o) $(CFILES:.c=.o) $(X11_OBJECTS)
 
 CLEAN_OBJECTS = \
 	$(OBJECTS)
 
 SUB_OBJECTS = \
-	$(CFILES:.c=.o)
+	$(CFILES:.c=.o) \
+	$(X11_OBJECTS)
 
 INCL_DEP = $(SOURCES)
 
@@ -375,7 +382,7 @@ copy_files:
 	  $(COPY) $(CHEADERS) $(DESTDIR)/include
 	mkdir $(DESTDIR)/src
 	cd $(SRCDIR) && \
-	  $(COPY) $(CFILES) $(DESTDIR)/src
+	  $(COPY) $(CFILES) $(X11_CFILES) $(DESTDIR)/src
 	mkdir $(DESTDIR)/tests
 	cd $(SRCDIR) && \
 	  $(COPY) $(TEST_FILES) $(DESTDIR)/tests
