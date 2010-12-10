@@ -216,7 +216,9 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
 
     if(block[0] == 0 && block[1] == 0 && block[2] == 0)
     {
-             if( block[3] == 249 ) { /* CMD */
+      uint8_t type = block[3];
+
+      if(        type == 249 ) { /* CMD */
         if(block[5] == 3)
         {
           uint16_t v;
@@ -227,12 +229,12 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
             a[j] = v / 100.0;
           }
         }
-      } else if( block[3] == 255 ) { /* serial */
+      } else if( type == 255 ) { /* serial */
         target = &serial;
-      } else if( block[3] == 254 ) { /* vendor */
+      } else if( type == 254 ) { /* vendor */
         target = &vendor;
-      } else if( block[3] == 253 ) { /* frequenz ranges */
-      } else if( block[3] == 252 ) { /* model */
+      } else if( type == 253 ) { /* frequenz ranges */
+      } else if( type == 252 ) { /* model */
         target = &model;
       }
       if(target)
@@ -252,7 +254,7 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
           /* workaround for APP */
           if(strcmp(mnf,"APP") == 0)
           {
-            if(block[3] == 254)
+            if(type == 254)
             {
               if(!serial)
                 target = &serial;

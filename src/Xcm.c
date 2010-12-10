@@ -35,7 +35,6 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 {
 	/* To delete a profile, send the header with a zero-length. */
-	uint32_t length = htonl(profile->length);
 	profile->length = 0;
 
 	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
