@@ -1,4 +1,4 @@
-.TH "X Color Management EDID data block parsing API's" 3 "7 Oct 2010" "Version 0.3.0" "Xcm" \" -*- nroff -*-
+.TH "X Color Management EDID data block parsing API's" 3 "10 Dec 2010" "Version 0.3.1" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -60,6 +60,24 @@ X Color Management EDID data block parsing API's \-
 .ti -1c
 .RI "#define \fBXCM_EDID_KEY_MANUFACTURER\fP   'manufacturer'"
 .br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_A3RED\fP   'a3red'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_A2RED\fP   'a2red'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_A3GREEN\fP   'a3green'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_A2GREEN\fP   'a2green'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_A3BLUE\fP   'a3blue'"
+.br
+.ti -1c
+.RI "#define \fBXCM_EDID_KEY_A2BLUE\fP   'a2blue'"
+.br
 .in -1c
 .SS "Functions"
 
@@ -88,6 +106,24 @@ The purpouse of this API is to obtain basic and displayable device identificatio
 The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
 .SH "Define Documentation"
 .PP 
+.SS "#define XCM_EDID_KEY_A2BLUE   'a2blue'"
+.PP
+transfer value for blue component, double 
+.SS "#define XCM_EDID_KEY_A2GREEN   'a2green'"
+.PP
+transfer value for green component, double 
+.SS "#define XCM_EDID_KEY_A2RED   'a2red'"
+.PP
+transfer value for red component, double 
+.SS "#define XCM_EDID_KEY_A3BLUE   'a3blue'"
+.PP
+transfer value for blue component, double 
+.SS "#define XCM_EDID_KEY_A3GREEN   'a3green'"
+.PP
+transfer value for green component, double 
+.SS "#define XCM_EDID_KEY_A3RED   'a3red'"
+.PP
+transfer value for red component, double 
 .SS "#define XCM_EDID_KEY_BLUEx   'bluex'"
 .PP
 colorimetric primary blue CIE*xyY x component, double 
