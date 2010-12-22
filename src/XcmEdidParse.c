@@ -304,21 +304,47 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_GAMMA, c[8] );
 
   {
-    t = (char*)malloc( 24 );
-    if(!strcmp(mnf,"APP"))
+    t = (char*)malloc( 80 );
+    if(!strcmp(mnf,"ACR"))
+      sprintf(t, "Acer");
+    else if(!strcmp(mnf,"APP"))
       sprintf(t, "Apple");
-    else if(!strcmp(mnf,"PHL"))
-      sprintf(t, "Philips");
-    else if(!strcmp(mnf,"HWP"))
-      sprintf(t, "HP");
-    else if(!strcmp(mnf,"NEC"))
-      sprintf(t, "NEC");
+    else if(!strcmp(mnf,"BDS"))
+      sprintf(t, "Barco");
+    else if(!strcmp(mnf,"CPQ"))
+      sprintf(t, "COMPAQ");
+    else if(!strcmp(mnf,"DEC"))
+      sprintf(t, "Digital Equipment Corporation");
+    else if(!strcmp(mnf,"DEL"))
+      sprintf(t, "Dell Computer");
+    else if(!strcmp(mnf,"DWE"))
+      sprintf(t, "Daewoo");
     else if(!strcmp(mnf,"EIZ"))
       sprintf(t, "EIZO");
+    else if(!strcmp(mnf,"HSD"))
+      sprintf(t, "HannStar");
+    else if(!strcmp(mnf,"HWP"))
+      sprintf(t, "Hewlett Packard");
+    else if(!strcmp(mnf,"NEC"))
+      sprintf(t, "NEC");
+    else if(!strcmp(mnf,"LPL"))
+      sprintf(t, "LG Philips");
     else if(!strcmp(mnf,"MEI"))
       sprintf(t, "Panasonic");
-    else if(!strcmp(mnf,"MIR"))
+    else if(!strcmp(mnf,"MEL"))
+      sprintf(t, "Mitsubishi");
+    else if(!strcmp(mnf,"MID"))
       sprintf(t, "miro");
+    else if(!strcmp(mnf,"NOK"))
+      sprintf(t, "Nokia");
+    else if(!strcmp(mnf,"NVD"))
+      sprintf(t, "Nvidia");
+    else if(!strcmp(mnf,"PHL"))
+      sprintf(t, "Philips");
+    else if(!strcmp(mnf,"QUA"))
+      sprintf(t, "Quatographic");
+    else if(!strcmp(mnf,"SAM"))
+      sprintf(t, "Samsung");
     else if(!strcmp(mnf,"SNI"))
       sprintf(t, "Siemens Nixdorf");
     else if(!strcmp(mnf,"SNY"))
