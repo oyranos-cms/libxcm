@@ -1,0 +1,187 @@
+.TH "X Color Management DDC/CI communication API's" 3 "29 Dec 2010" "Version 0.4.0" "Xcm" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+X Color Management DDC/CI communication API's \- 
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBXCM_DDC_ERROR_e\fP { \fBXCM_DDC_OK\fP, \fBXCM_DDC_NO_FILE\fP, \fBXCM_DDC_PREPARE_FAIL\fP, \fBXCM_DDC_EDID_READ_FAIL\fP, \fBXCM_DDC_WRONG_EDID\fP }"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBXCM_DDC_ERROR_e\fP \fBXcmDDClist\fP (const char **list, int *count)"
+.br
+.RI "\fIobtain all monitors i2c device names \fP"
+.ti -1c
+.RI "\fBXCM_DDC_ERROR_e\fP \fBXcmDDCgetEDID\fP (const char *device_name, char **data, size_t *size)"
+.br
+.RI "\fIobtain all monitors i2c device names \fP"
+.ti -1c
+.RI "const char * \fBXcmDDCErrorToString\fP (\fBXCM_DDC_ERROR_e\fP error)"
+.br
+.RI "\fIconvert enum into a meaningful text string \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+The purpose of the API is to establish client side communication with a monitor device. This can be used to update EEDID data and get MCCS properties. The former is supported by this library.
+.PP
+\fBXcmDDClist()\fP returns a list of monitor i2c device names. \fBXcmDDCgetEDID()\fP can be used to fetch EEDID from a device name.
+.PP
+XcmDDC.h
+.PP
+Xcm Xorg Colour Management
+.PP
+DDC communication with monitor devices
+.PP
+\fBCopyright:\fP.RS 4
+2010 (C) Kai-Uwe Behrmann
+.RE
+.PP
+\fBAuthor:\fP
+.RS 4
+Kai-Uwe Behrmann <ku.b@gmx.de> 
+.RE
+.PP
+\fBLicense:\fP.RS 4
+MIT <http://www.opensource.org/licenses/mit-license.php> 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/12/28 
+.RE
+.PP
+
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBXCM_DDC_ERROR_e\fP"
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIXCM_DDC_OK \fP\fP
+success 
+.TP
+\fB\fIXCM_DDC_NO_FILE \fP\fP
+fopen failed, permissions? 
+.TP
+\fB\fIXCM_DDC_PREPARE_FAIL \fP\fP
+setting EEDID adress failed 
+.TP
+\fB\fIXCM_DDC_EDID_READ_FAIL \fP\fP
+could not obtain EEDID 
+.TP
+\fB\fIXCM_DDC_WRONG_EDID \fP\fP
+wrong EDID header 
+.SH "Function Documentation"
+.PP 
+.SS "const char * XcmDDCErrorToString (\fBXCM_DDC_ERROR_e\fP error)"
+.PP
+convert enum into a meaningful text string 
+.PP
+Function XcmDDCErrorToString 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIerror\fP the error 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+library owned error text string
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.4.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/12/28 (libXcm: 0.4.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/12/28 
+.RE
+.PP
+
+.SS "\fBXCM_DDC_ERROR_e\fP XcmDDCgetEDID (const char * device_name, char ** data, size_t * size)"
+.PP
+obtain all monitors i2c device names 
+.PP
+Function XcmDDCgetEDID 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdevice_name\fP system specific device name 
+.br
+\fIdata\fP empty pointer to EDID data, will be mallocd for the user 
+.br
+\fIsize\fP size of memory in data 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error code
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.4.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/12/28 (libXcm: 0.4,0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/12/28 
+.RE
+.PP
+
+.SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (const char ** list, int * count)"
+.PP
+obtain all monitors i2c device names 
+.PP
+Function XcmDDClist 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlist\fP empty pointer to a list of device names 
+.br
+\fIcount\fP pass in a pointer to a int. gives the number of elements in list 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error code
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.4.0 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2010/12/28 (libXcm: 0.4.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2010/12/28 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Xcm from the source code.
