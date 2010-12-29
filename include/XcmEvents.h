@@ -2,10 +2,11 @@
  *
  *  A small X11 colour management event observer.
  *
+ *  @author   Kai-Uwe Behrmann <ku.b@gmx.de>
  *  @par License:
  *             MIT <http://www.opensource.org/licenses/mit-license.php>
  *  @par Copyright:
-               2009-2010 - Kai-Uwe Behrmann <ku.b@gmx.de>
+ *             2009-2010 - Kai-Uwe Behrmann <ku.b@gmx.de>
  *
  */
 
