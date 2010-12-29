@@ -14,7 +14,7 @@ X Color Management DDC/CI communication API's \-
 
 .in +1c
 .ti -1c
-.RI "\fBXCM_DDC_ERROR_e\fP \fBXcmDDClist\fP (const char **list, int *count)"
+.RI "\fBXCM_DDC_ERROR_e\fP \fBXcmDDClist\fP (char ***list, int *count)"
 .br
 .RI "\fIobtain all monitors i2c device names \fP"
 .ti -1c
@@ -148,7 +148,7 @@ libXcm: 0.4.0
 .RE
 .PP
 
-.SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (const char ** list, int * count)"
+.SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (char *** list, int * count)"
 .PP
 obtain all monitors i2c device names 
 .PP
