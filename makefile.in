@@ -28,9 +28,11 @@ LDLIBS = $(LDFLAGS) -L$(libdir) -L. \
 
 CHEADERS = \
 	include/$(TARGET_BASE).h \
+	include/$(TARGET_BASE)DDC.h \
 	include/$(TARGET_BASE)EdidParse.h \
 	include/$(TARGET_BASE)Events.h
 CFILES = \
+	src/$(TARGET_BASE)DDC.c \
 	src/$(TARGET_BASE)EdidParse.c
 X11_CFILES = \
 	src/$(TARGET_BASE).c \
