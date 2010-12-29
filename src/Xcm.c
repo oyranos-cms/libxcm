@@ -22,10 +22,11 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 {
 	/* XcolorProfile::length is in network byte-order, swap it now */
 	uint32_t length = htonl(profile->length);
+        int i;
 
 	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
 
-	for (int i = 0; i < ScreenCount(dpy); ++i) {
+	for (i = 0; i < ScreenCount(dpy); ++i) {
 		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile) + length);
 	}
 
@@ -34,12 +35,13 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 
 int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 {
+	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
+        int i;
+
 	/* To delete a profile, send the header with a zero-length. */
 	profile->length = 0;
 
-	Atom netColorProfiles = XInternAtom(dpy, "_NET_COLOR_PROFILES", False);
-
-	for (int i = 0; i < ScreenCount(dpy); ++i) {
+	for (i = 0; i < ScreenCount(dpy); ++i) {
 		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile));
 	}
 
@@ -51,6 +53,7 @@ int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion *region, unsigned long nRegions)
 {
 	Atom netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
+	XcolorRegion *ptr;
 
 	unsigned long nRegs;
 	XcolorRegion *reg = XcolorRegionFetch(dpy, win, &nRegs);
@@ -62,7 +65,7 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 		return -1;
 	}
 
-	XcolorRegion *ptr = malloc((nRegs + nRegions) * sizeof(XcolorRegion));
+	ptr = malloc((nRegs + nRegions) * sizeof(XcolorRegion));
 	if (ptr == NULL) {
 		XFree(reg);
 		return -1;
@@ -85,7 +88,6 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 
 XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegions)
 {
-	*nRegions = 0;
 
 	Atom actual, netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
 
@@ -93,6 +95,8 @@ XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegion
 	unsigned char *data;
        
 	int format, result = XGetWindowProperty(dpy, win, netColorRegions, 0, ~0, False, XA_CARDINAL, &actual, &format, &nBytes, &left, &data);
+
+	*nRegions = 0;
 	if (result != Success)
 		return NULL;
 
