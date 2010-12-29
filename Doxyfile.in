@@ -75,10 +75,12 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = ./ src/ include/
 FILE_PATTERNS          = Xcm.c \
+                         XcmDDC.c \
                          XcmEvents.c \
                          XcmEdidParse.c \
                          doxymentation \
                          Xcm.h \
+                         XcmDDC.h \
                          XcmEvents.h \
                          XcmEdidParse.h
 RECURSIVE              = NO
