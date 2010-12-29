@@ -134,21 +134,23 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 
 int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned long count)
 {
+	XWindowAttributes xwa;
+	Status status;
+
 	/* Construct the XEvent. */
 	XClientMessageEvent event;
-	
+
 	event.type = ClientMessage;
 	event.window = win;
 	event.message_type = XInternAtom(dpy, "_NET_COLOR_MANAGEMENT", False);
 	event.format = 32;
-	
+
 	event.data.l[0] = start;
 	event.data.l[1] = count;
 
 	/* The ClientMessage has to be sent to the root window. Find the root window
 	 * of the screen containing 'win'. */
-	XWindowAttributes xwa;
-	Status status = XGetWindowAttributes(dpy, RootWindow(dpy, 0), &xwa);
+        status = XGetWindowAttributes(dpy, RootWindow(dpy, 0), &xwa);
 	if (status == 0)
 		return -1;
 

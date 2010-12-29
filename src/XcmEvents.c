@@ -453,7 +453,7 @@ XcmeContext_s * XcmeContext_New      ( )
   c->Windows = 0;
   c->w = 0;
   c->old_pid = 0;
-  //c->aProfile, c->aTarget, c->aCM, c->aRegion, c->aDesktop;
+  /*c->aProfile, c->aTarget, c->aCM, c->aRegion, c->aDesktop;*/
 
   return c;
 }
