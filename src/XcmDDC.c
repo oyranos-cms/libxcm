@@ -27,8 +27,6 @@
 
 #include <sys/ioctl.h>
 #include <linux/types.h>
-//#include <linux/i2c.h>
-//#include <linux/i2o-dev.h>
 
 #ifndef USE_GETTEXT
 #define _(text) text
@@ -73,7 +71,7 @@
  *  @since   2010/12/28 (libXcm: 0.4.0)
  *  @date    2010/12/28
  */
-XCM_DDC_ERROR_e   XcmDDClist         ( const char       ** list,
+XCM_DDC_ERROR_e   XcmDDClist         ( char            *** list,
                                        int               * count )
 {
   XCM_DDC_ERROR_e error = XCM_DDC_OK;
@@ -83,11 +81,10 @@ XCM_DDC_ERROR_e   XcmDDClist         ( const char       ** list,
   char * data = 0;
   size_t size;
   char * fn = calloc(sizeof(char),1024);
-  int dump = -1;
-  int verbose = 0;
   int n = 0;
 
-  int pos = 0;
+  char ** devices = calloc(sizeof(char*), 128);
+
 
   do
   {
@@ -95,27 +92,29 @@ XCM_DDC_ERROR_e   XcmDDClist         ( const char       ** list,
     if(entry && strstr( entry->d_name, "i2c-" ))
     {
       sprintf( fn, I2C_DIR "%s", entry->d_name );
+      size = 0;
       error = XcmDDCgetEDID( fn, &data, &size );
 
-      if(!error && size == 128)
+      if(!error && (size % 128) == 0)
       {
-        if(verbose && dump == -1)
-          fprintf( stdout, "%s\n", fn );
-        if(dump == n)
-        {
-          if(verbose)
-            fprintf( stderr, "%s\n", fn );
-          fwrite( data, sizeof(char), 128, stdout );
-          fflush( stdout );
-        }
-        free(data); data = 0;
+        devices[n] = strdup(fn);
         ++n;
       }
+
+      if(data)
+        free(data); data = 0;
     }
   } while(entry);
  
 
-  *count = pos;
+  *count = n;
+
+  if(n > 0)
+  {
+    *list = devices;
+    devices = NULL;
+  } else if(devices)
+    free(devices);
 
   return error;
 }
@@ -171,22 +170,24 @@ XCM_DDC_ERROR_e   XcmDDCgetEDID      ( const char        * device_name,
         usleep(TIMEOUT);
       ret = read( fd, *data, 128 );
     } else
-      error = XCM_DDC_NO_FILE;
+      error = XCM_DDC_PREPARE_FAIL;
 
-    if(ret == 128)
+    if((ret % 128) == 0)
     {
-      unsigned char * edid = (unsigned char*) data;
+      unsigned char * edid = (unsigned char*) *data;
+
       if(
-       edid[0] == 0 &&
-       edid[1] == 255 &&
-       edid[2] == 255 &&
-       edid[3] == 255 &&
-       edid[4] == 255 &&
-       edid[5] == 255 &&
-       edid[6] == 255 &&
-       edid[7] == 0)
-      *size = 128;
-      else
+         edid[0] == 0 &&
+         edid[1] == 255 &&
+         edid[2] == 255 &&
+         edid[3] == 255 &&
+         edid[4] == 255 &&
+         edid[5] == 255 &&
+         edid[6] == 255 &&
+         edid[7] == 0)
+      {
+        *size = 128;
+      } else
         error = XCM_DDC_WRONG_EDID;
     }
 
@@ -198,7 +199,8 @@ XCM_DDC_ERROR_e   XcmDDCgetEDID      ( const char        * device_name,
       if(error != XCM_DDC_OK)
         error = XCM_DDC_PREPARE_FAIL;
     }
-  }
+  } else
+    error = XCM_DDC_NO_FILE;
 
   return error;
 }

@@ -35,7 +35,7 @@ typedef enum {
 } XCM_DDC_ERROR_e;
 
 /* basic access functions */
-XCM_DDC_ERROR_e    XcmDDClist        ( const char       ** devices,
+XCM_DDC_ERROR_e    XcmDDClist        ( char            *** devices,
                                        int               * count );
 XCM_DDC_ERROR_e    XcmDDCgetEDID     ( const char        * device,
                                        char             ** data,
