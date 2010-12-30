@@ -1,3 +1,33 @@
+Version libXcm-0.4.0
+
+Kai-Uwe Behrmann (26):
+	* [conf]: bump version
+	* [core]: fix empty string access in XcmStringAdd_
+	* [core]: add XcmValueInt16()
+	* [core]: add base EDID CMD block
+	* [core]: allow for non X11 builds
+	* [conf]: update month
+	* [core]: fix compile warnings
+	* [docu]: add macros to man page
+	* [core]: add more manufacturers and correct
+	* [conf]: bump version to 0.4.0
+	* [docu]: complete header information
+	* [core]: add i2c EDID fetching
+	* [docu]: build man pages for new API
+	* [build]: cover the DDC files
+	* [docu]: add XcmDDC man page
+	* [core]: fix source file permissions
+	* [core]: fix compile issues for non c99
+	* [core]: fix c99 compile warnings
+	* [core]: fix new DDC API and XcmDDCgetEDID()
+	* [build]: omit c99 gcc flag
+	* [docu]: update XcmDDC API
+	* [exmpl]: remove xcmevents, it is in Xcm package
+	* [exmpl]: move compiz code to examples
+	* [exmpl]: move compiz code to examples
+	* [docu]: update to XcmDDC
+	* [build]: Makefile.all is no more up to date
+
 libXcm-0.3.0
 
 Kai-Uwe Behrmann (17):
