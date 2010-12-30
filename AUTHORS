@@ -1,7 +1,7 @@
 net-color spec (first implementation): 
                 Tomas Carnecky
 
-XcmEdidParse, XcmEvents, maintainance:
+XcmEdidParse, XcmEvents, XcmDDC maintainance:
                 Kai-Uwe Behrmann <www.behrmann.name>
 
 XcmEdidParse (some decoding):
