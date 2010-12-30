@@ -24,12 +24,14 @@
 .ns
 .TP \\$1
 ..
-.TH XCM 3 "Version 0.3" "XFree86"
+.TH XCM 3 "Version 0.4" "XFree86"
 
 .SH NAME
 Xcm \- X11 Colour Management functions
 .SH SYNTAX
 \&#include <X11/Xcm/Xcm.h> /* colour region handling */
+
+\&#include <X11/Xcm/XcmDDC.h> /* CM EDID over i2c fetching */
 
 \&#include <X11/Xcm/XcmEvents.h> /* CM event observation */
 
@@ -47,5 +49,5 @@ will remain upward compatible after a 1.0 release.
 Tomas Carnecky for the net-color part, at time member of the OpenICC Project,
 Kai-Uwe Behrmann, member of the OpenICC and Oyranos Projects.
 .SH "SEE ALSO"
-Xcm(3) XcolorProfile(3) XcolorRegion(3) XcmEdidParse(3) XcmEvents(3)
+Xcm(3) XcolorProfile(3) XcolorRegion(3) XcmDDC(3) XcmEdidParse(3) XcmEvents(3)
 
