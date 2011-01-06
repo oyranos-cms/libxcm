@@ -1,8 +1,10 @@
-.TH "X Color Management EDID data block parsing API's" 3 "29 Dec 2010" "Version 0.4.0" "Xcm" \" -*- nroff -*-
+.TH "X Color Management EDID data block parsing API's" 3 "6 Jan 2011" "Version 0.4.1" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-X Color Management EDID data block parsing API's \- 
+X Color Management EDID data block parsing API's \- EDID data block parsing.  
+
+.PP
 .SS "Defines"
 
 .in +1c
@@ -101,9 +103,21 @@ X Color Management EDID data block parsing API's \-
 .in -1c
 .SH "Detailed Description"
 .PP 
+EDID data block parsing. 
+
 The purpouse of this API is to obtain basic and displayable device identification strings and colorimetric informations contained in the EDID data block sent by monitors.
 .PP
-The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory. 
+The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory.
+.PP
+XcmEdidParse.h
+.PP
+Xcm Xorg Colour Management
+.PP
+\fBCopyright:\fP.RS 4
+2005-2010 (C) Kai-Uwe Behrmann 
+.RE
+.PP
+
 .SH "Define Documentation"
 .PP 
 .SS "#define XCM_EDID_KEY_A2BLUE   'a2blue'"
@@ -180,7 +194,7 @@ colorimetric primary white CIE*xyY x component, double
 manufactur year, integer 
 .SH "Function Documentation"
 .PP 
-.SS "const char* XcmEdidErrorToString (XCM_EDID_ERROR_e error)"
+.SS "const char * XcmEdidErrorToString (XCM_EDID_ERROR_e error)"
 .PP
 convert enum into a meaningful text string 
 .PP
@@ -288,7 +302,7 @@ Function XcmEdidPrintString
 .PP
 \fBParameters:\fP
 .RS 4
-\fIerror\fP the EDID data block 
+\fIedid\fP the EDID data block 
 .br
 \fItext\fP the resulting text string 
 .br

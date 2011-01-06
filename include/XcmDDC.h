@@ -26,6 +26,14 @@ extern "C" {
  *  @{
  */
 
+
+/**
+ *  @brief   errors specific to XcmDDC
+ *
+ *  @version libXcm: 0.4.0
+ *  @since   2010/12/28 (libXcm: 0.4.0)
+ *  @date    2010/12/28
+ */
 typedef enum {
   XCM_DDC_OK,                          /**< @brief success */
   XCM_DDC_NO_FILE,                     /**< @brief fopen failed, permissions? */

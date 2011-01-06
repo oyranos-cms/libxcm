@@ -1,4 +1,4 @@
-/** @file Xcm_edid_parse.h
+/** XcmEdidParse.h
  *
  *  Xcm Xorg Colour Management
  *
@@ -21,7 +21,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/** @brief \internal DDC struct */
+/** \addtogroup XcmEdidParse
+ *
+ *  @{
+ */
+
+/* @internal
+ * DDC struct */
 typedef struct {
   unsigned char sig[8];
   unsigned char mnft_id[2];            /* [8] manufaturer ID */
@@ -93,11 +99,6 @@ const char *      XcmEdidErrorToString(XCM_EDID_ERROR_e    error );
 XCM_EDID_ERROR_e  XcmEdidPrintString ( void              * edid,
                                        char             ** text,
                                        void             *(*alloc)(size_t sz) );
-/** \addtogroup XcmEdidParse
- *
- *  @{
- */
-
 /** full length vendor, string */
 #define XCM_EDID_KEY_VENDOR               "vendor"
 /** full length device model, string */

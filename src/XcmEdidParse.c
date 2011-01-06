@@ -424,7 +424,7 @@ const char *   XcmEdidErrorToString    ( XCM_EDID_ERROR_e       error )
 /** Function XcmEdidPrintString
  *  @brief   convert a EDID block into text
  *
- *  @param[in]     error               the EDID data block
+ *  @param[in]     edid                the EDID data block
  *  @param[out]    text                the resulting text string
  *  @param[in]     alloc               a user provided function to allocate text
  *  @return                            error code
