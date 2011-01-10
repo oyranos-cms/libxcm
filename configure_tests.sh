@@ -172,6 +172,17 @@ if [ -n "$ELEKTRA" ] && [ "$ELEKTRA" -gt "0" ]; then
         echo_="  need a version not greater than $elektra_max, download: elektra.sf.net"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
       fi
     else
+      ELEKTRA_NOT_FOUND=1
+    fi
+  else
+    ELEKTRA_NOT_FOUND=1
+  fi
+  if [ -z "$ELEKTRA_FOUND" ]; then
+    echo_="$elektra_mod"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    if [ $ELEKTRA -eq 1 ]; then
+      ERROR=1
+    fi
+    if [ -n "$ELEKTRA_NOT_FOUND" ]; then
       if [ $ELEKTRA -eq 1 ]; then
         echo_="!!! ERROR Elektra: !!!"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
         ERROR=1
@@ -182,12 +193,6 @@ if [ -n "$ELEKTRA" ] && [ "$ELEKTRA" -gt "0" ]; then
       echo_="  no or too old elektra found,"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
       echo_="  need at least version $elektra_min, download: elektra.sf.net"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
     fi
-  fi
-  if [ -z "$ELEKTRA_FOUND" ]; then
-      echo_="$elektra_mod"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-      if [ $ELEKTRA -eq 1 ]; then
-        ERROR=1
-      fi
   fi
 fi
 
@@ -318,7 +323,7 @@ if [ -n "$LIBXML2" ] && [ $LIBXML2 -gt 0 ]; then
       rm tests/libtest$EXEC_END
     fi
   fi
-  if [ -n $HAVE_LIB ]; then
+  if [ $HAVE_LIB -ne 0 ]; then
     if [ -n $version ]; then
       echo_="libxml	$version		detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
     else
@@ -368,7 +373,57 @@ if [ -n "$LCMS" ] && [ $LCMS -gt 0 ]; then
       rm tests/libtest$EXEC_END
     fi
   fi
-  if [ -n $HAVE_LIB ]; then
+  if [ $HAVE_LIB -ne 0 ]; then
+    if [ -n $version ]; then
+      echo_="$name	$version		detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    else
+      echo_="$name                    detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    fi
+  else
+    if [ $TESTER -eq 1 ]; then
+      echo_="!!! ERROR: no or too old $name found, !!!"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      ERROR=1
+    else
+      echo_="    Warning: no or too old $name found,"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      WARNING=1
+    fi
+    echo_="  need at least version $minversion, download: $url"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+  fi
+fi
+
+if [ -n "$LCMS2" ] && [ $LCMS2 -gt 0 ]; then
+  name="lcms2"
+  libname=$name
+  minversion=2.0
+  url="http://www.littlecms.com"
+  TESTER=$LCMS2
+  ID=LCMS2
+
+  ID_H="$ID"_H
+  ID_LIBS="$ID"_LIBS
+  HAVE_LIB=0
+  version=`pkg-config --modversion $name`
+  pkg-config  --atleast-version=$minversion $name
+  if [ $? = 0 ]; then
+    HAVE_LIB=1
+    echo "#define HAVE_$ID 1" >> $CONF_H
+    echo "$ID = 1" >> $CONF
+    echo "$ID_H = `pkg-config --cflags $name | sed \"$STRIPOPT\"`" >> $CONF
+    echo "$ID_LIBS = `pkg-config --libs $name | sed \"$STRIPOPT\"`" >> $CONF
+  else
+    l=$libname
+    rm -f tests/libtest$EXEC_END
+    $CXX $CFLAGS -I$includedir $ROOT_DIR/tests/lib_test.cxx $LDFLAGS -L/usr/X11R6/lib$BARCH -L/usr/lib$BARCH -L$libdir -l$l -o tests/libtest 2>/dev/null
+    if [ -f tests/libtest ]; then
+      HAVE_LIB=1
+      echo "#define HAVE_$ID 1" >> $CONF_H
+      echo "$ID = 1" >> $CONF
+      echo "$ID_H =" >> $CONF
+      echo "$ID_LIBS = -l$l" >> $CONF
+      rm tests/libtest$EXEC_END
+    fi
+  fi
+  if [ $HAVE_LIB -ne 0 ]; then
     if [ -n $version ]; then
       echo_="$name	$version		detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
     else
@@ -387,12 +442,59 @@ if [ -n "$LCMS" ] && [ $LCMS -gt 0 ]; then
 fi
 
 if [ -n "$LRAW" ] && [ $LRAW -gt 0 ]; then
-  name="raw"
-  libname=$name
+  name="libraw"
+  libname=raw
   minversion=0.7
   url="http://www.libraw.org"
   TESTER=$LRAW
   ID=LRAW
+
+  ID_H="$ID"_H
+  ID_LIBS="$ID"_LIBS
+  HAVE_LIB=0
+  version=`pkg-config --modversion $name`
+  pkg-config  --atleast-version=$minversion $name
+  if [ $? = 0 ]; then
+    echo "#define HAVE_$ID 1" >> $CONF_H
+    l=$libname
+    rm -f tests/libtest$EXEC_END
+    $CXX $CXXFLAGS -I$includedir $ROOT_DIR/tests/libraw_test.cxx $LDFLAGS -L$libdir -shared `pkg-config --cflags --libs $name` -o tests/libtest 2>>$CONF_LOG
+    if [ -f tests/libtest$EXEC_END ]; then
+      HAVE_LIB=1
+      echo "#define HAVE_$ID 1" >> $CONF_H
+      echo "$ID = 1" >> $CONF
+      echo "$ID_H = `pkg-config --cflags $name | sed \"$STRIPOPT\"`" >> $CONF
+      echo "$ID_LIBS = `pkg-config --libs $name | sed \"$STRIPOPT\"`" >> $CONF
+      rm tests/libtest$EXEC_END
+    fi
+  fi
+  if [ $HAVE_LIB -eq 1 ]; then
+    if [ "$version" != "" ]; then
+      echo_="$name $version           detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    else
+      echo_="$name                  detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    fi
+  else
+    echo_="command was: $CXX $CXXFLAGS -I$includedir $ROOT_DIR/tests/libraw_test.cxx $LDFLAGS -L$libdir -shared -lraw -o tests/libtest"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    $CXX $CXXFLAGS -I$includedir $ROOT_DIR/tests/libraw_test.cxx $LDFLAGS -L$libdir -shared `pkg-config --cflags --libs $name` -o tests/libtest
+    if [ $TESTER -eq 1 ]; then
+      echo_="!!! ERROR: no or too old $name found, !!!"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      ERROR=1
+    else
+      echo_="    Warning: no or too old $name found,"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      WARNING=1
+    fi
+    echo_="  need at least version $minversion, download: $url"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+  fi
+fi
+
+if [ -n "$EXIV2" ] && [ $EXIV2 -gt 0 ]; then
+  name="exiv2"
+  libname=$name
+  minversion=0.10
+  url="http://www.exiv2.org/"
+  TESTER=$EXIV2
+  ID=EXIV2
 
   ID_H="$ID"_H
   ID_LIBS="$ID"_LIBS
@@ -420,7 +522,7 @@ if [ -n "$LRAW" ] && [ $LRAW -gt 0 ]; then
   fi
   if [ $HAVE_LIB -eq 1 ]; then
     if [ "$version" != "" ]; then
-      echo_="$name $version           detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      echo_="$name $version            detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
     else
       echo_="lib$name                  detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
     fi
@@ -434,6 +536,44 @@ if [ -n "$LRAW" ] && [ $LRAW -gt 0 ]; then
     fi
     echo_="  need at least version $minversion, download: $url"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
   fi
+fi
+
+if [ -n "$XCM" ] && [ $XCM -gt 0 ]; then
+    found=""
+    version=""
+    pc_package=xcm
+    name="xcm"
+    libname=$name
+    minversion=0.7
+    ID=XCM
+
+    ID_H="$ID"_H
+    ID_LIBS="$ID"_LIBS
+    if [ -z "$found" ]; then
+      pkg-config  --atleast-version=0.2 $pc_package
+      if [ $? = 0 ]; then
+        found=`pkg-config --cflags $pc_package`
+        version=`pkg-config --modversion $pc_package`
+      fi
+    fi
+    if [ -n "$found" ]; then
+      if [ -n "$version" ]; then
+        echo_="X CM $version              detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      else
+        echo_="X CM                    detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      fi
+      echo "#define HAVE_XCM 1" >> $CONF_H
+      if [ -n "$MAKEFILE_DIR" ]; then
+        for i in $MAKEFILE_DIR; do
+          test -f "$ROOT_DIR/$i/makefile".in && echo "XCM = 1" >> "$i/makefile"
+          test -f "$ROOT_DIR/$i/makefile".in && echo "XCM_H = $found" >> "$i/makefile"
+          test -f "$ROOT_DIR/$i/makefile".in && echo "$ID_LIBS = `pkg-config --libs $name | sed \"$STRIPOPT\"`" >> "$i/makefile"
+        done
+      fi
+    elif [ $OSUNAME = "Linux" ]; then
+      echo_="X CM not found in"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      echo_="  $pc_package.pc"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    fi
 fi
 
 if [ -n "$X11" ] && [ $X11 -gt 0 ]; then
@@ -581,6 +721,57 @@ if [ -n "$X11" ] && [ $X11 -gt 0 ]; then
   fi
 
 
+  if [ -n "$GLU" ] && [ $GLU -gt 0 ]; then
+    name="glu"
+    libname=$name
+    minversion=1.0
+    url="http://www.x.org"
+    TESTER=$GLU
+    ID=GLU
+
+    ID_H="$ID"_H
+    ID_LIBS="$ID"_LIBS
+    HAVE_LIB=0
+    version=`pkg-config --modversion $name`
+    pkg-config  --atleast-version=$minversion $name
+    if [ $? = 0 ]; then
+      HAVE_LIB=1
+      echo "#define HAVE_$ID 1" >> $CONF_H
+      echo "$ID = 1" >> $CONF
+      echo "$ID_H = `pkg-config --cflags $name | sed \"$STRIPOPT\"`" >> $CONF
+      echo "$ID_LIBS = `pkg-config --libs $name | sed \"$STRIPOPT\"`" >> $CONF
+    else
+      l=$libname
+      rm -f tests/libtest$EXEC_END
+      $CXX $CXXFLAGS -I$includedir $ROOT_DIR/tests/lib_test.cxx $LDFLAGS -L/usr/X11R6/lib$BARCH -L/usr/lib$BARCH -L$libdir -l$l -o tests/libtest 2>/dev/null
+      if [ -f tests/libtest ]; then
+        HAVE_LIB=1
+        echo "#define HAVE_$ID 1" >> $CONF_H
+        echo "$ID = 1" >> $CONF
+        echo "$ID_H = -I$includedir" >> $CONF
+        echo "$ID_LIBS =  -L/usr/lib$BARCH -L$libdir -l$l" >> $CONF
+        rm tests/libtest$EXEC_END
+      fi
+    fi
+    if [ $HAVE_LIB -eq 1 ]; then
+      if [ "$version" != "" ]; then
+        echo_="$name	$version		detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      else
+        echo_="lib$name                  detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      fi
+    else
+      if [ $TESTER -eq 1 ]; then
+        echo_="!!! ERROR: no or too old $name found, !!!"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+        ERROR=1
+      else
+        echo_="    Warning: no or too old $name found,"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+        WARNING=1
+      fi
+      echo_="  need at least version $minversion, download: $url"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    fi
+  fi
+
+
   echo "X_CPP = \$(X_CPPFILES)" >> $CONF
   if [ -n "$MAKEFILE_DIR" ]; then
     for i in $MAKEFILE_DIR; do
@@ -646,7 +837,7 @@ if [ -n "$X11" ] && [ $X11 -gt 0 ]; then
   if [ -n "$MAKEFILE_DIR" ]; then
     for i in $MAKEFILE_DIR; do
       test -f "$ROOT_DIR/$i/makefile".in && echo "X11_INCL=\$(XF86VMODE_INC) \$(XINERAMA_INC) \$(XRANDR_INC)" >> "$i/makefile"
-      test -f "$ROOT_DIR/$i/makefile".in && echo "X11_LIBS=\$(X11_LIB_PATH) -lX11 $X_ADD_LIBS" >> "$i/makefile"
+      test -f "$ROOT_DIR/$i/makefile".in && echo "X11_LIBS=\$(X11_LIB_PATH) -lX11 $X_ADD_LIBS \$(XCM_LIBS)" >> "$i/makefile"
     done
   fi
 fi
@@ -699,6 +890,11 @@ if [ -n "$FTGL" ] && [ $FTGL -gt 0 ]; then
     echo "FTGL = 1" >> $CONF
     echo "FTGL_H = `pkg-config --cflags ftgl | sed \"$STRIPOPT\"`" >> $CONF
     echo "FTGL_LIBS = `pkg-config --libs ftgl | sed \"$STRIPOPT\"`" >> $CONF
+    pkg-config  --atleast-version=2.1 ftgl
+    if [ $? = 0 ]; then
+      echo "FTGL_INLCUDE_VER = 20100" >> $CONF
+      echo "#define FTGL_INLCUDE_VER 20100" >> $CONF_H
+    fi
   else
     l=ftgl 
     rm -f tests/libtest$EXEC_END
@@ -748,12 +944,12 @@ if [ -n "$FLTK" ] && [ $FLTK -gt 0 ]; then
     fi
     echo "#define HAVE_FLTK 1" >> $CONF_H
     echo "FLTK = 1" >> $CONF
-    echo "FLTK_H = `$fltkconfig --cxxflags | sed \"$STRIPOPT\"`" >> $CONF
-    echo "FLTK_LIBS = `$fltkconfig --use-images --use-gl $fltkldflags | sed \"$STRIPOPT\"`" >> $CONF
+    echo "FLTK_H = `$fltkconfig --cxxflags $fltkflags | sed \"$STRIPOPT\"`" >> $CONF
+    echo "FLTK_LIBS = `$fltkconfig --use-images --use-gl $fltkldflags $fltkflags | sed \"$STRIPOPT\"`" >> $CONF
     echo "fltkconfig = $fltkconfig" >> $CONF
     echo "FLTK = 1" >> $CONF_I18N
-    echo "FLTK_H = `$fltkconfig --cxxflags | sed \"$STRIPOPT\"`" >> $CONF_I18N
-    echo "FLTK_LIBS = `$fltkconfig --use-images --use-gl $fltkldflags | sed \"$STRIPOPT\"`" >> $CONF_I18N
+    echo "FLTK_H = `$fltkconfig --cxxflags $fltkflags | sed \"$STRIPOPT\"`" >> $CONF_I18N
+    echo "FLTK_LIBS = `$fltkconfig --use-images --use-gl $fltkldflags $fltkflags | sed \"$STRIPOPT\"`" >> $CONF_I18N
     echo "fltkconfig = $fltkconfig" >> $CONF_I18N
 
   else
@@ -768,33 +964,6 @@ if [ -n "$FLTK" ] && [ $FLTK -gt 0 ]; then
   fi
 fi
 
-if [ -n "$FLU" ] && [ $FLU -gt 0 ]; then
-  FLU_=`flu-config --cxxflags 2>>$CONF_LOG`
-  if [ "`$fltkconfig --version`" = "1.1.7" ]; then
-    echo -e "\c"
-    #"
-    echo_="FLTK version 1.1.7 is not supported by FLU"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-    if [ "$FLU" = 1 ]; then
-      ERROR=1
-    fi
-  else
-    if [ -n "$FLU_" ] && [ -n "$FLTK_" ]; then
-      echo_="FLU                     detected"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-      echo "#define HAVE_FLU 1" >> $CONF_H
-      echo "FLU = 1" >> $CONF
-      echo "FLU_H = `flu-config --cxxflags | sed \"$STRIPOPT\"`" >> $CONF
-      echo "FLU_LIBS = `flu-config --ldflags --use-gl | sed \"$STRIPOPT\"`" >> $CONF
-    else
-      if [ "$FLU" -gt 1 ]; then
-        echo_="   no FLU found, will not use it"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-      else
-        echo_="ERROR:   FLU is not found; download:"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-        echo_="         http://www.osc.edu/~jbryan/FLU/http://www.osc.edu/~jbryan/FLU/"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
-        ERROR=1
-      fi
-    fi
-  fi
-fi
 
 if [ -n "$QT" ] && [ $QT -gt 0 ]; then
   pc_package=QtGui
@@ -834,7 +1003,14 @@ if [ -n "$COMPIZ" ] && [ $COMPIZ -gt 0 ]; then
     echo "COMPIZ_H = `pkg-config --cflags $pc_package | sed \"$STRIPOPT\"`" >> $CONF
     echo "COMPIZ_LIBS = `pkg-config --libs $pc_package | sed \"$STRIPOPT\"`" >> $CONF
   else
-    echo_="  no or too old $pc_package found, need $pc_package to build examples"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    echo__="  no or too old $pc_package found, need $pc_package";
+    if [ $COMPIZ -eq 1 ]; then
+      ERROR=1
+      echo_="!!! ERROR !!! $echo__"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+    else
+      echo_="    Warning   $echo__"; echo "$echo_" >> $CONF_LOG; test -n "$ECHO" && $ECHO "$echo_"
+      WARNING=1
+    fi
   fi
 fi
 
@@ -954,6 +1130,7 @@ if [ -n "$DEBUG" ] && [ $DEBUG -gt 0 ]; then
       fi
       if [ "$verbose" -eq "0" ]; then
         test -f "$ROOT_DIR/$i/makefile".in && echo ".SILENT:"  >> "$i/makefile"
+        test -f "$ROOT_DIR/$i/makefile".in && echo ""  >> "$i/makefile"
       fi
     done
   fi
