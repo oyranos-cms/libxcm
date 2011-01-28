@@ -13,6 +13,8 @@
  *  @since    2010/12/28
  */
 
+#if !defined(__APPLE__)
+
 #include "XcmDDC.h"
 
 #include <stdint.h>
@@ -233,3 +235,4 @@ const char *   XcmDDCErrorToString   ( XCM_DDC_ERROR_e     error )
 
 /** } XcmDDC */
 
+#endif /* !__APPLE__ */
