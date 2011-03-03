@@ -220,8 +220,8 @@ char * printfNetColorDesktop ( XcmeContext_s * c, int verbose )
                atom_time_text );
     }
     else
-      sprintf( net_color_desktop_text, "%d",
-               (int)c->old_pid );
+      sprintf( net_color_desktop_text, "%d %s",
+               (int)c->old_pid, atom_capabilities_text );
     if(atom_time_text) free(atom_time_text);
     if(atom_colour_server_name) free(atom_colour_server_name);
     if(atom_capabilities_text) free(atom_capabilities_text);
