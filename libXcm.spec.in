@@ -1,7 +1,7 @@
 Summary:        X Color Management Library
 Name:           libXcm
 License:        MIT
-Group:          System Environment/Libraries
+Group:          System/Libraries
 URL:            http://www.oyranos.org
 Vendor:         Kai-Uwe Behrmann
 #BuildArch: %{_arch}
