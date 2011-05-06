@@ -1,3 +1,24 @@
+Version libXcm-0.4.1
+
+Kai-Uwe Behrmann (14):
+	* [core]: dont call exit() from library code
+	* [build]: rpm group is System/Libraries
+	* [core]: initialy print capabilities
+	* [core]: fix typo
+	* [exmpl]: add net-color spec opt-out example
+	* [build]: compress package with bzip2
+	* [core]: disable ddc on apple
+	* [conf]: sync test script with Oyranos
+	* [docu]: fix some doxygen warnings
+	* [conf]: use -fPIC only on 64bit builds
+	* [docu]: update man page
+	* [conf]: bump version
+	* [build]: remove libxorg-x11-devel from mandriva
+	* [docu]: update ChangeLog
+
+Nicolas Chauvet (1):
+	* [conf]: apply Fedora patch for pkg-config
+
 Version libXcm-0.4.0
 
 Kai-Uwe Behrmann (26):
