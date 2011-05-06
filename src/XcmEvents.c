@@ -495,9 +495,9 @@ XcmeContext_s * XcmeContext_Create   ( const char        * display_name )
  *                                     With a existing X11 display inside c,
  *                                     this option will be ignored.
  *
- *  @version libXcm: 0.3.0
+ *  @version libXcm: 0.4.1
  *  @since   2009/00/00 (libXcm: 0.3.0)
- *  @date    2010/10/01
+ *  @date    2011/05/06
  */
 int      XcmeContext_Setup           ( XcmeContext_s    * c,
                                        const char        * display_name )
@@ -528,7 +528,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
   if(!c->display)
   {
     DERR( "could not open display %s", display_name?display_name:"???" );
-    exit (1);
+    return 1;
   }
 
   c->screen = DefaultScreen( c->display );
