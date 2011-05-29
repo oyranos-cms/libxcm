@@ -17,7 +17,7 @@
 #define XCM_DDC_H
 #include <stddef.h> /* size_t */
 
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,6 +60,6 @@ const char *   XcmDDCErrorToString   ( XCM_DDC_ERROR_e     error );
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* !__APPLE__ */
+#endif /* !__APPLE__ && !__FreeBSD__ */
 
 #endif /* XCM_DDC_H */

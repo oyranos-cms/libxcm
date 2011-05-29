@@ -13,7 +13,7 @@
  *  @since    2010/12/28
  */
 
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__)
 
 #include "XcmDDC.h"
 
@@ -235,4 +235,4 @@ const char *   XcmDDCErrorToString   ( XCM_DDC_ERROR_e     error )
 
 /** } XcmDDC */
 
-#endif /* !__APPLE__ */
+#endif /* !__APPLE__ && !__FreeBSD__ */
