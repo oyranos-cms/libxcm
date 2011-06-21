@@ -99,6 +99,9 @@ const char *      XcmEdidErrorToString(XCM_EDID_ERROR_e    error );
 XCM_EDID_ERROR_e  XcmEdidPrintString ( void              * edid,
                                        char             ** text,
                                        void             *(*alloc)(size_t sz) );
+XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON ( void              * edid,
+                                       char             ** text,
+                                       void             *(*alloc)(size_t sz) );
 /** full length vendor, string */
 #define XCM_EDID_KEY_VENDOR               "vendor"
 /** full length device model, string */

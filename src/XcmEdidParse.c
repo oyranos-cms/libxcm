@@ -3,7 +3,7 @@
  *  libXcm  Xorg Colour Management
  *
  *  @par Copyright:
- *            2005-2010 (C) Kai-Uwe Behrmann
+ *            2005-2011 (C) Kai-Uwe Behrmann
  *
  *  @brief    EDID data block parsing
  *  @internal
@@ -454,6 +454,71 @@ XCM_EDID_ERROR_e  XcmEdidPrintString ( void              * edid,
     if(l[i].type == XCM_EDID_VALUE_DOUBLE)
       sprintf( &txt[strlen(txt)], "%g\n", l[i].value.dbl);
   }
+
+  if(count)
+    *text = txt;
+
+  XcmEdidFree( &l );
+
+  return err;
+}
+
+/** Function XcmEdidPrintOpenIccJSON
+ *  @brief   convert a EDID block into a device configuration
+ *
+ *  @param[in]     edid                the EDID data block
+ *  @param[out]    text                the resulting text string
+ *  @param[in]     alloc               a user provided function to allocate text
+ *  @return                            error code
+ *
+ *  @version libXcm: 0.4.2
+ *  @since   2009/12/12 (libXcm: 0.4.2)
+ *  @date    2011/06/19
+ */
+XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
+                                       void              * edid,
+                                       char             ** text,
+                                       void             *(*alloc)(size_t sz) )
+{
+  XcmEdidKeyValue_s * l = 0;
+  int count = 0, i;
+  XCM_EDID_ERROR_e err = XcmEdidParse( edid, &l, &count );
+  char * txt = calloc( sizeof(char), 4096 );
+
+  sprintf(txt,
+  "{\n"
+  "  \"org\": {\n"
+  "    \"freedesktop\": {\n"
+  "      \"openicc\": {\n"
+  "        \"device\": {\n"
+  "          \"monitor\": {\n"
+  "            \"1\": {\n"
+  "              \"prefix\": \"EDID_\",\n"
+  );
+
+  for(i = 0; i < count; ++i)
+  {
+    sprintf( &txt[strlen(txt)], "              \"EDID_%s\": ", l[i].key );
+    if(l[i].type == XCM_EDID_VALUE_TEXT)
+      sprintf( &txt[strlen(txt)], "\"%s\"", l[i].value.text);
+    if(l[i].type == XCM_EDID_VALUE_INT)
+      sprintf( &txt[strlen(txt)], "%d", l[i].value.integer);
+    if(l[i].type == XCM_EDID_VALUE_DOUBLE)
+      sprintf( &txt[strlen(txt)], "%g", l[i].value.dbl);
+    if(i + 1 < count)
+      sprintf( &txt[strlen(txt)], ",", l[i].value.dbl);
+    sprintf( &txt[strlen(txt)], "\n", l[i].value.dbl);
+  }
+
+  sprintf( &txt[strlen(txt)], 
+  "            }\n"
+  "          }\n"
+  "        }\n"
+  "      }\n"
+  "    }\n"
+  "  }\n"
+  "}\n"
+  );
 
   if(count)
     *text = txt;
