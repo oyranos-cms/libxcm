@@ -3,7 +3,7 @@
  *  Xcm Xorg Colour Management
  *
  *  @par Copyright:
- *            2005-2010 (C) Kai-Uwe Behrmann
+ *            2005-2011 (C) Kai-Uwe Behrmann
  *
  *  @brief    EDID data block parsing
  *  @internal

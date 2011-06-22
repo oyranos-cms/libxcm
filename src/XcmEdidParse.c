@@ -39,6 +39,7 @@
  *  The returned XcmEdidKeyValue_s list elements can be individually read and
  *  worked with. Please look as well on the XcmEdidPrintString() function
  *  and examples/edid-parse/ as a small example on how to use the API.
+ *  The XcmEdidPrintOpenIccJSON() will pull out a JSON data structure.
  *  XcmEdidFree() releases allocated list memory.
  *
  */
@@ -476,7 +477,7 @@ XCM_EDID_ERROR_e  XcmEdidPrintString ( void              * edid,
  *  @return                            error code
  *
  *  @version libXcm: 0.4.2
- *  @since   2009/12/12 (libXcm: 0.4.2)
+ *  @since   2011/06/19 (libXcm: 0.4.2)
  *  @date    2011/06/19
  */
 XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (

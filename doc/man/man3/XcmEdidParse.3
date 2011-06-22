@@ -1,4 +1,4 @@
-.TH "X Color Management EDID data block parsing API's" 3 "16 Jun 2011" "Version 0.4.2" "Xcm" \" -*- nroff -*-
+.TH "X Color Management EDID data block parsing API's" 3 "22 Jun 2011" "Version 0.4.2" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -101,6 +101,10 @@ EDID data block parsing.
 .RI "XCM_EDID_ERROR_e \fBXcmEdidPrintString\fP (void *edid, char **text, void *(*alloc)(size_t sz))"
 .br
 .RI "\fIconvert a EDID block into text \fP"
+.ti -1c
+.RI "XCM_EDID_ERROR_e \fBXcmEdidPrintOpenIccJSON\fP (void *edid, char **text, void *(*alloc)(size_t sz))"
+.br
+.RI "\fIconvert a EDID block into a device configuration \fP"
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -108,14 +112,14 @@ EDID data block parsing.
 
 The purpouse of this API is to obtain basic and displayable device identification strings and colorimetric informations contained in the EDID data block sent by monitors.
 .PP
-The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. \fBXcmEdidFree()\fP releases allocated list memory.
+The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. The \fBXcmEdidPrintOpenIccJSON()\fP will pull out a JSON data structure. \fBXcmEdidFree()\fP releases allocated list memory.
 .PP
 XcmEdidParse.h
 .PP
 Xcm Xorg Colour Management
 .PP
 \fBCopyright:\fP.RS 4
-2005-2010 (C) Kai-Uwe Behrmann 
+2005-2011 (C) Kai-Uwe Behrmann 
 .RE
 .PP
 
@@ -238,6 +242,40 @@ libXcm: 0.3.0
 \fBDate:\fP
 .RS 4
 2010/10/01 
+.RE
+.PP
+
+.SS "XCM_EDID_ERROR_e XcmEdidPrintOpenIccJSON (void * edid, char ** text, void *(*)(size_t sz) alloc)"
+.PP
+convert a EDID block into a device configuration Function XcmEdidPrintOpenIccJSON 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIedid\fP the EDID data block 
+.br
+\fItext\fP the resulting text string 
+.br
+\fIalloc\fP a user provided function to allocate text 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+error code
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.4.2 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2011/06/19 (libXcm: 0.4.2) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2011/06/19 
 .RE
 .PP
 
