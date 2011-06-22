@@ -307,6 +307,8 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
     t = (char*)malloc( 80 );
     if(!strcmp(mnf,"ACR"))
       sprintf(t, "Acer");
+    else if(!strcmp(mnf,"AUO"))
+      sprintf(t, "AU Optronics");
     else if(!strcmp(mnf,"APP"))
       sprintf(t, "Apple");
     else if(!strcmp(mnf,"BDS"))
@@ -327,6 +329,8 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
       sprintf(t, "Hewlett Packard");
     else if(!strcmp(mnf,"NEC"))
       sprintf(t, "NEC");
+    else if(!strcmp(mnf,"LEN"))
+      sprintf(t, "Lenovo");
     else if(!strcmp(mnf,"LPL"))
       sprintf(t, "LG Philips");
     else if(!strcmp(mnf,"MEI"))
