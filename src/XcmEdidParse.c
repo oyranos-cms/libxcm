@@ -153,7 +153,7 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   XCM_EDID_ERROR_e error = XCM_EDID_OK;
   char * t = 0;
   int len, i, j;
-  char mnf[4];
+  char mnf[4], * num;
   uint16_t mnft_id = 0, model_id = 0, week = 0, year = 0;
   char * serial = 0, * manufacturer = 0, * model = 0, * vendor = 0,
        * mnft = 0;
@@ -274,6 +274,18 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   SET_TXT( vendor )
   SET_TXT( model )
   SET_TXT( serial )
+
+  if(!model)
+  {
+    num = malloc(128);
+    if(num)
+    {
+      sprintf(num, "%d", model_id);
+      model = num;
+      SET_TXT( model )
+      num = model = 0;
+    }
+  }
 
   decode_color_characteristics( edid, c );
 
@@ -511,8 +523,8 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
     if(l[i].type == XCM_EDID_VALUE_DOUBLE)
       sprintf( &txt[strlen(txt)], "%g", l[i].value.dbl);
     if(i + 1 < count)
-      sprintf( &txt[strlen(txt)], ",", l[i].value.dbl);
-    sprintf( &txt[strlen(txt)], "\n", l[i].value.dbl);
+      sprintf( &txt[strlen(txt)], ",");
+    sprintf( &txt[strlen(txt)], "\n");
   }
 
   sprintf( &txt[strlen(txt)], 
