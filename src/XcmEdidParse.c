@@ -501,6 +501,7 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
   int count = 0, i;
   XCM_EDID_ERROR_e err = XcmEdidParse( edid, &l, &count );
   char * txt = calloc( sizeof(char), 4096 );
+  int year = 0, week = 0;
 
   sprintf(txt,
   "{\n"
@@ -515,6 +516,16 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
 
   for(i = 0; i < count; ++i)
   {
+    if(strcmp(l[i].key,"week") == 0)
+    {
+      week = l[i].value.integer;
+      continue;
+    } else
+    if(strcmp(l[i].key,"year") == 0)
+    {
+      year = l[i].value.integer;
+      continue;
+    }
     sprintf( &txt[strlen(txt)], "              \"EDID_%s\": ", l[i].key );
     if(l[i].type == XCM_EDID_VALUE_TEXT)
       sprintf( &txt[strlen(txt)], "\"%s\"", l[i].value.text);
@@ -522,10 +533,12 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
       sprintf( &txt[strlen(txt)], "%d", l[i].value.integer);
     if(l[i].type == XCM_EDID_VALUE_DOUBLE)
       sprintf( &txt[strlen(txt)], "%g", l[i].value.dbl);
-    if(i + 1 < count)
-      sprintf( &txt[strlen(txt)], ",");
+    sprintf( &txt[strlen(txt)], ",");
     sprintf( &txt[strlen(txt)], "\n");
   }
+
+  sprintf( &txt[strlen(txt)], "              \"EDID_date\": \"%d-T%d\"\n",
+           year, week );
 
   sprintf( &txt[strlen(txt)], 
   "            }\n"
