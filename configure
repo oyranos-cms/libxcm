@@ -809,7 +809,7 @@ test -n "$ECHO" && $ECHO "#define "$MACRONAME"_DATE \"$DATE\"" >> $VERS_H
 test -n "$ECHO" && $ECHO "" >> $VERS_H
 
 test -n "$RPMECHO" && $RPMECHO "Version:        $VERSION" >> $SPEC
-test -n "$RPMECHO" && $RPMECHO "Source:         http://downloads.sourceforge.net/projects/oyranos/$TARGET/$TARGET-$VERSION_A.$VERSION_B.x/$TARGET"-"$VERSION".tar.gz >> $SPEC
+test -n "$RPMECHO" && $RPMECHO "Source:         http://downloads.sourceforge.net/projects/oyranos/$TARGET/$TARGET-$VERSION_A.$VERSION_B.x/$TARGET"-"$VERSION".tar.bz2 >> $SPEC
 test -n "$RPMECHO" && $RPMECHO "Release:        $RELEASE" >> $SPEC
 test -n "$RPMECHO" && $RPMECHO "%define pixmapdir       $pixmapdir" >> $SPEC
 test -n "$RPMECHO" && $RPMECHO "%define desktopdir      $desktopdir" >> $SPEC
