@@ -4,9 +4,6 @@ License:        MIT
 Group:          System/Libraries
 URL:            http://www.oyranos.org
 Vendor:         Kai-Uwe Behrmann
-#BuildArch: %{_arch}
-#%ifos linux
-#%endif 
 BuildRoot: %{_tmppath}/%{name}-root
 Prefix:    %{_prefix}
 
@@ -103,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Dec 29 2010 Kai-Uwe Behrmann
+- include basic i2c DDC/CI - 0.4.0
+
 * Fri Oct 01 2010 Kai-Uwe Behrmann
 - include EDID parser - 0.3.0
 - include Xcm Events API
