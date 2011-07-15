@@ -509,7 +509,7 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
   "    \"freedesktop\": {\n"
   "      \"openicc\": {\n"
   "        \"device\": {\n"
-  "          \"monitor\": {\n"
+  "          \"monitor\": [{\n"
   "            \"prefix\": \"EDID_\",\n"
   );
 
@@ -525,7 +525,7 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
       year = l[i].value.integer;
       continue;
     }
-    sprintf( &txt[strlen(txt)], "            \"EDID_%s\": ", l[i].key );
+    sprintf( &txt[strlen(txt)], "              \"EDID_%s\": ", l[i].key );
     if(l[i].type == XCM_EDID_VALUE_TEXT)
       sprintf( &txt[strlen(txt)], "\"%s\"", l[i].value.text);
     if(l[i].type == XCM_EDID_VALUE_INT)
@@ -536,11 +536,12 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
     sprintf( &txt[strlen(txt)], "\n");
   }
 
-  sprintf( &txt[strlen(txt)], "            \"EDID_date\": \"%d-T%d\"\n",
+  sprintf( &txt[strlen(txt)], "              \"EDID_date\": \"%d-T%d\"\n",
            year, week );
 
   sprintf( &txt[strlen(txt)], 
-  "          }\n"
+  "            }\n"
+  "          ]\n"
   "        }\n"
   "      }\n"
   "    }\n"
