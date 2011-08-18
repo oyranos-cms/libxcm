@@ -1,3 +1,18 @@
+Version libXcm-0.4.2
+
+Kai-Uwe Behrmann (11):
+	* [core]: use only JSON array in xcmedid
+	* [core]: skip the numbered JSON device level in xcmedid
+	* [build]: default to bz2 compression for RPM
+	* [build]: remove unused macros in RPM spec file
+	* [core]: merge EDID week and year to EDID_date
+	* [core]: fall back for EDID_model to model_id
+	* [docu]: update XcmEdidParse man page
+	* [core]: add AUO and LEN manufacturers
+	* [core]: add XcmEdidPrintOpenIccJSON() API
+	* [core]: exclude DDC from __FreeBSD__
+	* [conf]: bump version
+
 Version libXcm-0.4.1
 
 Kai-Uwe Behrmann (14):

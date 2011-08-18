@@ -35,13 +35,13 @@ test -f error.tmp && rm error.tmp
 
 VERSION_A=0
 VERSION_B=4
-VERSION_C=2
+VERSION_C=3
 VERSION_ABI_A=1
 VERSION_ABI_B=0
 RELEASE=0
 START_MONTH=05
 START_YEAR=2008
-DEVEL_MONTH=06 # numeric
+DEVEL_MONTH=08 # numeric
 DEVEL_YEAR=2011
 GIT_MASTER="`cat $ROOT_DIR/.git/refs/heads/master`"
 time="`date +%y%m%d.%H%M%S`"
