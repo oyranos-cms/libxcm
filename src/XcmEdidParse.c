@@ -230,12 +230,12 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
             a[j] = v / 100.0;
           }
         }
-      } else if( type == 255 ) { /* serial */
+      } else if( type == 255 && !(serial && serial[0]) ) { /* serial */
         target = &serial;
-      } else if( type == 254 ) { /* vendor */
+      } else if( type == 254 && !(vendor && vendor[0]) ) { /* vendor */
         target = &vendor;
       } else if( type == 253 ) { /* frequenz ranges */
-      } else if( type == 252 ) { /* model */
+      } else if( type == 252 && !(model && model[0]) ) { /* model */
         target = &model;
       }
       if(target)
