@@ -54,6 +54,7 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 {
 	Atom netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
 	XcolorRegion *ptr;
+	int result;
 
 	unsigned long nRegs;
 	XcolorRegion *reg = XcolorRegionFetch(dpy, win, &nRegs);
@@ -65,25 +66,28 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 		return -1;
 	}
 
-	ptr = malloc((nRegs + nRegions) * sizeof(XcolorRegion));
+	ptr = calloc(sizeof(char), (nRegs + nRegions) * sizeof(XcolorRegion));
 	if (ptr == NULL) {
 		XFree(reg);
 		return -1;
 	}
 
-	memcpy(ptr, reg, nRegs * sizeof(XcolorRegion));
 
 	/* Make space for the new regions and copy them to the array. */
 	if (nRegs)
+	{
+		memcpy(ptr, reg, nRegs * sizeof(XcolorRegion));
 		memmove(ptr + pos + nRegs, ptr + pos, nRegions * sizeof(XcolorRegion));
+	}
 	memcpy(ptr + pos, region, nRegions * sizeof(XcolorRegion));
 
-	XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
+	result = XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
 
-	XFree(reg);
+	if(reg)
+		XFree(reg);
 	free(ptr);
 
-	return 0;
+	return result;
 }
 
 XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegions)
@@ -107,6 +111,7 @@ XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegion
 int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned long count)
 {
 	Atom netColorRegions = XInternAtom(dpy, "_NET_COLOR_REGIONS", False);
+	int result;
 
 	unsigned long nRegions;
 	XcolorRegion *region = XcolorRegionFetch(dpy, win, &nRegions);
@@ -122,20 +127,21 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 	memmove(region + start, region + start + count, (nRegions - start - count) * sizeof(XcolorRegion));
 
   if(nRegions - count)
-  	XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
+  	result = XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
   else
     XDeleteProperty( dpy, win, netColorRegions );
 
   XFree(region);
 
 
-	return 0;	
+	return result;
 }
 
 int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned long count)
 {
 	XWindowAttributes xwa;
 	Status status;
+	int result;
 
 	/* Construct the XEvent. */
 	XClientMessageEvent event;
@@ -155,7 +161,7 @@ int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned
 		return -1;
 
 	/* Uhm, why ExposureMask? */
-	XSendEvent(dpy, xwa.root, False, ExposureMask, (XEvent *) &event);
+	result = XSendEvent(dpy, xwa.root, False, ExposureMask, (XEvent *) &event);
 
-	return 0;
+	return result;
 }
