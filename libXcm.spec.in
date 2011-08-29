@@ -4,26 +4,29 @@ License:        MIT
 Group:          System/Libraries
 URL:            http://www.oyranos.org
 Vendor:         Kai-Uwe Behrmann
-BuildRoot: %{_tmppath}/%{name}-root
-Prefix:    %{_prefix}
-
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+Prefix:         %{_prefix}
 
 %if 0%{?suse_version} > 0
 BuildRequires:     gcc-c++ pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel
 %endif
+
 %if 0%{?suse_version} > 910
 BuildRequires:  bash bind-utils binutils bison bzip2 coreutils cpio cyrus-sasl diffutils e2fsprogs file filesystem findutils gcc gcc-c++ glibc glibc-devel grep groff gzip less make man mktemp patch perl pkgconfig popt readline rpm sed tar timezone unzip util-linux zlib zlib-devel
 %endif
+
 %if 0%{?suse_version} > 1010
 BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel xorg-x11-libXmu-devel
 %endif
+
 %if 0%{?mandriva_version} > 0
 BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig
 %endif
+
 %if 0%{?fedora_version} > 0
 BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils  libXfixes-devel xorg-x11-proto-devel xorg-x11-xtrans-devel libXmu-devel
-
 %endif
+
 %if 0%{?debian_version} > 0
 BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils 
 %endif
@@ -59,9 +62,10 @@ The package contains headers and other development files.
 
 
 %prep
-%setup -n %{name}-%{version}
+%setup -p
 
 %build
+export CFLAGS="%{optflags}"
 %configure --disable-static
 make %{?_smp_mflags}
 
