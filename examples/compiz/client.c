@@ -12,6 +12,8 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
+#include <alpha/oyranos_alpha.h>
+
 #include <stdio.h>
 
 #include <sys/types.h>
@@ -21,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <Xcolor.h>
+#include <Xcm.h>
 
 static void *readFile(const char *path, unsigned long *nBytes)
 {
@@ -29,6 +31,8 @@ static void *readFile(const char *path, unsigned long *nBytes)
 
 	struct stat buf;
 	fstat(fd, &buf);
+
+        if(fd < 0) return NULL;
 
 	void *ret = malloc(buf.st_size);
 	read(fd, ret, buf.st_size);
@@ -95,10 +99,11 @@ int main(int argc, char *argv[])
 	/* To query the output layout first try to use RandR, if that fails try Xinerama. */
 	int rrEventBase, rrErrorBase;
 	if (XRRQueryExtension(dpy, &rrEventBase, &rrErrorBase) == True && !forceXinerama) {
+                unsigned long i;
 		XRRScreenResources *res = XRRGetScreenResources(dpy, XRootWindow(dpy, screen));
 
 		printf("Found %d RandR outputs:\n", res->noutput);
-		for (unsigned long i = 0; i < res->noutput; ++i) {
+		for (i = 0; i < res->noutput; ++i) {
 			XRROutputInfo *oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
 			outputName[i] = strdup(oinfo->name);
 			printf("  %s\n", outputName[i]);
@@ -109,6 +114,7 @@ int main(int argc, char *argv[])
 		
 		XRRFreeScreenResources(res);
 	} else {
+                int i;
 		int xiEventBase, xiErrorBase;
 		if (XineramaQueryExtension(dpy, &xiEventBase, &xiErrorBase) == False) {
 			printf("Neither RandR nor Xinerama available!\n");
@@ -119,7 +125,7 @@ int main(int argc, char *argv[])
 		XineramaScreenInfo *screen = XineramaQueryScreens(dpy, &nScreens);
 
 		printf("Found %d Xinerama screens:\n", nScreens);
-		for (int i = 0; i < nScreens; ++i) {
+		for (i = 0; i < nScreens; ++i) {
 			char name[128];
 			snprintf(name, 128, "Xinerama-Screen-%d", i);
 			outputName[i] = strdup(name);
@@ -135,28 +141,29 @@ int main(int argc, char *argv[])
 	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
 	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], strlen(outputName[activeOutput]));
 
-	unsigned long nBytes;
+	unsigned long nBytes = 0;
 	void *blob = readFile("profile.icc", &nBytes);
+	oyProfile_s * p = oyProfile_FromFile( "./profile.icc", 0,0 );
 
-	/* Create a XcolorProfile object that will be uploaded to the display. */
+	/* Create a XcolorProfile object that will be uploaded to the display.*/
 	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
 
-	/* Fake MD5, real code should extract the MD5 from the ICC profile. See
-	 * for example oyProfileGetMD5_(). */
-	for (int i = 0; i < 16; ++i)
-		profile->md5[i] = i;
-
-	profile->length = nBytes;
+	oyProfile_GetMD5(p, OY_FROM_PROFILE, (uint32_t*)profile->md5);
+	profile->length = htonl(nBytes);
 	memcpy(profile + 1, blob, nBytes);
 
-	XcolorProfileUpload(dpy, profile);
+	int result = XcolorProfileUpload(dpy, profile);
+        if(result)
+		printf("XcolorProfileUpload: %d\n", result);
+
+	oyProfile_Release( &p );
 
 	/* Upload the region to the window. */
 	XRectangle rec[3] = { { 50, 25, 200, 175 }, { 25, 175, 100, 100 },{0,0,0,0} };
 	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
 
 	XcolorRegion region;
-	region.region = reg;
+	region.region = htonl( reg );
 	memcpy(region.md5, profile->md5, 16);
 
 	XcolorRegionInsert(dpy, w, 0, &region, 1);
