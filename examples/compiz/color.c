@@ -5,7 +5,7 @@
  *
  *  @author   Tomas Carnecky
  *  @par Copyright:
- *            2008 (C) Tomas Carnecky, 2009 (C) Kai-Uwe Behrmann
+ *            2008 (C) Tomas Carnecky, 2009-2011 (C) Kai-Uwe Behrmann
  *  @par License:
  *            new BSD <http://www.opensource.org/licenses/bsd-license.php>
  *  @since    2008/06/09
@@ -31,7 +31,7 @@
 #include <stdarg.h>
 #include <lcms.h>
 
-#include <Xcolor.h>
+#include <Xcm.h>
 
 
 #define OY_COMPIZ_VERSION (COMPIZ_VERSION_MAJOR * 10000 + COMPIZ_VERSION_MINOR * 100 + COMPIZ_VERSION_MICRO)
@@ -239,8 +239,8 @@ static inline XcolorProfile *XcolorProfileNext(XcolorProfile *profile)
 static inline unsigned long XcolorProfileCount(void *data, unsigned long nBytes)
 {
 	unsigned long count = 0;
-
-	for (XcolorProfile *ptr = data; (intptr_t) ptr < (intptr_t)data + nBytes; ptr = XcolorProfileNext(ptr))
+	XcolorProfile *ptr = data;
+	for (; (intptr_t) ptr < (intptr_t)data + nBytes; ptr = XcolorProfileNext(ptr))
 		++count;
 
 	return count;
@@ -264,8 +264,8 @@ static inline unsigned long XcolorRegionCount(void *data, unsigned long nBytes)
 static const char *md5string(const uint8_t md5[16])
 {
 	static char buffer[33];
-
-	for (int i = 0; i < 16; ++i)
+	int i;
+	for (i = 0; i < 16; ++i)
 		sprintf(buffer + i * 2, "%02x", md5[i]);
 
 	return buffer;
@@ -311,7 +311,7 @@ static int getProfileShader(CompScreen *s, CompTexture *texture, int param, int 
 	ps->unit = unit;
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Shader compiled: %d/%d/%d", ps->function, param, unit);
+	oyCompLogMessage(s->display, "color", CompLogLevelWarn, "Shader compiled: %d/%d/%d", ps->function, param, unit);
 #endif
 
 	return ps->function;
@@ -324,10 +324,15 @@ static Region convertRegion(Display *dpy, XserverRegion src)
 {
 	Region ret = XCreateRegion();
 
-	int nRects = 0;
+	int nRects = 0, i;
 	XRectangle *rect = XFixesFetchRegion(dpy, src, &nRects);
 
-	for (int i = 0; i < nRects; ++i) {
+#if defined(PLUGIN_DEBUG)
+	printf( "%s:%d %s() %d rects: %d\n", __FILE__,__LINE__,__func__,
+		(int)src, nRects );
+#endif
+
+	for (i = 0; i < nRects; ++i) {
 		XUnionRectWithRegion(&rect[i], ret, ret);
 	}
 
@@ -360,9 +365,9 @@ static void *fetchProperty(Display *dpy, Window w, Atom prop, Atom type, unsigne
 
 static unsigned long screenProfileCount(PrivScreen *ps)
 {
-	unsigned long ret = 0;
+	unsigned long ret = 0, i;
 
-	for (unsigned long i = 0; i < ps->nProfiles; ++i) {
+	for (i = 0; i < ps->nProfiles; ++i) {
 		if (ps->profile[i].refCount > 0)
 			++ret;
 	}
@@ -378,14 +383,19 @@ static unsigned long screenProfileCount(PrivScreen *ps)
 static unsigned long findProfileIndex(CompScreen *s, const uint8_t md5[16])
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
-
-	for (unsigned long i = 0; i < ps->nProfiles; ++i) {
+	unsigned long i;
+	for (i = 0; i < ps->nProfiles; ++i) {
 		if (ps->profile[i].refCount > 0 && memcmp(md5, ps->profile[i].md5, 16) == 0)
+		{
+#if defined(PLUGIN_DEBUG)
+	oyCompLogMessage(s->display, "color", CompLogLevelWarn, "Found profile with MD5 '%s' %lu", md5string(md5), i);
+#endif
 			return i;
+		}
 	}
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile with MD5 '%s'", md5string(md5));
+	oyCompLogMessage(s->display, "color", CompLogLevelWarn, "Could not find profile with MD5 '%s'", md5string(md5));
 #endif
 
 	return ps->nProfiles;
@@ -404,6 +414,7 @@ static void updateScreenProfiles(CompScreen *s)
 
 	/* Fetch the profiles */
 	unsigned long nBytes;
+	unsigned long i;
         int screen = DefaultScreen( s->display->display );
 	void *data = fetchProperty(d->display,
                                    XRootWindow( s->display->display, screen ),
@@ -426,8 +437,8 @@ static void updateScreenProfiles(CompScreen *s)
 		ps->nProfiles = usedSlots + count;
 		ps->profile = ptr;
 	} else if (usedSlots + count < ps->nProfiles / 2) {
-		unsigned long index = 0;
-		for (unsigned long i = 0; i < ps->nProfiles; ++i) {
+		unsigned long index = 0, i;
+		for (i = 0; i < ps->nProfiles; ++i) {
 			if (ps->profile[i].refCount > 0)
 				memmove(ps->profile + index++, ps->profile + i, sizeof(PrivColorProfile));
 		}
@@ -446,7 +457,7 @@ static void updateScreenProfiles(CompScreen *s)
 
 	/* Copy the profiles into the array, and create the lcms handles. */
 	XcolorProfile *profile = data;
-	for (unsigned long i = 0; i < count; ++i) {
+	for (i = 0; i < count; ++i) {
 		unsigned long index = findProfileIndex(s, profile->md5);
 
 		/* XcolorProfile::length == 0 means the clients wants to delete the profile. */
@@ -463,7 +474,7 @@ static void updateScreenProfiles(CompScreen *s)
 		} else {
 			if (index == ps->nProfiles) {
 				/* Profile doesn't exist in our array, find a new free slot. */
-				for (unsigned long i = 0; i < ps->nProfiles; ++i) {
+				for (i = 0; i < ps->nProfiles; ++i) {
 					if (ps->profile[i].refCount > 0)
 						continue;
 
@@ -490,7 +501,7 @@ static void updateScreenProfiles(CompScreen *s)
 	}
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(d, "color", CompLogLevelDebug, "Updated screen profiles, %d existing plus %d updates leading to %d profiles in %d slots",
+	oyCompLogMessage(d, "color", CompLogLevelWarn, "Updated screen profiles, %d existing plus %d updates leading to %d profiles in %d slots",
 		       usedSlots, count, screenProfileCount(ps), ps->nProfiles);
 #endif
 
@@ -509,9 +520,10 @@ static void updateWindowRegions(CompWindow *w)
 
 	CompDisplay *d = w->screen->display;
 	PrivDisplay *pd = compObjectGetPrivate((CompObject *) d);
+	unsigned long i;
 
 	/* free existing data structures */
-	for (unsigned long i = 0; i < pw->nRegions; ++i) {
+	for (i = 0; i < pw->nRegions; ++i) {
 		if (pw->region[i].glTexture != 0) {
 			XDestroyRegion(pw->region[i].xRegion);
 			glDeleteTextures(1, &pw->region[i].glTexture);
@@ -539,13 +551,13 @@ static void updateWindowRegions(CompWindow *w)
 
 	/* fill in the pointers */
 	XcolorRegion *region = data;
-	for (unsigned long i = 0; i < count; ++i) {
+	for (i = 0; i < count; ++i) {
 		pw->region[i].region = region->region;
 
 		/* Locate the lcms profile. If not availabe, simply set PrivColorRegion::lcmsRegion
 		 * to NULL so that it will be ignored during the rendering. */
 		unsigned long index = findProfileIndex(w->screen, region->md5);
-		pw->region[i].lcmsProfile = index == ps->nProfiles ? NULL : ps->profile[index].lcmsProfile;
+		pw->region[i].lcmsProfile = (index == ps->nProfiles) ? NULL : ps->profile[index].lcmsProfile;
 
 		region = XcolorRegionNext(region);
 	}
@@ -553,7 +565,7 @@ static void updateWindowRegions(CompWindow *w)
 	pw->nRegions = count;
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(d, "color", CompLogLevelDebug, "Updated window regions, %d total now", count);
+	oyCompLogMessage(d, "color", CompLogLevelWarn, "Updated window regions, %d total now", count);
 #endif
 
 out:
@@ -579,7 +591,7 @@ static void updateWindowOutput(CompWindow *w)
 	pw->output = fetchProperty(d->display, w->id, pd->netColorTarget, XA_STRING, &nBytes, False);
 
 #if defined(_NET_COLOR_DEBUG)
-	oyCompLogMessage(d, "color", CompLogLevelDebug, "Updated window output, target is %s", pw->output);
+	oyCompLogMessage(d, "color", CompLogLevelWarn, "Updated window output, target is %s", pw->output);
 #endif
 
 	updateWindowStack(w, NULL);
@@ -591,15 +603,16 @@ static void updateWindowOutput(CompWindow *w)
 static void *findOutputProfile(CompScreen *s, const char *name)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+	unsigned long i;
 
-	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
+	for (i = 0; i < ps->nOutputs; ++i) {
 		if (strcmp(name, ps->output[i].name) == 0) {
 			return ps->output[i].lcmsProfile;
 		}
 	}
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Could not find profile for output '%s'", name);
+	oyCompLogMessage(s->display, "color", CompLogLevelWarn, "Could not find profile for output '%s'", name);
 #endif
 
 	return NULL;
@@ -613,9 +626,10 @@ static void *findOutputProfile(CompScreen *s, const char *name)
 static void updateWindowStack(CompWindow *w, void *closure)
 {
 	PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
+	unsigned long i;
 
 	/* free existing data structures */
-	for (unsigned long i = 0; i < pw->nRegions; ++i) {
+	for (i = 0; i < pw->nRegions; ++i) {
 		if (pw->region[pw->active[0] + i].glTexture != 0) {
 			XDestroyRegion(pw->region[pw->active[0] + i].xRegion);
 			glDeleteTextures(1, &pw->region[pw->active[0] + i].glTexture);
@@ -628,8 +642,13 @@ static void updateWindowStack(CompWindow *w, void *closure)
 	if (pw->active[0] + pw->active[1] > pw->nRegions)
 		pw->active[0] = pw->active[1] = 0;
 
+#if defined(PLUGIN_DEBUG)
+	printf( "%s:%d %s() rects: %lu\n", __FILE__,__LINE__,__func__,
+		pw->active[1] );
+#endif
+
 	/* regenerate local region variables */
-	for (unsigned long i = 0; i < pw->active[1]; ++i) {
+	for (i = 0; i < pw->active[1]; ++i) {
 		/* First try to create the transformation matrix. If that fails, simply skip to the next region.
 		 * Because of PrivColorRegion::glTexture == 0 the region will later be skippend when rendering the window. */
 
@@ -656,11 +675,12 @@ static void updateWindowStack(CompWindow *w, void *closure)
 		pw->region[pw->active[0] + i].offset = (GLfloat) 1.0 / (2 * GRIDPOINTS);
 
 		unsigned short in[3];
-		for (int r = 0; r < GRIDPOINTS; ++r) {
+                int r,g,b;
+		for (r = 0; r < GRIDPOINTS; ++r) {
 			in[0] = floor((double) r / (GRIDPOINTS - 1) * 65535.0 + 0.5);
-			for (int g = 0; g < GRIDPOINTS; ++g) {
+			for (g = 0; g < GRIDPOINTS; ++g) {
 				in[1] = floor((double) g / (GRIDPOINTS - 1) * 65535.0 + 0.5);
-				for (int b = 0; b < GRIDPOINTS; ++b) {
+				for (b = 0; b < GRIDPOINTS; ++b) {
 					in[2] = floor((double) b / (GRIDPOINTS - 1) * 65535.0 + 0.5);
 					cmsDoTransform(xform, in, clut[b][g][r], 1);
 				}
@@ -682,10 +702,16 @@ static void updateWindowStack(CompWindow *w, void *closure)
 		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 		glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16, GRIDPOINTS, GRIDPOINTS, GRIDPOINTS, 0, GL_RGB, GL_UNSIGNED_SHORT, clut);
+		
+#if defined(PLUGIN_DEBUG)
+		printf( "%s:%d %s %d\n", __FILE__,__LINE__,
+			cmsTakeProductName(srcProfile),
+			pw->region[pw->active[0] + i].glTexture );
+#endif
 	}
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(w->screen->display, "color", CompLogLevelDebug, "Created window transformation textures. Active range is between %d and %d (out of %d regions total)",
+	printf( "%s:%d Created window transformation textures. Active range is between %lu and %lu (out of %lu regions total)\n", __FILE__,__LINE__,
 		       pw->active[0], pw->active[0] + pw->active[1], pw->nRegions);
 #endif
 
@@ -700,9 +726,10 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 {
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
         int screen = DefaultScreen( s->display->display );
+	unsigned long i;
 
 	if (ps->nOutputs > 0) {
-		for (unsigned long i = 0; i < ps->nOutputs; ++i)
+		for (i = 0; i < ps->nOutputs; ++i)
 			cmsCloseProfile(ps->output[i].lcmsProfile);
 
 		free(ps->output);
@@ -713,7 +740,7 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 
 	ps->nOutputs = res->noutput;
 	ps->output = malloc(ps->nOutputs * sizeof(PrivColorOutput));
-	for (unsigned long i = 0; i < ps->nOutputs; ++i) {
+	for (i = 0; i < ps->nOutputs; ++i) {
 		XRROutputInfo *oinfo = XRRGetOutputInfo(s->display->display, res, res->outputs[i]);
 		strcpy(ps->output[i].name, oinfo->name);
 
@@ -743,7 +770,7 @@ static void updateOutputConfiguration(CompScreen *s, CompBool updateWindows)
 		forEachWindowOnScreen(s, updateWindowStack, NULL);
 
 #if defined(PLUGIN_DEBUG)
-	oyCompLogMessage(s->display, "color", CompLogLevelDebug, "Updated screen outputs, %d total now", ps->nOutputs);
+	oyCompLogMessage(s->display, "color", CompLogLevelWarn, "Updated screen outputs, %d total now", ps->nOutputs);
 #endif
 }
 
@@ -781,8 +808,9 @@ static void pluginHandleEvent(CompDisplay *d, XEvent *event)
 	case ClientMessage:
 		if (event->xclient.message_type == pd->netColorManagement) {
 #if defined(PLUGIN_DEBUG)
-			printf( "%s:%d ClientMessage: %s\n", __FILE__,__LINE__,
-  	         	XGetAtomName( event->xany.display, event->xclient.message_type) );
+			printf( "%s:%d ClientMessage: %s %lu %lu\n",
+                        __FILE__,__LINE__,
+  	         	XGetAtomName( event->xany.display, event->xclient.message_type), event->xclient.data.l[0], event->xclient.data.l[1] );
 #endif
 			CompWindow *w = findWindowAtDisplay (d, event->xclient.window);
 			PrivWindow *pw = compObjectGetPrivate((CompObject *) w);
@@ -814,17 +842,28 @@ static Region absoluteRegion(CompWindow *w, Region region)
 {
 	static REGION ret;
 	static BOX rects[128];
+	int i;
 
 	ret.numRects = region->numRects;
 	ret.rects = rects;
 
+#if defined(PLUGIN_DEBUG_)
+	printf( "%s:%d %s() rects: %lu\n", __FILE__,__LINE__,__func__,
+		region->numRects );
+#endif
+
 	memset(&ret.extents, 0, sizeof(ret.extents));
 
-	for (int i = 0; i < region->numRects; ++i) {
+	for (i = 0; i < region->numRects; ++i) {
 		rects[i].x1 = region->rects[i].x1 + w->attrib.x;
 		rects[i].x2 = region->rects[i].x2 + w->attrib.x;
 		rects[i].y1 = region->rects[i].y1 + w->attrib.y;
 		rects[i].y2 = region->rects[i].y2 + w->attrib.y;
+
+#if defined(PLUGIN_DEBUG_)
+		printf( "%s:%d %s() rects: %d %d %d %d\n", __FILE__,__LINE__,__func__,
+			rects[i].x1, rects[i].x2, rects[i].y1, rects[i].y2 );
+#endif
 
 		EXTENTS(&rects[i], &ret);
 	}
@@ -839,6 +878,7 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 {
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+	unsigned long i;
 
 	UNWRAP(ps, s, drawWindow);
 	Bool status = (*s->drawWindow) (w, transform, attrib, region, mask);
@@ -859,8 +899,13 @@ static Bool pluginDrawWindow(CompWindow *w, const CompTransform *transform, cons
 	/* Replace the stencil value in places where we'd draw something */
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-	for (unsigned long i = 0; i < pw->active[1]; ++i) {
+	for (i = 0; i < pw->active[1]; ++i) {
 		PrivColorRegion *reg = pw->region + pw->active[0] + i;
+#if defined(PLUGIN_DEBUG_)
+	printf( "%s:%d %s() %lu %d\n",
+		__FILE__,__LINE__,__func__, pw->active[1], reg->glTexture);
+#endif
+
 		if (reg->glTexture == 0)
 			continue;
 
@@ -894,6 +939,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 {
 	CompScreen *s = w->screen;
 	PrivScreen *ps = compObjectGetPrivate((CompObject *) s);
+	unsigned long i;
 
 	UNWRAP(ps, s, drawWindowTexture);
 	(*s->drawWindowTexture) (w, texture, attrib, mask);
@@ -916,7 +962,7 @@ static void pluginDrawWindowTexture(CompWindow *w, CompTexture *texture, const F
 	if (function)
 		addFragmentFunction(&fa, function);
 
-	for (unsigned long i = 0; i < pw->active[1]; ++i) {
+	for (i = 0; i < pw->active[1]; ++i) {
 		PrivColorRegion *reg = pw->region + pw->active[0] + i;
 		if (reg->glTexture == 0)
 			continue;
