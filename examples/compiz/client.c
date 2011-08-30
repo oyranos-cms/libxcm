@@ -51,6 +51,38 @@ int main(int argc, char *argv[])
 {
 	/* Parse commandline options. */
 	int c;
+  FILE * fp = 0;
+  size_t size = 0;
+  const char * file_name = "profile.icc";
+
+  if(argc > 1)
+  {
+    fp = fopen(argv[1],"rb");
+    if(fp)
+    {
+      fseek(fp,0L,SEEK_END); 
+      size = ftell (fp);
+      rewind(fp);
+      fclose (fp); fp = 0;
+      file_name = argv[1];
+    }
+  }
+  {
+    fp = fopen(file_name,"rb");
+    size = 0;
+    if(fp)
+    {
+      fseek(fp,0L,SEEK_END); 
+      size = ftell (fp);
+      rewind(fp);
+      fclose (fp); fp = 0;
+    }
+    if(size == 0)
+    {
+      printf("Failed to load \"%s\"\n", file_name);
+    }
+  }
+
 	while ((c = getopt(argc, argv, "x")) != -1) {
 		switch(c) {
 		case 'x':
@@ -142,8 +174,8 @@ int main(int argc, char *argv[])
 	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], strlen(outputName[activeOutput]));
 
 	unsigned long nBytes = 0;
-	void *blob = readFile("profile.icc", &nBytes);
-	oyProfile_s * p = oyProfile_FromFile( "./profile.icc", 0,0 );
+	void *blob = readFile( file_name, &nBytes);
+	oyProfile_s * p = oyProfile_FromFile( file_name, 0,0 );
 
 	/* Create a XcolorProfile object that will be uploaded to the display.*/
 	XcolorProfile *profile = malloc(sizeof(XcolorProfile) + nBytes);
@@ -163,7 +195,7 @@ int main(int argc, char *argv[])
 	XserverRegion reg = XFixesCreateRegion(dpy, rec, 2);
 
 	XcolorRegion region;
-	region.region = reg;
+	region.region = htonl(reg);
 	memcpy(region.md5, profile->md5, 16);
 
 	XcolorRegionInsert(dpy, w, 0, &region, 1);
