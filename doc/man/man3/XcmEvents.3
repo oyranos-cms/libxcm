@@ -1,4 +1,4 @@
-.TH "X Color Management Event API's" 3 "6 Jan 2011" "Version 0.4.1" "Xcm" \" -*- nroff -*-
+.TH "X Color Management Event API's" 3 "1 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -43,7 +43,7 @@ X Color Management Event API's \-
 .br
 .RI "\fIset a message function to customise messages \fP"
 .ti -1c
-.RI "const char * \fBxcmePrintWindowName\fP (Display *display, Window w)"
+.RI "const char * \fBXcmePrintWindowName\fP (Display *display, Window w)"
 .br
 .RI "\fIreturn a short window description text \fP"
 .ti -1c
@@ -54,6 +54,10 @@ X Color Management Event API's \-
 .RI "void \fBXcmICCprofileFromMD5FuncSet\fP (XcmICCprofileGetFromMD5_f fromMD5)"
 .br
 .RI "\fIplugin more informations capabilities for ICC profiles \fP"
+.ti -1c
+.RI "const char * \fBXcmePrintWindowRegions\fP (Display *display, Window w, int always)"
+.br
+.RI "\fIprovide info text about window regions \fP"
 .ti -1c
 .RI "void \fBxcmePrintWindowRegions\fP (Display *display, Window w, int always)"
 .br
@@ -364,7 +368,7 @@ Function XcmeContext_Setup The initialised context is needed for observing colou
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.3.0 
+libXcm: 0.4.1 
 .RE
 .PP
 \fBSince:\fP
@@ -374,7 +378,7 @@ libXcm: 0.3.0
 .PP
 \fBDate:\fP
 .RS 4
-2010/10/01 
+2011/05/06 
 .RE
 .PP
 
@@ -412,7 +416,7 @@ libXcm: 0.3.0
 .RE
 .PP
 
-.SS "const char* xcmePrintWindowName (Display * display, Window w)"
+.SS "const char * XcmePrintWindowName (Display * display, Window w)"
 .PP
 return a short window description text 
 .PP
@@ -444,6 +448,37 @@ libXcm: 0.3.0
 \fBDate:\fP
 .RS 4
 2010/10/01 
+.RE
+.PP
+
+.SS "const char * XcmePrintWindowRegions (Display * display, Window w, int always)"
+.PP
+provide info text about window regions 
+.PP
+Function XcmePrintWindowRegions The function informs about _NET_COLOR_REGIONS atom.
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdisplay\fP X display 
+.br
+\fIw\fP X window 
+.br
+\fIalways\fP send always a message, even for a empty property
+.RE
+.PP
+\fBVersion:\fP
+.RS 4
+libXcm: 0.4.3 
+.RE
+.PP
+\fBSince:\fP
+.RS 4
+2009/00/00 (libXcm: 0.3.0) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+2011/10/01 
 .RE
 .PP
 
