@@ -40,7 +40,7 @@ extern "C" {
 
 const char * XcmePrintWindowName     ( Display           * display,
                                        Window              w );
-void     XcmePrintWindowRegions      ( Display           * display,
+const char * XcmePrintWindowRegions  ( Display           * display,
                                        Window              w,
                                        int                 always );
 /** @brief context for parsing events */

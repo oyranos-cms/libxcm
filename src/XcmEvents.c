@@ -234,7 +234,7 @@ char * printfNetColorDesktop ( XcmeContext_s * c, int verbose )
 
 
 /** @brief     return a short window description text */
-const char * xcmePrintWindowName( Display * display, Window w )
+const char * XcmePrintWindowName( Display * display, Window w )
 {
   static char * text = 0;
   Window root_return;
@@ -315,6 +315,87 @@ void           XcmICCprofileFromMD5FuncSet (
 }
 
 
+/** Function XcmePrintWindowRegions
+ *  @brief   provide info text about window regions
+ *
+ *  The function informs about _NET_COLOR_REGIONS atom.
+ *
+ *  @param[in]     display             X display
+ *  @param[in]     w                   X window
+ *  @param[in]     always              send always a message, even for a empty
+ *                                     property
+ *
+ *  @version libXcm: 0.4.3
+ *  @since   2009/00/00 (libXcm: 0.3.0)
+ *  @date    2011/10/01
+ */
+const char * XcmePrintWindowRegions  ( Display           * display,
+                                       Window              w,
+                                       int                 always )
+{
+  unsigned long n = 0;
+  int i, j;
+  XcolorRegion * regions = 0;
+  static char * text = 0;
+
+  if(!text) text = (char*)malloc(1024);
+  text[0] = 0;
+
+  /* a pain to work with that cruft */
+  w = XmuClientWindow( display, w );
+
+  regions = XcolorRegionFetch( display, w, &n );
+
+  if(!always && !n)
+    return text;
+
+  sprintf( &text[strlen(text)], "PropertyNotify : %s    vvvvv      %s %d\n",
+      XGetAtomName( display, 
+                    XInternAtom( display,"_NET_COLOR_REGIONS", False)),
+      XcmePrintWindowName( display, w ), (int)n );
+
+          for(i = 0; i < (int)n; ++i)
+          {
+            int nRect = 0;
+            XRectangle * rect = 0;
+            uint32_t * md5 = 0;
+            void * icc_data = 0;
+            size_t icc_data_size = 0;
+            char * name = 0;
+
+            if(!regions[i].region)
+            {
+              DERR("server region id with zero: left %d", (int)n-i);
+              break;
+            }
+
+            rect = XFixesFetchRegion( display, ntohl(regions[i].region),
+                                      &nRect );
+            md5 = (uint32_t*)&regions[i].md5[0];
+            if(XcmICCprofileGetFromMD5_p)
+            {
+              icc_data = XcmICCprofileGetFromMD5_p( md5, &icc_data_size,
+                                                    malloc );
+              if(XcmICCprofileGetName_p && icc_data_size && icc_data)
+                name = XcmICCprofileGetName_p( icc_data, icc_data_size,
+                                               malloc, 0);
+            }
+
+            sprintf( &text[strlen(text)], "    %d local look up: %s[%x%x%x%x]:\n", i, name?name:"???",
+                   md5[0], md5[1], md5[2], md5[3] );
+            for(j = 0; j < nRect; ++j)
+            sprintf( &text[strlen(text)], "        %dx%d+%d+%d\n",
+                   rect[j].width, rect[j].height, rect[j].x, rect[j].y );
+
+            if(icc_data_size && icc_data)
+              free(icc_data);
+            if(name)
+              free(name);
+          }
+
+  return text;
+}
+
 /** Function xcmePrintWindowRegions
  *  @brief   send a message about window regions
  *
@@ -348,7 +429,7 @@ void     xcmePrintWindowRegions      ( Display           * display,
   DE( "PropertyNotify : %s    vvvvv      %s %d",
       XGetAtomName( display, 
                     XInternAtom( display,"_NET_COLOR_REGIONS", False)),
-      xcmePrintWindowName( display, w ), (int)n );
+      XcmePrintWindowName( display, w ), (int)n );
 
           for(i = 0; i < (int)n; ++i)
           {
@@ -632,7 +713,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
       {
         xcmePrintWindowRegions( c->display, children_return[i], 0 );
         /*printf( "[%d] \"%s\"\n", (int)children_return[i],
-                     xcmePrintWindowName(display, children_return[i]) );*/
+                     XcmePrintWindowName(display, children_return[i]) );*/
 
       }
 
@@ -853,14 +934,14 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
           text = (char*)data;
           DE("PropertyNotify : %s     \"%s\"  %s",
                actual_name,
-               text, xcmePrintWindowName( display, event->xany.window ) );
+               text, XcmePrintWindowName( display, event->xany.window ) );
 
         } else if( event->xproperty.atom == c->aProfile )
         {
           unsigned long count = XcolorProfileCount(data, n);
           DE( "PropertyNotify : %s   %d         %s",
                actual_name,
-               (int)count, xcmePrintWindowName( display, event->xany.window ) );
+               (int)count, XcmePrintWindowName( display, event->xany.window ) );
 
         } else if( event->xproperty.atom == c->aCM )
         {
@@ -872,7 +953,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
                actual_name,
                event->xproperty.state ? "0 - removed" :
                printfNetColorDesktop(c, 1),
-               xcmePrintWindowName( display, event->xany.window ) );
+               XcmePrintWindowName( display, event->xany.window ) );
 
         } else if( event->xproperty.atom == c->aRegion )
         {
@@ -925,7 +1006,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
           }
           DE(   "PropertyNotify : %s    \"%s\"[%d]  %s",
                  an, name?name:(tmp?"set":"removed"),(int)n,
-                 xcmePrintWindowName( display, event->xany.window ) );
+                 XcmePrintWindowName( display, event->xany.window ) );
 
           if(tmp)
           {
@@ -1004,7 +1085,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
         active[1] = event->xclient.data.l[1];
         DE( "ClientMessage  : %s %ld %ld        %s",
                 actual_name, active[0], active[1],
-                xcmePrintWindowName( display, event->xclient.window ) );
+                XcmePrintWindowName( display, event->xclient.window ) );
         XFree( actual_name ); actual_name = 0;
       }
     }
