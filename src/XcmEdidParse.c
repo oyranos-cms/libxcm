@@ -529,9 +529,9 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
     if(l[i].type == XCM_EDID_VALUE_TEXT)
       sprintf( &txt[strlen(txt)], "\"%s\"", l[i].value.text);
     if(l[i].type == XCM_EDID_VALUE_INT)
-      sprintf( &txt[strlen(txt)], "%d", l[i].value.integer);
+      sprintf( &txt[strlen(txt)], "\"%d\"", l[i].value.integer);
     if(l[i].type == XCM_EDID_VALUE_DOUBLE)
-      sprintf( &txt[strlen(txt)], "%g", l[i].value.dbl);
+      sprintf( &txt[strlen(txt)], "\"%g\"", l[i].value.dbl);
     sprintf( &txt[strlen(txt)], ",");
     sprintf( &txt[strlen(txt)], "\n");
   }
