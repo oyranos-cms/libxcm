@@ -83,18 +83,18 @@ which has set the atom.
 The second section contains time since epoch GMT as returned by time(NULL).
 The thired section contains the bar '|' separated and surrounded
 capabilities:
-  - NCP  _ICC_COLOR_PROFILES
-  - NCT  _ICC_COLOR_TARGET
-  - NCM  _ICC_COLOR_MANAGEMENT
-  - NCR  _ICC_COLOR_REGIONS
+  - ICP  _ICC_COLOR_PROFILES
+  - ICT  _ICC_COLOR_TARGET
+  - ICM  _ICC_COLOR_MANAGEMENT
+  - ICR  _ICC_COLOR_REGIONS
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
 The fourth section contains the servers name identifier.
 
-As of this specification the third section must contain NCR and the 
-supported _ICC_PROFILE in X version. NCT is optional.
+As of this specification the third section must contain ICR and the 
+supported _ICC_PROFILE in X version. ICT is optional.
 
 A example of a valid atom might look like:
-_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |NCR|V0.3| compiz_colour_desktop"
+_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
 
  _ICC_DEVICE_PROFILE(_xxx):
 
