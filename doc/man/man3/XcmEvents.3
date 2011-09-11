@@ -1,4 +1,4 @@
-.TH "X Color Management Event API's" 3 "1 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management Event API's" 3 "11 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,7 +9,7 @@ X Color Management Event API's \-
 .ti -1c
 .RI "#define \fBXCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE\fP   '_ICC_DEVICE_PROFILE'"
 .br
-.RI "\fInet-color spec atoms \fP"
+.RI "\fIX Color Management spec atoms. \fP"
 .ti -1c
 .RI "#define \fBXCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE\fP   '_ICC_PROFILE'"
 .br
@@ -121,18 +121,15 @@ MIT <http://www.opensource.org/licenses/mit-license.php>
 .PP 
 .SS "#define XCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE   '_ICC_DEVICE_PROFILE'"
 .PP
-net-color spec atoms 
-.PP
+X Color Management spec atoms. 
 .SS "#define XCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE   '_ICC_PROFILE'"
 .PP
 _ICC_PROFILE_(xxx) in X spec atoms 
-.PP
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct XcmeContext_s_ \fBXcmeContext_s\fP"
 .PP
 context for parsing events 
-.PP
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBXCME_MSG_e\fP"
@@ -166,9 +163,7 @@ initial status infos
 .PP 
 .SS "\fBXcmeContext_s\fP * XcmeContext_Create (const char * display_name)"
 .PP
-allocate and initialise a event observer context structure 
-.PP
-Function XcmeContext_Create The context is needed to observe colour management events.
+allocate and initialise a event observer context structure Function XcmeContext_Create The context is needed to observe colour management events.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -198,9 +193,7 @@ libXcm: 0.3.0
 
 .SS "Display * XcmeContext_DisplayGet (\fBXcmeContext_s\fP * c)"
 .PP
-return the Display 
-.PP
-Function XcmeContext_DisplayGet 
+return the Display Function XcmeContext_DisplayGet 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -230,9 +223,7 @@ libXcm: 0.3.0
 
 .SS "int XcmeContext_DisplaySet (\fBXcmeContext_s\fP * c, Display * display)"
 .PP
-set a custom X11 Display 
-.PP
-Function XcmeContext_DisplaySet 
+set a custom X11 Display Function XcmeContext_DisplaySet 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -264,9 +255,7 @@ libXcm: 0.3.0
 
 .SS "int XcmeContext_InLoop (\fBXcmeContext_s\fP * c, XEvent * event)"
 .PP
-check for colour management events 
-.PP
-Function XcmeContext_InLoop This function needs to be called inside the X11 event loop, to observe the related events and send messages about them.
+check for colour management events Function XcmeContext_InLoop This function needs to be called inside the X11 event loop, to observe the related events and send messages about them.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -301,9 +290,7 @@ libXcm: 0.3.0
 
 .SS "\fBXcmeContext_s\fP * XcmeContext_New ()"
 .PP
-allocate a event observer context structure 
-.PP
-Function XcmeContext_New The context is needed to observe colour management events. After the allocation the context needs initialisation.
+allocate a event observer context structure Function XcmeContext_New The context is needed to observe colour management events. After the allocation the context needs initialisation.
 .PP
 \fBReturns:\fP
 .RS 4
@@ -328,9 +315,7 @@ libXcm: 0.3.0
 
 .SS "int XcmeContext_Release (\fBXcmeContext_s\fP ** c)"
 .PP
-clean owned resources 
-.PP
-Function XcmeContext_Release 
+clean owned resources Function XcmeContext_Release 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -355,9 +340,7 @@ libXcm: 0.3.0
 
 .SS "int XcmeContext_Setup (\fBXcmeContext_s\fP * c, const char * display_name)"
 .PP
-allocate and initialise a event observer context structure 
-.PP
-Function XcmeContext_Setup The initialised context is needed for observing colour management events.
+allocate and initialise a event observer context structure Function XcmeContext_Setup The initialised context is needed for observing colour management events.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -384,9 +367,7 @@ libXcm: 0.4.1
 
 .SS "int XcmeContext_WindowSet (\fBXcmeContext_s\fP * c, Window window)"
 .PP
-set a custom X11 Window 
-.PP
-Function xcmeContext_WindowSet 
+set a custom X11 Window Function xcmeContext_WindowSet 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -419,12 +400,9 @@ libXcm: 0.3.0
 .SS "const char * XcmePrintWindowName (Display * display, Window w)"
 .PP
 return a short window description text 
-.PP
 .SS "void xcmePrintWindowRegions (Display * display, Window w, int always)"
 .PP
-send a message about window regions 
-.PP
-Function xcmePrintWindowRegions The function informs about _NET_COLOR_REGIONS atom.
+send a message about window regions Function xcmePrintWindowRegions The function informs about _ICC_COLOR_REGIONS atom.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -453,9 +431,7 @@ libXcm: 0.3.0
 
 .SS "const char * XcmePrintWindowRegions (Display * display, Window w, int always)"
 .PP
-provide info text about window regions 
-.PP
-Function XcmePrintWindowRegions The function informs about _NET_COLOR_REGIONS atom.
+provide info text about window regions Function XcmePrintWindowRegions The function informs about _ICC_COLOR_REGIONS atom.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -484,9 +460,7 @@ libXcm: 0.4.3
 
 .SS "void XcmICCprofileFromMD5FuncSet (XcmICCprofileGetFromMD5_f fromMD5)"
 .PP
-plugin more informations capabilities for ICC profiles 
-.PP
-Function XcmICCprofileFromMD5FuncSet 
+plugin more informations capabilities for ICC profiles Function XcmICCprofileFromMD5FuncSet 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -511,9 +485,7 @@ libXcm: 0.3.0
 
 .SS "void XcmICCprofileGetNameFuncSet (XcmICCprofileGetName_f getName)"
 .PP
-plugin more informations capabilities for ICC profiles 
-.PP
-Function XcmICCprofileGetNameFuncSet 
+plugin more informations capabilities for ICC profiles Function XcmICCprofileGetNameFuncSet 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -538,9 +510,7 @@ libXcm: 0.3.0
 
 .SS "int XcmMessage (\fBXCME_MSG_e\fP code, const void * context, const char * format,  ...)"
 .PP
-default message function 
-.PP
-Function XcmMessage Messages are printed out to stdout console text stream.
+default message function Function XcmMessage Messages are printed out to stdout console text stream.
 .PP
 \fBReturns:\fP
 .RS 4
@@ -569,7 +539,6 @@ libXcm: 0.3.0
 .SS "int XcmMessageFuncSet (XcmMessage_f message_func)"
 .PP
 set a message function to customise messages 
-.PP
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Xcm from the source code.

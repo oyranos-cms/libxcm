@@ -71,7 +71,7 @@ typedef struct {
 } PrivColorProfile;
 
 /**
- * The XserverRegion is dereferenced only when the client sends a _NET_COLOR_MANAGEMENT
+ * The XserverRegion is dereferenced only when the client sends a _ICC_COLOR_MANAGEMENT
  * ClientMessage to its window. This allows clients to change the region as the window
  * is resized and later send _N_C_M to tell the plugin to re-fetch the region from the
  * server.
@@ -575,7 +575,7 @@ out:
 static void updateWindowStack(CompWindow *w, void *closure);
 
 /**
- * Called when the window target (_NET_COLOR_TARGET) has been changed.
+ * Called when the window target (_ICC_COLOR_TARGET) has been changed.
  */
 static void updateWindowOutput(CompWindow *w)
 {
@@ -590,7 +590,7 @@ static void updateWindowOutput(CompWindow *w)
 	unsigned long nBytes;
 	pw->output = fetchProperty(d->display, w->id, pd->netColorTarget, XA_STRING, &nBytes, False);
 
-#if defined(_NET_COLOR_DEBUG)
+#if defined(_ICC_COLOR_DEBUG)
 	oyCompLogMessage(d, "color", CompLogLevelWarn, "Updated window output, target is %s", pw->output);
 #endif
 
@@ -1039,11 +1039,11 @@ static CompBool pluginInitDisplay(CompPlugin *plugin, CompObject *object, void *
 
 	WRAP(pd, d, handleEvent, pluginHandleEvent);
 
-	pd->netColorManagement = XInternAtom(d->display, "_NET_COLOR_MANAGEMENT", False);
+	pd->netColorManagement = XInternAtom(d->display, "_ICC_COLOR_MANAGEMENT", False);
 
-	pd->netColorProfiles = XInternAtom(d->display, "_NET_COLOR_PROFILES", False);
-	pd->netColorRegions = XInternAtom(d->display, "_NET_COLOR_REGIONS", False);
-	pd->netColorTarget = XInternAtom(d->display, "_NET_COLOR_TARGET", False);
+	pd->netColorProfiles = XInternAtom(d->display, "_ICC_COLOR_PROFILES", False);
+	pd->netColorRegions = XInternAtom(d->display, "_ICC_COLOR_REGIONS", False);
+	pd->netColorTarget = XInternAtom(d->display, "_ICC_COLOR_TARGET", False);
 
 	return TRUE;
 }

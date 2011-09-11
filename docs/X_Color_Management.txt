@@ -1,5 +1,5 @@
 
-    net-color spec 0.2
+    X Color Management specification 0.3
    ====================
 
 DRAFT 1
@@ -12,22 +12,26 @@ Revision 0.1            2008-07-21  Tomas Carnecky
 Draft for Revision 0.2  2010-05-16  Kai-Uwe Behrmann
                                       clearify XcolorRegion, add references,
                                       history, date and headers,
-                                      remove XRandR, _NET_COLOR_MANAGEMENT and
-                                      _NET_COLOR_PROFILES from this version,
-                                      add _NET_COLOR_REGIONS and
-                                      _NET_COLOR_DESKTOP
+                                      remove XRandR, _ICC_COLOR_MANAGEMENT and
+                                      _ICC_COLOR_PROFILES from this version,
+                                      add _ICC_COLOR_REGIONS and
+                                      _ICC_COLOR_DESKTOP
 Draft 2  Revision 0.2   2010-08-14  Kai-Uwe Behrmann
+                                      add _ICC_DEVICE_PROFILE(_xxx)
+
+Draft 1  Revision 0.3   2011-09-11  Kai-Uwe Behrmann
                                       add _ICC_DEVICE_PROFILE(_xxx)
 
    Introduction
   --------------
 
-The net-color spec defines a protocol, which can be used by X11 clients to
-offload color correction and transformation into the compositing manager. The
-basic idea is to communicate client side regions to the X11 server.
-The regions can of this version have no ICC profile attached, which means
-a color server, typical in a compositing manager, shall not color manage 
-these regions. These regions then are in the responsibility of the application.
+The X Color Management specification defines a protocol, which can be used by 
+X11 clients to offload color correction and transformation into the 
+compositing manager. The basic idea is to communicate client side regions to 
+the X11 server.  The regions can of this version have no ICC profile attached,
+which means a color server, typical in a compositing manager, shall not color 
+manage these regions. These regions then are in the responsibility of the 
+application.
 
 
    Color Region
@@ -51,24 +55,24 @@ color managed by the application.
    Atoms
   -------
 
- _NET_COLOR_REGIONS:
+ _ICC_COLOR_REGIONS:
 
 The atom is attached to windows and lists the XcolorRegion's defined for that
 specific window. The application is responsible to update the contained 
 informations, e.g. on region resize or move inside the window.
 The type is XA_CARDINAL and values are stored in network byte order.
 
- _NET_COLOR_TARGET:
+ _ICC_COLOR_TARGET:
 
 Is attached to windows and specifies on which output the window should
 look correctly. The type is XA_STRING.
 
- _NET_COLOR_DESKTOP:
+ _ICC_COLOR_DESKTOP:
 
 The atom is attached on the root window to tell about a color servers activity.
 The content is of type XA_STRING and has four sections separated by a 
 empty space char ' '. 
-The _NET_COLOR_DESKTOP atom is a string with following usages:
+The _ICC_COLOR_DESKTOP atom is a string with following usages:
 - uniquely identify the colour server
 - tell the name of the colour server
 - tell the colour server is alive
@@ -79,10 +83,10 @@ which has set the atom.
 The second section contains time since epoch GMT as returned by time(NULL).
 The thired section contains the bar '|' separated and surrounded
 capabilities:
-  - NCP  _NET_COLOR_PROFILES
-  - NCT  _NET_COLOR_TARGET
-  - NCM  _NET_COLOR_MANAGEMENT
-  - NCR  _NET_COLOR_REGIONS
+  - NCP  _ICC_COLOR_PROFILES
+  - NCT  _ICC_COLOR_TARGET
+  - NCM  _ICC_COLOR_MANAGEMENT
+  - NCR  _ICC_COLOR_REGIONS
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
 The fourth section contains the servers name identifier.
 
@@ -90,7 +94,7 @@ As of this specification the third section must contain NCR and the
 supported _ICC_PROFILE in X version. NCT is optional.
 
 A example of a valid atom might look like:
-_NET_COLOR_DESKTOP(STRING) = "4518 1274001512 |NCR|V0.3| compiz_colour_desktop"
+_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |NCR|V0.3| compiz_colour_desktop"
 
  _ICC_DEVICE_PROFILE(_xxx):
 

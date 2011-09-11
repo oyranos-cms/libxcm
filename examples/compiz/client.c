@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 	}
 		
 
-	Atom netColorTarget = XInternAtom(dpy, "_NET_COLOR_TARGET", False);
+	Atom netColorTarget = XInternAtom(dpy, "_ICC_COLOR_TARGET", False);
 	XChangeProperty(dpy, w, netColorTarget, XA_STRING, 8, PropModeReplace, (unsigned char *) outputName[activeOutput], strlen(outputName[activeOutput]));
 
 	unsigned long nBytes = 0;

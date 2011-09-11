@@ -1,4 +1,4 @@
-.TH "XcolorProfile" 3 "1 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
+.TH "XcolorProfile" 3 "11 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -6,8 +6,8 @@ XcolorProfile \-
 .SH SYNOPSIS
 .br
 .PP
-\fC#include <Xcm.h>\fP
 .PP
+\fC#include <Xcm.h>\fP
 .SS "Data Fields"
 
 .in +1c
@@ -23,12 +23,8 @@ XcolorProfile \-
 The \fBXcolorProfile\fP typedefed structure describes a single ICC profile. The 'md5' field is used to identify the profile. The actual data follows right after the structure. 
 .SH "Field Documentation"
 .PP 
-.SS "uint32_t \fBXcolorProfile::length\fP"
-.PP
-number of bytes following, network byte order 
-.SS "uint8_t \fBXcolorProfile::md5\fP[16]"
-.PP
-ICC MD5 of the profile 
+.SS "uint32_t \fBXcolorProfile::length\fP"number of bytes following, network byte order 
+.SS "uint8_t \fBXcolorProfile::md5\fP[16]"ICC MD5 of the profile 
 
 .SH "Author"
 .PP 

@@ -44,17 +44,17 @@ Requires:  %{name}0 = %{version}
 
 %description
 The libXcm library is colour management helper for Xorg. It contains a 
-reference implementation of the net-color spec.
+reference implementation of the X Color Management specification.
 It allows to attach colour regions to X windows to communicate with colour
 servers. A EDID parser and a observer tool are included.
 
 %description -n %{name}0
-The libXcm library is a reference implementation of the net-color spec.
+The libXcm library is a reference implementation of the X Color Management specification.
 It allows to attach colour regions to X windows to communicate with colour
 servers. A EDID parser and a colour management event observer are included.
 
 %description devel
-The libXcm library is a reference implementation of the net-color spec.
+The libXcm library is a reference implementation of the X Color Management specification.
 It allows to attach colour regions to X windows to communicate with colour
 servers. A EDID parser and a colour management event observer are included.
 The package contains headers and other development files.
@@ -95,7 +95,7 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-, root, root)
 %doc AUTHORS COPYING ChangeLog README
-%doc docs/net-color-spec
+%doc docs/X_Color_Management.txt
 %{_libdir}/%{name}.so
 %dir %{_includedir}/X11/Xcm
 %{_includedir}/X11/Xcm/*.h

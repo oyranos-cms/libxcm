@@ -1,8 +1,9 @@
 libXcm:
 
-    The libXcm library contains the a reference implementation of the net-color
-    spec. The net-color spec allows to attach colour regions to X windows to 
-    communicate with colour servers.
+    The libXcm library contains the a reference implementation of the 
+    X Color Management specification. The X Color Management specification 
+    allows to attach colour regions to X windows to communicate with colour
+    servers.
 
     The XcmDDC API can be used to fetch a EDID data block from a monitor over
     a i2c communication. On Linux typical the i2c-dev module

@@ -5,7 +5,7 @@
  *  @par Copyright:
  *            2010-2011 (C) Kai-Uwe Behrmann
  *
- *  @brief    net-color spec example
+ *  @brief    X Color Management specification example
  *  @internal
  *  @author   Kai-Uwe Behrmann <ku.b@gmx.de>
  *  @par License:
@@ -13,7 +13,7 @@
  *  @since    2010/04/15
  */
 
-/* Use the net-color spec to explicitely opt-out in server side colour 
+/* Use the X Color Management specification to explicitely opt-out in server side colour 
  * management */
 
 #include <X11/Xlib.h> /* XOpenDisplay() */

@@ -54,7 +54,7 @@ DOKU =  AUTHORS \
         COPYING \
         README
 SUB_DOKU = \
-	docs/net-color-spec
+	docs/X_Color_Management.txt
 DIST_FILES = \
 	Doxyfile.in
 MAN3_GENERATED = doc/man/man3/*

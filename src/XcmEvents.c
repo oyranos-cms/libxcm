@@ -318,7 +318,7 @@ void           XcmICCprofileFromMD5FuncSet (
 /** Function XcmePrintWindowRegions
  *  @brief   provide info text about window regions
  *
- *  The function informs about _NET_COLOR_REGIONS atom.
+ *  The function informs about _ICC_COLOR_REGIONS atom.
  *
  *  @param[in]     display             X display
  *  @param[in]     w                   X window
@@ -351,7 +351,7 @@ const char * XcmePrintWindowRegions  ( Display           * display,
 
   sprintf( &text[strlen(text)], "PropertyNotify : %s    vvvvv      %s %d\n",
       XGetAtomName( display, 
-                    XInternAtom( display,"_NET_COLOR_REGIONS", False)),
+                    XInternAtom( display,"_ICC_COLOR_REGIONS", False)),
       XcmePrintWindowName( display, w ), (int)n );
 
           for(i = 0; i < (int)n; ++i)
@@ -399,7 +399,7 @@ const char * XcmePrintWindowRegions  ( Display           * display,
 /** Function xcmePrintWindowRegions
  *  @brief   send a message about window regions
  *
- *  The function informs about _NET_COLOR_REGIONS atom.
+ *  The function informs about _ICC_COLOR_REGIONS atom.
  *
  *  @param[in]     display             X display
  *  @param[in]     w                   X window
@@ -428,7 +428,7 @@ void     xcmePrintWindowRegions      ( Display           * display,
 
   DE( "PropertyNotify : %s    vvvvv      %s %d",
       XGetAtomName( display, 
-                    XInternAtom( display,"_NET_COLOR_REGIONS", False)),
+                    XInternAtom( display,"_ICC_COLOR_REGIONS", False)),
       XcmePrintWindowName( display, w ), (int)n );
 
           for(i = 0; i < (int)n; ++i)
@@ -616,11 +616,11 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
   c->root = XRootWindow( c->display, c->screen );
 
   /* define the observers interesst */
-  c->aProfile = XInternAtom( c->display, "_NET_COLOR_PROFILES", False );
-  c->aTarget = XInternAtom( c->display, "_NET_COLOR_TARGET", False );
-  c->aCM = XInternAtom( c->display, "_NET_COLOR_MANAGEMENT", False );
-  c->aRegion = XInternAtom( c->display, "_NET_COLOR_REGIONS", False );
-  c->aDesktop = XInternAtom( c->display, "_NET_COLOR_DESKTOP", False );
+  c->aProfile = XInternAtom( c->display, "_ICC_COLOR_PROFILES", False );
+  c->aTarget = XInternAtom( c->display, "_ICC_COLOR_TARGET", False );
+  c->aCM = XInternAtom( c->display, "_ICC_COLOR_MANAGEMENT", False );
+  c->aRegion = XInternAtom( c->display, "_ICC_COLOR_REGIONS", False );
+  c->aDesktop = XInternAtom( c->display, "_ICC_COLOR_DESKTOP", False );
 
   if(!has_display)
   {
@@ -651,11 +651,11 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
      "libXcm based X11 colour management system events observer%s", "");
   M( XCME_MSG_COPYRIGHT, 0,
      "(c) 2009-2010 - Kai-Uwe Behrmann  License: MIT%s", "" );
-  DS( "atom: \"_NET_COLOR_PROFILES\": %d", (int)c->aProfile );
-  DS( "atom: \"_NET_COLOR_TARGET\": %d", (int)c->aTarget );
-  DS( "atom: \"_NET_COLOR_MANAGEMENT\": %d", (int)c->aCM );
-  DS( "atom: \"_NET_COLOR_REGIONS\": %d", (int)c->aRegion );
-  DS( "atom: \"_NET_COLOR_DESKTOP\": %d %s", (int)c->aDesktop,
+  DS( "atom: \"_ICC_COLOR_PROFILES\": %d", (int)c->aProfile );
+  DS( "atom: \"_ICC_COLOR_TARGET\": %d", (int)c->aTarget );
+  DS( "atom: \"_ICC_COLOR_MANAGEMENT\": %d", (int)c->aCM );
+  DS( "atom: \"_ICC_COLOR_REGIONS\": %d", (int)c->aRegion );
+  DS( "atom: \"_ICC_COLOR_DESKTOP\": %d %s", (int)c->aDesktop,
                                           printfNetColorDesktop(c, 0) );
 
 
@@ -725,8 +725,8 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
 
   /* observe the root window as well for newly appearing windows */
   XSelectInput( c->display, c->root,
-                PropertyChangeMask |   /* _NET_COLOR_PROFILES */
-                ExposureMask );        /* _NET_COLOR_MANAGEMENT */
+                PropertyChangeMask |   /* _ICC_COLOR_PROFILES */
+                ExposureMask );        /* _ICC_COLOR_MANAGEMENT */
 
   return 0;
 }

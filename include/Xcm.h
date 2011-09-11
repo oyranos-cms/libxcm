@@ -6,7 +6,7 @@
  *            2008 (C) Tomas Carnecky
  *            2008-2010 (C) Kai-Uwe Behrmann
  *
- *  @brief    net-color spec helpers
+ *  @brief    X Color Management specfication helpers
  *  @internal
  *  @author   Tomas Carnecky
  *            Kai-Uwe Behrmann <ku.b@gmx.de>

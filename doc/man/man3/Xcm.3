@@ -1,4 +1,4 @@
-.TH "X Color Management Core API's" 3 "1 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management Core API's" 3 "11 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -45,34 +45,22 @@ X Color Management Core API's \-
 .PP 
 .SS "int XcolorProfileDelete (Display * dpy, \fBXcolorProfile\fP * profile)"
 .PP
-Decreases the ref-count of the profile. 
-.PP
-Function XcolorProfileDelete You shouldn't use the profile anymore after this call because it could have been removed from the internal database in the compositing manager. If you do, nothing bad will happen, just that color management won't work on regions that use this profile. 
+Decreases the ref-count of the profile. Function XcolorProfileDelete You shouldn't use the profile anymore after this call because it could have been removed from the internal database in the compositing manager. If you do, nothing bad will happen, just that color management won't work on regions that use this profile. 
 .SS "int XcolorProfileUpload (Display * dpy, \fBXcolorProfile\fP * profile)"
 .PP
-Uploads the profile into all screens of the display. 
-.PP
-Function XcolorProfileUpload Uploads the profile into all screens of the display. Profiles are ref-counted inside the compositing manager, so make sure to call \fBXcolorProfileDelete()\fP before your application exits or when you don't need the profile anymore. 
+Uploads the profile into all screens of the display. Function XcolorProfileUpload Uploads the profile into all screens of the display. Profiles are ref-counted inside the compositing manager, so make sure to call \fBXcolorProfileDelete()\fP before your application exits or when you don't need the profile anymore. 
 .SS "int XcolorRegionActivate (Display * dpy, Window win, unsigned long start, unsigned long count)"
 .PP
-Activates regions. 
-.PP
-Function XcolorRegionActivate Activates 'count' regions starting at positiong 'start' in the stack. Unlike the other functions it does not check whether 'start + count' extends beyond the stack end. To disable all regions pass zero to 'count'. 
+Activates regions. Function XcolorRegionActivate Activates 'count' regions starting at positiong 'start' in the stack. Unlike the other functions it does not check whether 'start + count' extends beyond the stack end. To disable all regions pass zero to 'count'. 
 .SS "int XcolorRegionDelete (Display * dpy, Window win, unsigned long start, unsigned long count)"
 .PP
-Deletes regions. 
-.PP
-Function XcolorRegionDelete Deletes 'count' regions starting at 'start' in the stack. If 'start + count' in beyond the stack end, nothing will be done and the function returns '-1'. 
+Deletes regions. Function XcolorRegionDelete Deletes 'count' regions starting at 'start' in the stack. If 'start + count' in beyond the stack end, nothing will be done and the function returns '-1'. 
 .SS "\fBXcolorRegion\fP* XcolorRegionFetch (Display * dpy, Window win, unsigned long * nRegions)"
 .PP
-Fetches the existing regions. 
-.PP
-Function XcolorRegionFetch Fetches the existing regions and returns an array of 'XcolorRegion'. After you're done, free the array using XFree(). The number of regions is put into 'nRegions'. 
+Fetches the existing regions. Function XcolorRegionFetch Fetches the existing regions and returns an array of 'XcolorRegion'. After you're done, free the array using XFree(). The number of regions is put into 'nRegions'. 
 .SS "int XcolorRegionInsert (Display * dpy, Window win, unsigned long pos, \fBXcolorRegion\fP * region, unsigned long nRegions)"
 .PP
-Inserts the supplied regions into the stack. 
-.PP
-Function XcolorRegionInsert Inserts the supplied regions into the stack at the position 'pos', shifting the existing profiles upwards in the stack. If 'pos' is beyond the stack end, nothing will be done and the function returns '-1'. 
+Inserts the supplied regions into the stack. Function XcolorRegionInsert Inserts the supplied regions into the stack at the position 'pos', shifting the existing profiles upwards in the stack. If 'pos' is beyond the stack end, nothing will be done and the function returns '-1'. 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Xcm from the source code.

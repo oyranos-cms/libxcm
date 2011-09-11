@@ -33,7 +33,7 @@ extern "C" {
  *  @{
  */
 
-/** @brief net-color spec atoms */
+/** @brief X Color Management spec atoms */
 #define XCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE "_ICC_DEVICE_PROFILE"
 /** @brief _ICC_PROFILE_(xxx) in X spec atoms */
 #define XCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE          "_ICC_PROFILE"
