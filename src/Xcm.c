@@ -24,7 +24,7 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 	uint32_t length = htonl(profile->length);
         int i;
 
-	Atom netColorProfiles = XInternAtom(dpy, "_ICC_COLOR_PROFILES", False);
+	Atom netColorProfiles = XInternAtom(dpy, XCM_COLOR_PROFILES, False);
 
 	for (i = 0; i < ScreenCount(dpy); ++i) {
 		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile) + length);
@@ -35,7 +35,7 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 
 int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 {
-	Atom netColorProfiles = XInternAtom(dpy, "_ICC_COLOR_PROFILES", False);
+	Atom netColorProfiles = XInternAtom(dpy, XCM_COLOR_PROFILES, False);
         int i;
 
 	/* To delete a profile, send the header with a zero-length. */
@@ -52,7 +52,7 @@ int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 
 int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion *region, unsigned long nRegions)
 {
-	Atom netColorRegions = XInternAtom(dpy, "_ICC_COLOR_REGIONS", False);
+	Atom netColorRegions = XInternAtom(dpy, XCM_COLOR_REGIONS, False);
 	XcolorRegion *ptr;
 	int result;
 
@@ -93,7 +93,7 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegions)
 {
 
-	Atom actual, netColorRegions = XInternAtom(dpy, "_ICC_COLOR_REGIONS", False);
+	Atom actual, netColorRegions = XInternAtom(dpy, XCM_COLOR_REGIONS, False);
 
 	unsigned long left, nBytes;
 	unsigned char *data;
@@ -110,7 +110,7 @@ XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegion
 
 int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned long count)
 {
-	Atom netColorRegions = XInternAtom(dpy, "_ICC_COLOR_REGIONS", False);
+	Atom netColorRegions = XInternAtom(dpy, XCM_COLOR_REGIONS, False);
 	int result;
 
 	unsigned long nRegions;
