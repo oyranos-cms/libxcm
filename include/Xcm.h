@@ -4,7 +4,7 @@
  *
  *  @par Copyright:
  *            2008 (C) Tomas Carnecky
- *            2008-2010 (C) Kai-Uwe Behrmann
+ *            2008-2011 (C) Kai-Uwe Behrmann
  *
  *  @brief    X Color Management specfication helpers
  *  @internal
@@ -49,6 +49,12 @@ typedef struct {
 } XcolorProfile;
 
 /**
+ *    The XCM_COLOR_PROFILES macro
+ * represents a atom name for under which XcolorProfile data can be stored.
+ */
+#define XCM_COLOR_PROFILES "_ICC_COLOR_PROFILES"
+
+/**
  *    The XcolorRegion typedefed structure
  * describes a single region with an attached profile. The region is
  * evaluated when the client enables the region and not when the region
@@ -61,6 +67,11 @@ typedef struct {
 	uint8_t md5[16];  /**< ICC MD5 of the associated profile	*/
 } XcolorRegion;
 
+/**
+ *    The XCM_COLOR_REGIONS macro
+ * represents a atom name for under which XcolorRegions data can be stored.
+ */
+#define XCM_COLOR_REGIONS "_ICC_COLOR_REGIONS"
 
 /** Function  XcolorProfileUpload
  *  @brief    Uploads the profile into all screens of the display.
@@ -119,6 +130,65 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
  * the stack end. To disable all regions pass zero to 'count'.
  */
 int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned long count);
+
+/**
+ *    The XCM_COLOR_TARGET macro
+ * is attached to windows and specifies on which output the window should
+ * look correctly. The type is XA_STRING.
+ */
+#define XCM_COLOR_TARGET "_ICC_COLOR_TARGET"
+
+/**
+ *    The XCM_COLOR_DESKTOP macro
+The atom is attached on the root window to tell about a color servers activity.
+The content is of type XA_STRING and has four sections separated by a 
+empty space char ' '. 
+The _ICC_COLOR_DESKTOP atom is a string with following usages:
+- uniquely identify the colour server
+- tell the name of the colour server
+- tell the colour server is alive
+All sections are separated by one space char ' ' for easy parsing.
+
+The first section contains the process id (pid_t) of the color server process, 
+which has set the atom.
+The second section contains time since epoch GMT as returned by time(NULL).
+The thired section contains the bar '|' separated and surrounded
+capabilities:
+  - ICP  _ICC_COLOR_PROFILES
+  - ICT  _ICC_COLOR_TARGET
+  - ICM  _ICC_COLOR_MANAGEMENT
+  - ICR  _ICC_COLOR_REGIONS
+  - V0.3 indicates version compliance to the _ICC_Profile in X spec
+The fourth section contains the servers name identifier.
+
+As of this specification the third section must contain ICR and the 
+supported _ICC_PROFILE in X version. ICT is optional.
+
+A example of a valid atom might look like:
+_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
+ */
+#define XCM_COLOR_DESKTOP "_ICC_COLOR_DESKTOP"
+
+/**
+ *    The _ICC_DEVICE_PROFILE atom
+The atom will hold a native ICC profile with the exposed device 
+characteristics at the compositing window manager level. 
+The colour server shall if no _ICC_DEVICE_PROFILE(_xxx) is set, copy the 
+_ICC_PROFILE(_xxx) profiles to each equivalent _ICC_DEVICE_PROFILE(_xxx) atom.
+The _ICC_PROFILE(_xxx) profiles shall be replaced by a sRGB ICC profile.
+The counting in the atoms (_xxx) name section follows the rules outlined in 
+the ICC Profile in X recommendation. After finishing the session the the old
+state has to be recovered by copying any _ICC_DEVICE_PROFILE(_xxx) atoms 
+content into the appropriate _ICC_PROFILE(_xxx) atoms and removing all
+_ICC_DEVICE_PROFILE(_xxx) atoms.
+The colour server must be aware about change property events indicating that
+a _ICC_PROFILE(_xxx) atom has changed by a external application and needs to
+move that profile to the appropriate _ICC_DEVICE_PROFILE(_xxx) atom and set
+the _ICC_PROFILE(_xxx) atom to sRGB as well.
+The modification of the _ICC_DEVICE_PROFILE(_xxx) atoms by external applications
+is undefined.
+ */
+#define XCM_DEVICE_PROFILE "_ICC_DEVICE_PROFILE"
 
 /** 
  *  @} *//*Xcm
