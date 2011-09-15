@@ -62,7 +62,7 @@ The package contains headers and other development files.
 
 
 %prep
-%setup -p
+%setup -q
 
 %build
 export CFLAGS="%{optflags}"
