@@ -1,4 +1,4 @@
-.TH "X Color Management DDC/CI communication API's" 3 "11 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management DDC/CI communication API's" 3 "15 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -62,7 +62,9 @@ MIT <http://www.opensource.org/licenses/mit-license.php>
 .PP 
 .SS "enum \fBXCM_DDC_ERROR_e\fP"
 .PP
-errors specific to XcmDDC \fBVersion:\fP
+errors specific to XcmDDC 
+.PP
+\fBVersion:\fP
 .RS 4
 libXcm: 0.4.0 
 .RE
@@ -100,7 +102,9 @@ wrong EDID header
 .PP 
 .SS "const char * XcmDDCErrorToString (\fBXCM_DDC_ERROR_e\fP error)"
 .PP
-convert enum into a meaningful text string Function XcmDDCErrorToString 
+convert enum into a meaningful text string 
+.PP
+Function XcmDDCErrorToString 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -130,7 +134,9 @@ libXcm: 0.4.0
 
 .SS "\fBXCM_DDC_ERROR_e\fP XcmDDCgetEDID (const char * device_name, char ** data, size_t * size)"
 .PP
-obtain all monitors i2c device names Function XcmDDCgetEDID 
+obtain all monitors i2c device names 
+.PP
+Function XcmDDCgetEDID 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -164,7 +170,9 @@ libXcm: 0.4.0
 
 .SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (char *** list, int * count)"
 .PP
-obtain all monitors i2c device names Function XcmDDClist 
+obtain all monitors i2c device names 
+.PP
+Function XcmDDClist 
 .PP
 \fBParameters:\fP
 .RS 4

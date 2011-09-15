@@ -1,4 +1,4 @@
-.TH "X Color Management Core API's" 3 "11 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management Core API's" 3 "15 Sep 2011" "Version 0.4.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -62,7 +62,9 @@ X Color Management Core API's \-
 .in -1c
 .SH "Define Documentation"
 .PP 
-.SS "#define XCM_COLOR_DESKTOP   '_ICC_COLOR_DESKTOP'"The XCM_COLOR_DESKTOP macro The atom is attached on the root window to tell about a color servers activity. The content is of type XA_STRING and has four sections separated by a empty space char ' '. The _ICC_COLOR_DESKTOP atom is a string with following usages:
+.SS "#define XCM_COLOR_DESKTOP   '_ICC_COLOR_DESKTOP'"
+.PP
+The XCM_COLOR_DESKTOP macro The atom is attached on the root window to tell about a color servers activity. The content is of type XA_STRING and has four sections separated by a empty space char ' '. The _ICC_COLOR_DESKTOP atom is a string with following usages:
 .IP "\(bu" 2
 uniquely identify the colour server
 .IP "\(bu" 2
@@ -87,30 +89,50 @@ V0.3 indicates version compliance to the _ICC_Profile in X spec The fourth secti
 As of this specification the third section must contain ICR and the supported _ICC_PROFILE in X version. ICT is optional.
 .PP
 A example of a valid atom might look like: _ICC_COLOR_DESKTOP(STRING) = '4518 1274001512 |ICR|V0.3| compiz_colour_desktop' 
-.SS "#define XCM_COLOR_PROFILES   '_ICC_COLOR_PROFILES'"The XCM_COLOR_PROFILES macro represents a atom name for under which \fBXcolorProfile\fP data can be stored. 
-.SS "#define XCM_COLOR_REGIONS   '_ICC_COLOR_REGIONS'"The XCM_COLOR_REGIONS macro represents a atom name for under which XcolorRegions data can be stored. 
-.SS "#define XCM_COLOR_TARGET   '_ICC_COLOR_TARGET'"The XCM_COLOR_TARGET macro is attached to windows and specifies on which output the window should look correctly. The type is XA_STRING. 
-.SS "#define XCM_DEVICE_PROFILE   '_ICC_DEVICE_PROFILE'"The _ICC_DEVICE_PROFILE atom The atom will hold a native ICC profile with the exposed device characteristics at the compositing window manager level. The colour server shall if no _ICC_DEVICE_PROFILE(_xxx) is set, copy the _ICC_PROFILE(_xxx) profiles to each equivalent _ICC_DEVICE_PROFILE(_xxx) atom. The _ICC_PROFILE(_xxx) profiles shall be replaced by a sRGB ICC profile. The counting in the atoms (_xxx) name section follows the rules outlined in the ICC Profile in X recommendation. After finishing the session the the old state has to be recovered by copying any _ICC_DEVICE_PROFILE(_xxx) atoms content into the appropriate _ICC_PROFILE(_xxx) atoms and removing all _ICC_DEVICE_PROFILE(_xxx) atoms. The colour server must be aware about change property events indicating that a _ICC_PROFILE(_xxx) atom has changed by a external application and needs to move that profile to the appropriate _ICC_DEVICE_PROFILE(_xxx) atom and set the _ICC_PROFILE(_xxx) atom to sRGB as well. The modification of the _ICC_DEVICE_PROFILE(_xxx) atoms by external applications is undefined. 
+.SS "#define XCM_COLOR_PROFILES   '_ICC_COLOR_PROFILES'"
+.PP
+The XCM_COLOR_PROFILES macro represents a atom name for under which \fBXcolorProfile\fP data can be stored. 
+.SS "#define XCM_COLOR_REGIONS   '_ICC_COLOR_REGIONS'"
+.PP
+The XCM_COLOR_REGIONS macro represents a atom name for under which XcolorRegions data can be stored. 
+.SS "#define XCM_COLOR_TARGET   '_ICC_COLOR_TARGET'"
+.PP
+The XCM_COLOR_TARGET macro is attached to windows and specifies on which output the window should look correctly. The type is XA_STRING. 
+.SS "#define XCM_DEVICE_PROFILE   '_ICC_DEVICE_PROFILE'"
+.PP
+The _ICC_DEVICE_PROFILE atom The atom will hold a native ICC profile with the exposed device characteristics at the compositing window manager level. The colour server shall if no _ICC_DEVICE_PROFILE(_xxx) is set, copy the _ICC_PROFILE(_xxx) profiles to each equivalent _ICC_DEVICE_PROFILE(_xxx) atom. The _ICC_PROFILE(_xxx) profiles shall be replaced by a sRGB ICC profile. The counting in the atoms (_xxx) name section follows the rules outlined in the ICC Profile in X recommendation. After finishing the session the the old state has to be recovered by copying any _ICC_DEVICE_PROFILE(_xxx) atoms content into the appropriate _ICC_PROFILE(_xxx) atoms and removing all _ICC_DEVICE_PROFILE(_xxx) atoms. The colour server must be aware about change property events indicating that a _ICC_PROFILE(_xxx) atom has changed by a external application and needs to move that profile to the appropriate _ICC_DEVICE_PROFILE(_xxx) atom and set the _ICC_PROFILE(_xxx) atom to sRGB as well. The modification of the _ICC_DEVICE_PROFILE(_xxx) atoms by external applications is undefined. 
 .SH "Function Documentation"
 .PP 
 .SS "int XcolorProfileDelete (Display * dpy, \fBXcolorProfile\fP * profile)"
 .PP
-Decreases the ref-count of the profile. Function XcolorProfileDelete You shouldn't use the profile anymore after this call because it could have been removed from the internal database in the compositing manager. If you do, nothing bad will happen, just that color management won't work on regions that use this profile. 
+Decreases the ref-count of the profile. 
+.PP
+Function XcolorProfileDelete You shouldn't use the profile anymore after this call because it could have been removed from the internal database in the compositing manager. If you do, nothing bad will happen, just that color management won't work on regions that use this profile. 
 .SS "int XcolorProfileUpload (Display * dpy, \fBXcolorProfile\fP * profile)"
 .PP
-Uploads the profile into all screens of the display. Function XcolorProfileUpload Uploads the profile into all screens of the display. Profiles are ref-counted inside the compositing manager, so make sure to call \fBXcolorProfileDelete()\fP before your application exits or when you don't need the profile anymore. 
+Uploads the profile into all screens of the display. 
+.PP
+Function XcolorProfileUpload Uploads the profile into all screens of the display. Profiles are ref-counted inside the compositing manager, so make sure to call \fBXcolorProfileDelete()\fP before your application exits or when you don't need the profile anymore. 
 .SS "int XcolorRegionActivate (Display * dpy, Window win, unsigned long start, unsigned long count)"
 .PP
-Activates regions. Function XcolorRegionActivate Activates 'count' regions starting at positiong 'start' in the stack. Unlike the other functions it does not check whether 'start + count' extends beyond the stack end. To disable all regions pass zero to 'count'. 
+Activates regions. 
+.PP
+Function XcolorRegionActivate Activates 'count' regions starting at positiong 'start' in the stack. Unlike the other functions it does not check whether 'start + count' extends beyond the stack end. To disable all regions pass zero to 'count'. 
 .SS "int XcolorRegionDelete (Display * dpy, Window win, unsigned long start, unsigned long count)"
 .PP
-Deletes regions. Function XcolorRegionDelete Deletes 'count' regions starting at 'start' in the stack. If 'start + count' in beyond the stack end, nothing will be done and the function returns '-1'. 
+Deletes regions. 
+.PP
+Function XcolorRegionDelete Deletes 'count' regions starting at 'start' in the stack. If 'start + count' in beyond the stack end, nothing will be done and the function returns '-1'. 
 .SS "\fBXcolorRegion\fP* XcolorRegionFetch (Display * dpy, Window win, unsigned long * nRegions)"
 .PP
-Fetches the existing regions. Function XcolorRegionFetch Fetches the existing regions and returns an array of 'XcolorRegion'. After you're done, free the array using XFree(). The number of regions is put into 'nRegions'. 
+Fetches the existing regions. 
+.PP
+Function XcolorRegionFetch Fetches the existing regions and returns an array of 'XcolorRegion'. After you're done, free the array using XFree(). The number of regions is put into 'nRegions'. 
 .SS "int XcolorRegionInsert (Display * dpy, Window win, unsigned long pos, \fBXcolorRegion\fP * region, unsigned long nRegions)"
 .PP
-Inserts the supplied regions into the stack. Function XcolorRegionInsert Inserts the supplied regions into the stack at the position 'pos', shifting the existing profiles upwards in the stack. If 'pos' is beyond the stack end, nothing will be done and the function returns '-1'. 
+Inserts the supplied regions into the stack. 
+.PP
+Function XcolorRegionInsert Inserts the supplied regions into the stack at the position 'pos', shifting the existing profiles upwards in the stack. If 'pos' is beyond the stack end, nothing will be done and the function returns '-1'. 
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Xcm from the source code.
