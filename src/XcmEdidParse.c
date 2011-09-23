@@ -342,6 +342,8 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
       sprintf(t, "Hewlett Packard");
     else if(!strcmp(mnf,"NEC"))
       sprintf(t, "NEC");
+    else if(!strcmp(mnf,"LGD"))
+      sprintf(t, "LG Display");
     else if(!strcmp(mnf,"LEN"))
       sprintf(t, "Lenovo");
     else if(!strcmp(mnf,"LPL"))
