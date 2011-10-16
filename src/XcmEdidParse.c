@@ -368,6 +368,8 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
       sprintf(t, "Quatographic");
     else if(!memcmp(mnf,"SAM",3))
       sprintf(t, "Samsung");
+    else if(!memcmp(mnf,"SEC",3))
+      sprintf(t, "Seiko Epson Corporation");
     else if(!memcmp(mnf,"SNI",3))
       sprintf(t, "Siemens Nixdorf");
     else if(!memcmp(mnf,"SNY",3))
