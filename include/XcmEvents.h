@@ -52,6 +52,9 @@ XcmeContext_s *
          XcmeContext_Create          ( const char        * display_name );
 int      XcmeContext_Setup           ( XcmeContext_s     * c,
                                        const char        * display_name );
+int      XcmeContext_Setup2          ( XcmeContext_s     * c,
+                                       const char        * display_name,
+                                       int                 flags );
 int      XcmeContext_Release         ( XcmeContext_s    ** c );
 int      XcmeContext_InLoop          ( XcmeContext_s     * c,
                                        XEvent            * event );

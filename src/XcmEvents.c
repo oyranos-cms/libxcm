@@ -5,7 +5,7 @@
  *  @par License: 
  *             MIT <http://www.opensource.org/licenses/mit-license.php>
  *  @par Copyright:
-               2009-2010 - Kai-Uwe Behrmann <ku.b@gmx.de>
+               2009-2011 - Kai-Uwe Behrmann <ku.b@gmx.de>
  *
  */
 
@@ -565,38 +565,37 @@ XcmeContext_s * XcmeContext_Create   ( const char        * display_name )
   return c;
 }
 
-/** Function XcmeContext_Setup
+/** Function XcmeContext_Setup2
  *  @brief   allocate and initialise a event observer context structure
  *
  *  The initialised context is needed for observing colour management events.
+ *  No initial events are sent.
  *
  *  @param[in,out] c                   a event observer context
  *                                     A existing X11 display will be honoured.
  *  @param[in]     display_name        a valid X11 display name or NULL;
  *                                     With a existing X11 display inside c,
  *                                     this option will be ignored.
+ *  @param[in]     flags               unused
  *
- *  @version libXcm: 0.4.1
- *  @since   2009/00/00 (libXcm: 0.3.0)
- *  @date    2011/05/06
+ *  @version libXcm: 0.5.0
+ *  @since   2011/10/26 (libXcm: 0.5.0)
+ *  @date    2011/10/26
  */
-int      XcmeContext_Setup           ( XcmeContext_s    * c,
-                                       const char        * display_name )
+int      XcmeContext_Setup2          ( XcmeContext_s     * c,
+                                       const char        * display_name,
+                                       int                 flags )
 {
   /* Open the display and create our window. */
   Visual * vis = 0;
   Colormap cmap = 0;
   XSetWindowAttributes attrs;
-  Status status = 0;
   Atom actual;
   int format,
       has_display = 0;
   unsigned long left, n;
   unsigned char * data;
 
-  /*signal( SIGINT, mySignalHandler );
-  signal( SIGINT, SIG_IGN );*/
-  /*XSetErrorHandler(myXErrorHandler);*/
   XSetErrorHandler( XmuSimpleErrorHandler );
 
   if(c->display)
@@ -634,6 +633,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
     c->w = XCreateWindow( c->display, c->root, 0, 0, 300, 300, 5, 24,
                           InputOutput, DefaultVisual( c->display, c->screen ),
                           CWBorderPixel | CWColormap | CWEventMask, &attrs);
+
     /*XMapWindow( display, w );*/
   }
 
@@ -645,6 +645,37 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
   if(!data || !n)
     DERR( "\nThe extented ICCCM hint _NET_CLIENT_LIST atom is %s\n"
           "!!! xcmevents will work limited !!!\n", n ? "missed" : "zero" );
+
+  /* observe the root window as well for newly appearing windows */
+  XSelectInput( c->display, c->root,
+                PropertyChangeMask |   /* _ICC_COLOR_PROFILES */
+                ExposureMask );        /* _ICC_COLOR_MANAGEMENT */
+
+  return 0;
+}
+
+/** Function XcmeContext_Setup
+ *  @brief   allocate and initialise a event observer context structure
+ *
+ *  The initialised context is needed for observing colour management events.
+ *
+ *  @param[in,out] c                   a event observer context
+ *                                     A existing X11 display will be honoured.
+ *  @param[in]     display_name        a valid X11 display name or NULL;
+ *                                     With a existing X11 display inside c,
+ *                                     this option will be ignored.
+ *
+ *  @version libXcm: 0.4.1
+ *  @since   2009/00/00 (libXcm: 0.3.0)
+ *  @date    2011/05/06
+ */
+int      XcmeContext_Setup           ( XcmeContext_s    * c,
+                                       const char        * display_name )
+{
+  /* Open the display and create our window. */
+  Status status = 0;
+
+  XcmeContext_Setup2(c, display_name, 0);
 
   /* print some general information */
   M( XCME_MSG_TITLE, 0,
@@ -722,11 +753,6 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
 
     free( children_return );
   }
-
-  /* observe the root window as well for newly appearing windows */
-  XSelectInput( c->display, c->root,
-                PropertyChangeMask |   /* _ICC_COLOR_PROFILES */
-                ExposureMask );        /* _ICC_COLOR_MANAGEMENT */
 
   return 0;
 }
