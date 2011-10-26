@@ -623,6 +623,9 @@ int      XcmeContext_Setup2          ( XcmeContext_s     * c,
 
   if(!has_display)
   {
+    char * strings[] = {"XcmEvents",NULL};
+    XTextProperty text;
+
     vis = DefaultVisual( c->display, c->screen );
     cmap = XCreateColormap( c->display, c->root, vis, AllocNone );
     attrs.colormap = cmap;
@@ -634,6 +637,8 @@ int      XcmeContext_Setup2          ( XcmeContext_s     * c,
                           InputOutput, DefaultVisual( c->display, c->screen ),
                           CWBorderPixel | CWColormap | CWEventMask, &attrs);
 
+    if(XStringListToTextProperty( strings, 1, &text))
+      XSetWMName( c->display, c->w, &text );
     /*XMapWindow( display, w );*/
   }
 
