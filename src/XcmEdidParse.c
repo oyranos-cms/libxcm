@@ -318,55 +318,61 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
 
   {
     t = (char*)malloc( 80 );
-    if(!strcmp(mnf,"ACR"))
+    if(!memcmp(mnf,"ACR",3))
       sprintf(t, "Acer");
-    else if(!strcmp(mnf,"AUO"))
+    else if(!memcmp(mnf,"AUO",3))
       sprintf(t, "AU Optronics");
-    else if(!strcmp(mnf,"APP"))
+    else if(!memcmp(mnf,"APP",3))
       sprintf(t, "Apple");
-    else if(!strcmp(mnf,"BDS"))
+    else if(!memcmp(mnf,"BDS",3))
       sprintf(t, "Barco");
-    else if(!strcmp(mnf,"CPQ"))
+    else if(!memcmp(mnf,"CPQ",3))
       sprintf(t, "COMPAQ");
-    else if(!strcmp(mnf,"DEC"))
+    else if(!memcmp(mnf,"DEC",3))
       sprintf(t, "Digital Equipment Corporation");
-    else if(!strcmp(mnf,"DEL"))
+    else if(!memcmp(mnf,"DEL",3))
       sprintf(t, "Dell Computer");
-    else if(!strcmp(mnf,"DWE"))
+    else if(!memcmp(mnf,"DWE",3))
       sprintf(t, "Daewoo");
-    else if(!strcmp(mnf,"EIZ"))
+    else if(!memcmp(mnf,"EIZ",3))
       sprintf(t, "EIZO");
-    else if(!strcmp(mnf,"HSD"))
+    else if(!memcmp(mnf,"GSM",3))
+      sprintf(t, "Goldstar Company Ltd"); /* as per gnome-desktop */
+    else if(!memcmp(mnf,"HSD",3))
       sprintf(t, "HannStar");
-    else if(!strcmp(mnf,"HWP"))
+    else if(!memcmp(mnf,"HWP",3))
       sprintf(t, "Hewlett Packard");
-    else if(!strcmp(mnf,"NEC"))
+    else if(!memcmp(mnf,"NEC",3))
       sprintf(t, "NEC");
-    else if(!strcmp(mnf,"LGD"))
+    else if(!memcmp(mnf,"LGD",3))
       sprintf(t, "LG Display");
-    else if(!strcmp(mnf,"LEN"))
+    else if(!memcmp(mnf,"LGE",3))
+      sprintf(t, "LG Electronics");
+    else if(!memcmp(mnf,"LEN",3))
       sprintf(t, "Lenovo");
-    else if(!strcmp(mnf,"LPL"))
+    else if(!memcmp(mnf,"LPL",3))
       sprintf(t, "LG Philips");
-    else if(!strcmp(mnf,"MEI"))
+    else if(!memcmp(mnf,"MEI",3))
       sprintf(t, "Panasonic");
-    else if(!strcmp(mnf,"MEL"))
+    else if(!memcmp(mnf,"MEL",3))
       sprintf(t, "Mitsubishi");
-    else if(!strcmp(mnf,"MID"))
+    else if(!memcmp(mnf,"MID",3))
       sprintf(t, "miro");
-    else if(!strcmp(mnf,"NOK"))
+    else if(!memcmp(mnf,"NOK",3))
       sprintf(t, "Nokia");
-    else if(!strcmp(mnf,"NVD"))
+    else if(!memcmp(mnf,"NVD",3))
       sprintf(t, "Nvidia");
-    else if(!strcmp(mnf,"PHL"))
+    else if(!memcmp(mnf,"PHL",3))
       sprintf(t, "Philips");
-    else if(!strcmp(mnf,"QUA"))
+    else if(!memcmp(mnf,"QUA",3))
       sprintf(t, "Quatographic");
-    else if(!strcmp(mnf,"SAM"))
+    else if(!memcmp(mnf,"SAM",3))
       sprintf(t, "Samsung");
-    else if(!strcmp(mnf,"SNI"))
+    else if(!memcmp(mnf,"SEC",3))
+      sprintf(t, "Seiko Epson Corporation");
+    else if(!memcmp(mnf,"SNI",3))
       sprintf(t, "Siemens Nixdorf");
-    else if(!strcmp(mnf,"SNY"))
+    else if(!memcmp(mnf,"SNY",3))
       sprintf(t, "Sony");
     else
       sprintf(t, "%s", mnf);
