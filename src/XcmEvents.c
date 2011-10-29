@@ -620,7 +620,7 @@ int      XcmeContext_Setup2          ( XcmeContext_s     * c,
   c->aCM = XInternAtom( c->display, "_ICC_COLOR_MANAGEMENT", False );
   c->aRegion = XInternAtom( c->display, XCM_COLOR_REGIONS, False );
   c->aDesktop = XInternAtom( c->display, XCM_COLOR_DESKTOP, False );
-  c->aAdvanced = XInternAtom(c->display, XCM_ICC_COLOUR_DESKTOP_ADVANCED,False);
+  c->aAdvanced = XInternAtom(c->display, XCM_COLOUR_DESKTOP_ADVANCED,False);
 
   if(!has_display)
   {
@@ -692,7 +692,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
   DS( "atom: \""XCM_COLOR_TARGET"\": %d", (int)c->aTarget );
   DS( "atom: \"_ICC_COLOR_MANAGEMENT\": %d", (int)c->aCM );
   DS( "atom: \""XCM_COLOR_REGIONS"\": %d", (int)c->aRegion );
-  DS( "atom: \""XCM_ICC_COLOUR_DESKTOP_ADVANCED"\": %d", (int)c->aAdvanced );
+  DS( "atom: \""XCM_COLOUR_DESKTOP_ADVANCED"\": %d", (int)c->aAdvanced );
   DS( "atom: \""XCM_COLOR_DESKTOP"\": %d %s", (int)c->aDesktop,
                                           printfNetColorDesktop(c, 0) );
 
