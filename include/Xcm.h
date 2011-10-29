@@ -158,6 +158,7 @@ capabilities:
   - ICT  _ICC_COLOR_TARGET
   - ICM  _ICC_COLOR_MANAGEMENT
   - ICR  _ICC_COLOR_REGIONS
+  - ICA  _ICC_COLOR_DISPLAY_ADVANCED
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
 The fourth section contains the servers name identifier.
 

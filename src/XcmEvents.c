@@ -80,7 +80,7 @@ struct XcmeContext_s_ {
   Window * Windows;
   Window w;
   pid_t old_pid;
-  Atom aProfile, aTarget, aCM, aRegion, aDesktop;
+  Atom aProfile, aTarget, aCM, aRegion, aDesktop, aAdvanced;
 };
 
 static inline XcolorProfile *
@@ -534,7 +534,7 @@ XcmeContext_s * XcmeContext_New      ( )
   c->Windows = 0;
   c->w = 0;
   c->old_pid = 0;
-  /*c->aProfile, c->aTarget, c->aCM, c->aRegion, c->aDesktop;*/
+  /*c->aProfile, c->aTarget, c->aCM, c->aRegion, c->aDesktop;, c->aAdvanced*/
 
   return c;
 }
@@ -620,6 +620,7 @@ int      XcmeContext_Setup2          ( XcmeContext_s     * c,
   c->aCM = XInternAtom( c->display, "_ICC_COLOR_MANAGEMENT", False );
   c->aRegion = XInternAtom( c->display, XCM_COLOR_REGIONS, False );
   c->aDesktop = XInternAtom( c->display, XCM_COLOR_DESKTOP, False );
+  c->aAdvanced = XInternAtom(c->display, XCM_ICC_COLOUR_DESKTOP_ADVANCED,False);
 
   if(!has_display)
   {
@@ -691,6 +692,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
   DS( "atom: \""XCM_COLOR_TARGET"\": %d", (int)c->aTarget );
   DS( "atom: \"_ICC_COLOR_MANAGEMENT\": %d", (int)c->aCM );
   DS( "atom: \""XCM_COLOR_REGIONS"\": %d", (int)c->aRegion );
+  DS( "atom: \""XCM_ICC_COLOUR_DESKTOP_ADVANCED"\": %d", (int)c->aAdvanced );
   DS( "atom: \""XCM_COLOR_DESKTOP"\": %d %s", (int)c->aDesktop,
                                           printfNetColorDesktop(c, 0) );
 
@@ -954,6 +956,12 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
                 &n, &left, &data );
         n += left;
 
+        if(event->xproperty.atom == c->aAdvanced)
+        r = XGetWindowProperty( display, event->xany.window,
+               event->xproperty.atom, 0, ~0, False, XA_STRING,&actual,&format,
+                &n, &left, &data );
+        n += left;
+
         if       ( event->xproperty.atom == c->aTarget )
         {
           char * text;
@@ -1049,6 +1057,12 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
           }
           if(name_alloced)
             free(name_alloced);
+
+        } else if( event->xproperty.atom == c->aAdvanced )
+        {
+          DE( "PropertyNotify : %s   %s   %s",
+               actual_name,
+               data, XcmePrintWindowName( display, event->xany.window ) );
         }
 
         if(data) XFree(data);

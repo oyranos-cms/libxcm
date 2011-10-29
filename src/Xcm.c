@@ -4,7 +4,7 @@
  *
  *  @par Copyright:
  *            2008 (C) Tomas Carnecky
- *            2008-2010 (C) Kai-Uwe Behrmann
+ *            2008-2011 (C) Kai-Uwe Behrmann
  *
  *  @brief    X Color Management specification helpers
  *  @internal
