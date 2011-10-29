@@ -20,7 +20,11 @@ Draft 2  Revision 0.2   2010-08-14  Kai-Uwe Behrmann
                                       add _ICC_DEVICE_PROFILE(_xxx)
 
 Draft 1  Revision 0.3   2011-09-11  Kai-Uwe Behrmann
-                                      add _ICC_DEVICE_PROFILE(_xxx)
+                                      rename _NET prefix to _ICC
+
+Draft 2  Revision 0.3   2011-10-29  Kai-Uwe Behrmann
+                                      describe _ICC_COLOR_DISPLAY_ADVANCED,
+                                      readd _ICC_COLOR_PROFILES
 
    Introduction
   --------------
@@ -32,6 +36,21 @@ the X11 server.  The regions can of this version have no ICC profile attached,
 which means a color server, typical in a compositing manager, shall not color 
 manage these regions. These regions then are in the responsibility of the 
 application.
+
+
+   Color Profile
+  ---------------
+
+A single ICC color profile is described by the following C structure.
+
+typedef struct {
+        uint8_t md5[16];  /* ICC MD5 hash of the associated ICC profile */
+	uint32_t size;    /* number of bytes following, in network byte order */
+} XcolorProfile;
+
+It defines a single ICC profile that can be uploaded to the compositing manager
+and later referenced in color regions. The actual profile data follows directly
+after the structure.
 
 
    Color Region
@@ -55,6 +74,24 @@ color managed by the application.
    Atoms
   -------
 
+ _ICC_COLOR_PROFILES:
+
+Is used to upload color profiles to the compositing manager. Clients attach a
+a list of one or more XColorProfile to the root window. Compositing manager then
+fetches the list and saves the profiles in an internal database and deletes the
+property.
+The type is XA_CARDINAL. The size value is stored in network byte order. The 
+data represents a list of XcolorProfiles. The memory layout is like:
+first profile 
+   16 byte      md5
+    4 byte      size
+ size bytes     profile data
+second profile
+   16 byte      md5
+    4 byte      size
+ size bytes     profile data
+...
+
  _ICC_COLOR_REGIONS:
 
 The atom is attached to windows and lists the XcolorRegion's defined for that
@@ -66,6 +103,11 @@ The type is XA_CARDINAL and values are stored in network byte order.
 
 Is attached to windows and specifies on which output the window should
 look correctly. The type is XA_STRING.
+
+ _ICC_COLOR_DISPLAY_ADVANCED:
+
+The atom is optionaly attached to the root window. A value of "1" signals the 
+colour server to use advanced CMS options like proofing. The type is XA_STRING.
 
  _ICC_COLOR_DESKTOP:
 
@@ -87,14 +129,15 @@ capabilities:
   - ICT  _ICC_COLOR_TARGET
   - ICM  _ICC_COLOR_MANAGEMENT
   - ICR  _ICC_COLOR_REGIONS
+  - ICA  _ICC_COLOR_DISPLAY_ADVANCED
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
 The fourth section contains the servers name identifier.
 
 As of this specification the third section must contain ICR and the 
-supported _ICC_PROFILE in X version. ICT is optional.
+supported _ICC_PROFILE in X version. All other capabilities are optional.
 
 A example of a valid atom might look like:
-_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
+_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICA|ICR|V0.3| compicc"
 
  _ICC_DEVICE_PROFILE(_xxx):
 
@@ -139,5 +182,5 @@ desired backward compatibility.
 
 
 
-2008 (c) Tomas Carnecky, 2010 (c) Kai-Uwe Behrmann
+2008 (c) Tomas Carnecky, 2010-2011 (c) Kai-Uwe Behrmann
 
