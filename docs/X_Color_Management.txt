@@ -2,7 +2,7 @@
     X Color Management specification 0.3
    ====================
 
-DRAFT 1
+DRAFT 2
 
    Revision History
   ------------------
@@ -22,9 +22,10 @@ Draft 2  Revision 0.2   2010-08-14  Kai-Uwe Behrmann
 Draft 1  Revision 0.3   2011-09-11  Kai-Uwe Behrmann
                                       rename _NET prefix to _ICC
 
-Draft 2  Revision 0.3   2011-10-29  Kai-Uwe Behrmann
+Draft 2  Revision 0.3   2011-10-30  Kai-Uwe Behrmann
                                       describe _ICC_COLOR_DISPLAY_ADVANCED,
                                       readd _ICC_COLOR_PROFILES
+                                      add color server implementation note
 
    Introduction
   --------------
@@ -70,6 +71,7 @@ transformation. Windows can have an unlimited amount of regions attached, though
 only the first 2 * 2^32 can be referenced.
 As of this spec the md5 shall be set to zero to signal the region is already
 color managed by the application.
+
 
    Atoms
   -------
@@ -168,6 +170,13 @@ backward compatibility. The _ICC_DEVICE_PROFILE(_xxx) atom provides a means to
 expose capable clients the desired information about the monitor characteristics
 at the discussed level. The _ICC_PROFILE(_xxx) atom is maintained to enshure the
 desired backward compatibility.
+
+ Implementation Notes:
+
+Color servers see in a X11 environment only asynchronous events. Therefore they
+shall control the setup of _ICC_PROFILE(_xxx) atoms. That way they will
+be able to handle XRandR output configuration and desktop geometry change events
+in the correct order.
 
 
    References
