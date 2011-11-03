@@ -121,9 +121,9 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON ( void              * edid,
 /** colorimetric primary blue CIE*xyY y component, double */
 #define XCM_EDID_KEY_BLUEy                "bluey"
 /** colorimetric primary white CIE*xyY x component, double */
-#define XCM_EDID_KEY_WHITEy               "whitex"
+#define XCM_EDID_KEY_WHITEx               "whitex"
 /** colorimetric primary white CIE*xyY y component, double */
-#define XCM_EDID_KEY_WHITEx               "whitey"
+#define XCM_EDID_KEY_WHITEy               "whitey"
 /** colorimetric single gamma for all channels, double */
 #define XCM_EDID_KEY_GAMMA                "gamma"
 /** manufactur week, integer */

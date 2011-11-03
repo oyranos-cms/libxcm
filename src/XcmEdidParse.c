@@ -295,8 +295,8 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_GREENy, c[3] );
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_BLUEx, c[4] );
   XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_BLUEy, c[5] );
-  XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_WHITEx, c[7] );
-  XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_WHITEy, c[6] );
+  XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_WHITEx, c[6] );
+  XcmEdidSetDouble( &(*list)[pos++], XCM_EDID_KEY_WHITEy, c[7] );
 
   if( has_cmd == 1 )
   {
