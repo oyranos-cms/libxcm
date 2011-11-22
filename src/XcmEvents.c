@@ -338,9 +338,6 @@ const char * XcmePrintWindowRegions  ( Display           * display,
   XcolorRegion * regions = 0;
   static char * text = 0;
 
-  if(!text) text = (char*)malloc(1024);
-  text[0] = 0;
-
   /* a pain to work with that cruft */
   w = XmuClientWindow( display, w );
 
@@ -348,6 +345,10 @@ const char * XcmePrintWindowRegions  ( Display           * display,
 
   if(!always && !n)
     return text;
+
+  if(!text) text = (char*)malloc(256*(1+n));
+  if(!text) return text;
+  text[0] = 0;
 
   sprintf( &text[strlen(text)], "PropertyNotify : %s    vvvvv      %s %d\n",
       XGetAtomName( display, 
