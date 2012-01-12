@@ -171,6 +171,25 @@ _ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
 #define XCM_COLOR_DESKTOP "_ICC_COLOR_DESKTOP"
 
 /**
+ *   The XCM_COLOR_SERVER_ enums
+ * describe colour server capabilities as specified in XCM_COLOR_DESKTOP atom.
+ */
+enum {
+  XCM_COLOR_SERVER_REGIONS = 0x01,           /**< _ICC_COLOR_REGIONS */
+  XCM_COLOR_SERVER_PROFILES = 0x02,          /**< _ICC_COLOR_PROFILES */
+  XCM_COLOR_SERVER_DISPLAY_ADVANCED = 0x04,  /**< _ICC_COLOR_DISPLAY_ADVANCED */
+  XCM_COLOR_SERVER_TARGET = 0x08             /**< _ICC_COLOR_TARGET */
+};
+/** Function  XcmColorServerCapabilities
+ *  @brief    informs which colour server services are available
+ *
+ *  Query the capabilities of a colour server. In case no colour server is 
+ *  running, the function should return zero. The return value consists of a bit
+ *  mask of XCM_COLOR_SERVER_ properties from the XCM_COLOR_DESKTOP atom.
+ */
+int    XcmColorServerCapabilities    ( Display *dpy );
+
+/**
  *    The _ICC_DEVICE_PROFILE atom
 The atom will hold a native ICC profile with the exposed device 
 characteristics at the compositing window manager level. 

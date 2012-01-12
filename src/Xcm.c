@@ -16,7 +16,7 @@
  */
 
 #include <Xcm.h>
-
+#include <stdio.h>
 
 int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 {
@@ -81,7 +81,7 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 	}
 	memcpy(ptr + pos, region, nRegions * sizeof(XcolorRegion));
 
-	result = XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
+	result = !XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
 
 	if(reg)
 		XFree(reg);
@@ -108,6 +108,7 @@ XcolorRegion *XcolorRegionFetch(Display *dpy, Window win, unsigned long *nRegion
 	return (XcolorRegion *) data;
 }
 
+
 int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned long count)
 {
 	Atom netColorRegions = XInternAtom(dpy, XCM_COLOR_REGIONS, False);
@@ -127,9 +128,9 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 	memmove(region + start, region + start + count, (nRegions - start - count) * sizeof(XcolorRegion));
 
   if(nRegions - count)
-  	result = XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
+  	result = !XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
   else
-    XDeleteProperty( dpy, win, netColorRegions );
+    result = !XDeleteProperty( dpy, win, netColorRegions );
 
   XFree(region);
 
@@ -165,3 +166,60 @@ int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned
 
 	return result;
 }
+
+static unsigned char * XcmFetchProperty(Display *dpy, Window w, Atom prop, Atom type, unsigned long *n, Bool del)
+{
+  Atom actual;
+  int format;
+  unsigned long left;
+  unsigned char *data;
+  int result;
+
+  XFlush( dpy );
+
+  result = XGetWindowProperty( dpy, w, prop, 0, ~0, del, type,
+                               &actual, &format, n, &left, &data);
+  if (result == Success)
+    return data;
+
+  return NULL;
+}
+
+int    XcmColorServerCapabilities    ( Display *dpy )
+{
+  int active = 0;
+  unsigned long n = 0;
+  unsigned char * data = 0;
+  Atom iccColorDesktop = XInternAtom(dpy, XCM_COLOR_DESKTOP, False);
+
+  data = XcmFetchProperty( dpy, RootWindow(dpy,0),
+                           iccColorDesktop, XA_STRING, &n, False);
+  if(data && n && strlen((char*)data))
+  {
+    int old_pid = 0;
+    long atom_last_time = 0;
+    char * atom_time_text = (char*)malloc(1024),
+         * atom_colour_server_name = (char*)malloc(1024),
+         * atom_capabilities_text = (char*)malloc(1024);
+
+    atom_time_text[0]= atom_colour_server_name[0]= atom_capabilities_text[0]= 0;
+
+    sscanf( (const char*)data, "%d %ld %s %s",
+              &old_pid, &atom_last_time,
+              atom_capabilities_text, atom_colour_server_name );
+    if(atom_capabilities_text[0])
+    {
+      if(strstr(atom_capabilities_text, "|ICP|"))
+        active |= XCM_COLOR_SERVER_PROFILES;
+      if(strstr(atom_capabilities_text, "|ICR|"))
+        active |= XCM_COLOR_SERVER_REGIONS;
+      if(strstr(atom_capabilities_text, "|ICA|"))
+        active |= XCM_COLOR_SERVER_DISPLAY_ADVANCED;
+    }
+    free(atom_capabilities_text);
+    free(atom_time_text);
+    free(atom_colour_server_name);
+  }
+  return active;
+}
+
