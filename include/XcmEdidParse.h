@@ -109,21 +109,21 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON ( void              * edid,
 /** full length device serial number, string */
 #define XCM_EDID_KEY_SERIAL               "serial"
 /** colorimetric primary red CIE*xyY x component, double */
-#define XCM_EDID_KEY_REDx                 "redx"
+#define XCM_EDID_KEY_REDx                 "red_x"
 /** colorimetric primary red CIE*xyY y component, double */
-#define XCM_EDID_KEY_REDy                 "redy"
+#define XCM_EDID_KEY_REDy                 "red_y"
 /** colorimetric primary green CIE*xyY x component, double */
-#define XCM_EDID_KEY_GREENx               "greenx"
+#define XCM_EDID_KEY_GREENx               "green_x"
 /** colorimetric primary green CIE*xyY y component, double */
-#define XCM_EDID_KEY_GREENy               "greeny"
+#define XCM_EDID_KEY_GREENy               "green_y"
 /** colorimetric primary blue CIE*xyY x component, double */
-#define XCM_EDID_KEY_BLUEx                "bluex"
+#define XCM_EDID_KEY_BLUEx                "blue_x"
 /** colorimetric primary blue CIE*xyY y component, double */
-#define XCM_EDID_KEY_BLUEy                "bluey"
+#define XCM_EDID_KEY_BLUEy                "blue_y"
 /** colorimetric primary white CIE*xyY x component, double */
-#define XCM_EDID_KEY_WHITEx               "whitex"
+#define XCM_EDID_KEY_WHITEx               "white_x"
 /** colorimetric primary white CIE*xyY y component, double */
-#define XCM_EDID_KEY_WHITEy               "whitey"
+#define XCM_EDID_KEY_WHITEy               "white_y"
 /** colorimetric single gamma for all channels, double */
 #define XCM_EDID_KEY_GAMMA                "gamma"
 /** manufactur week, integer */

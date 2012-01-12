@@ -1,10 +1,11 @@
-.TH "X Color Management EDID data block parsing API's" 3 "23 Sep 2011" "Version 0.5.0" "Xcm" \" -*- nroff -*-
+.TH "X Color Management EDID data block parsing API's" 3 "Thu Jan 12 2012" "Version 0.5.0" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
-X Color Management EDID data block parsing API's \- EDID data block parsing.  
-
+X Color Management EDID data block parsing API's \- 
 .PP
+EDID data block parsing\&.  
+
 .SS "Defines"
 
 .in +1c
@@ -18,28 +19,28 @@ X Color Management EDID data block parsing API's \- EDID data block parsing.
 .RI "#define \fBXCM_EDID_KEY_SERIAL\fP   'serial'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_REDx\fP   'redx'"
+.RI "#define \fBXCM_EDID_KEY_REDx\fP   'red_x'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_REDy\fP   'redy'"
+.RI "#define \fBXCM_EDID_KEY_REDy\fP   'red_y'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_GREENx\fP   'greenx'"
+.RI "#define \fBXCM_EDID_KEY_GREENx\fP   'green_x'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_GREENy\fP   'greeny'"
+.RI "#define \fBXCM_EDID_KEY_GREENy\fP   'green_y'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_BLUEx\fP   'bluex'"
+.RI "#define \fBXCM_EDID_KEY_BLUEx\fP   'blue_x'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_BLUEy\fP   'bluey'"
+.RI "#define \fBXCM_EDID_KEY_BLUEy\fP   'blue_y'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_WHITEy\fP   'whitex'"
+.RI "#define \fBXCM_EDID_KEY_WHITEx\fP   'white_x'"
 .br
 .ti -1c
-.RI "#define \fBXCM_EDID_KEY_WHITEx\fP   'whitey'"
+.RI "#define \fBXCM_EDID_KEY_WHITEy\fP   'white_y'"
 .br
 .ti -1c
 .RI "#define \fBXCM_EDID_KEY_GAMMA\fP   'gamma'"
@@ -87,7 +88,7 @@ X Color Management EDID data block parsing API's \- EDID data block parsing.
 .ti -1c
 .RI "XCM_EDID_ERROR_e \fBXcmEdidParse\fP (void *edid, XcmEdidKeyValue_s **list, int *count)"
 .br
-.RI "\fIEDID to key/value pair transformation. \fP"
+.RI "\fIEDID to key/value pair transformation\&. \fP"
 .ti -1c
 .RI "XCM_EDID_ERROR_e \fBXcmEdidFree\fP (XcmEdidKeyValue_s **list)"
 .br
@@ -107,102 +108,53 @@ X Color Management EDID data block parsing API's \- EDID data block parsing.
 .in -1c
 .SH "Detailed Description"
 .PP 
-EDID data block parsing. 
+EDID data block parsing\&. 
 
-The purpouse of this API is to obtain basic and displayable device identification strings and colorimetric informations contained in the EDID data block sent by monitors.
+The purpouse of this API is to obtain basic and displayable device identification strings and colorimetric informations contained in the EDID data block sent by monitors\&.
 .PP
-The user has to pass in a valid EDID block. This can be obtained per a root window X atom or a XRandR output property and is not part of this API. The data block is passed to \fBXcmEdidParse()\fP. This function generates a list of key value pairs, with some first rough interpretation. The key/values are useable for data bases, ICC profile generation or device identification. The returned XcmEdidKeyValue_s list elements can be individually read and worked with. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API. The \fBXcmEdidPrintOpenIccJSON()\fP will pull out a JSON data structure. \fBXcmEdidFree()\fP releases allocated list memory.
+The user has to pass in a valid EDID block\&. This can be obtained per a root window X atom or a XRandR output property and is not part of this API\&. The data block is passed to \fBXcmEdidParse()\fP\&. This function generates a list of key value pairs, with some first rough interpretation\&. The key/values are useable for data bases, ICC profile generation or device identification\&. The returned XcmEdidKeyValue_s list elements can be individually read and worked with\&. Please look as well on the \fBXcmEdidPrintString()\fP function and examples/edid-parse/ as a small example on how to use the API\&. The \fBXcmEdidPrintOpenIccJSON()\fP will pull out a JSON data structure\&. \fBXcmEdidFree()\fP releases allocated list memory\&.
 .PP
-XcmEdidParse.h
+XcmEdidParse\&.h
 .PP
 Xcm Xorg Colour Management
 .PP
-\fBCopyright:\fP.RS 4
+\fBCopyright:\fP
+.RS 4
 2005-2011 (C) Kai-Uwe Behrmann 
 .RE
 .PP
 
 .SH "Define Documentation"
 .PP 
-.SS "#define XCM_EDID_KEY_A2BLUE   'a2blue'"
-.PP
-transfer value for blue component, double 
-.SS "#define XCM_EDID_KEY_A2GREEN   'a2green'"
-.PP
-transfer value for green component, double 
-.SS "#define XCM_EDID_KEY_A2RED   'a2red'"
-.PP
-transfer value for red component, double 
-.SS "#define XCM_EDID_KEY_A3BLUE   'a3blue'"
-.PP
-transfer value for blue component, double 
-.SS "#define XCM_EDID_KEY_A3GREEN   'a3green'"
-.PP
-transfer value for green component, double 
-.SS "#define XCM_EDID_KEY_A3RED   'a3red'"
-.PP
-transfer value for red component, double 
-.SS "#define XCM_EDID_KEY_BLUEx   'bluex'"
-.PP
-colorimetric primary blue CIE*xyY x component, double 
-.SS "#define XCM_EDID_KEY_BLUEy   'bluey'"
-.PP
-colorimetric primary blue CIE*xyY y component, double 
-.SS "#define XCM_EDID_KEY_GAMMA   'gamma'"
-.PP
-colorimetric single gamma for all channels, double 
-.SS "#define XCM_EDID_KEY_GREENx   'greenx'"
-.PP
-colorimetric primary green CIE*xyY x component, double 
-.SS "#define XCM_EDID_KEY_GREENy   'greeny'"
-.PP
-colorimetric primary green CIE*xyY y component, double 
-.SS "#define XCM_EDID_KEY_MANUFACTURER   'manufacturer'"
-.PP
-full length manufacturer, string 
-.SS "#define XCM_EDID_KEY_MNFT   'mnft'"
-.PP
-manufacturer ID, string 
-.SS "#define XCM_EDID_KEY_MNFT_ID   'mnft_id'"
-.PP
-manufacturer ID, integer 
-.SS "#define XCM_EDID_KEY_MODEL   'model'"
-.PP
-full length device model, string 
-.SS "#define XCM_EDID_KEY_MODEL_ID   'model_id'"
-.PP
-model ID, integer 
-.SS "#define XCM_EDID_KEY_REDx   'redx'"
-.PP
-colorimetric primary red CIE*xyY x component, double 
-.SS "#define XCM_EDID_KEY_REDy   'redy'"
-.PP
-colorimetric primary red CIE*xyY y component, double 
-.SS "#define XCM_EDID_KEY_SERIAL   'serial'"
-.PP
-full length device serial number, string 
-.SS "#define XCM_EDID_KEY_VENDOR   'vendor'"
-.PP
-full length vendor, string 
-.SS "#define XCM_EDID_KEY_WEEK   'week'"
-.PP
-manufactur week, integer 
-.SS "#define XCM_EDID_KEY_WHITEx   'whitey'"
-.PP
-colorimetric primary white CIE*xyY y component, double 
-.SS "#define XCM_EDID_KEY_WHITEy   'whitex'"
-.PP
-colorimetric primary white CIE*xyY x component, double 
-.SS "#define XCM_EDID_KEY_YEAR   'year'"
-.PP
-manufactur year, integer 
+.SS "#define \fBXCM_EDID_KEY_A2BLUE\fP   'a2blue'"transfer value for blue component, double 
+.SS "#define \fBXCM_EDID_KEY_A2GREEN\fP   'a2green'"transfer value for green component, double 
+.SS "#define \fBXCM_EDID_KEY_A2RED\fP   'a2red'"transfer value for red component, double 
+.SS "#define \fBXCM_EDID_KEY_A3BLUE\fP   'a3blue'"transfer value for blue component, double 
+.SS "#define \fBXCM_EDID_KEY_A3GREEN\fP   'a3green'"transfer value for green component, double 
+.SS "#define \fBXCM_EDID_KEY_A3RED\fP   'a3red'"transfer value for red component, double 
+.SS "#define \fBXCM_EDID_KEY_BLUEx\fP   'blue_x'"colorimetric primary blue CIE*xyY x component, double 
+.SS "#define \fBXCM_EDID_KEY_BLUEy\fP   'blue_y'"colorimetric primary blue CIE*xyY y component, double 
+.SS "#define \fBXCM_EDID_KEY_GAMMA\fP   'gamma'"colorimetric single gamma for all channels, double 
+.SS "#define \fBXCM_EDID_KEY_GREENx\fP   'green_x'"colorimetric primary green CIE*xyY x component, double 
+.SS "#define \fBXCM_EDID_KEY_GREENy\fP   'green_y'"colorimetric primary green CIE*xyY y component, double 
+.SS "#define \fBXCM_EDID_KEY_MANUFACTURER\fP   'manufacturer'"full length manufacturer, string 
+.SS "#define \fBXCM_EDID_KEY_MNFT\fP   'mnft'"manufacturer ID, string 
+.SS "#define \fBXCM_EDID_KEY_MNFT_ID\fP   'mnft_id'"manufacturer ID, integer 
+.SS "#define \fBXCM_EDID_KEY_MODEL\fP   'model'"full length device model, string 
+.SS "#define \fBXCM_EDID_KEY_MODEL_ID\fP   'model_id'"model ID, integer 
+.SS "#define \fBXCM_EDID_KEY_REDx\fP   'red_x'"colorimetric primary red CIE*xyY x component, double 
+.SS "#define \fBXCM_EDID_KEY_REDy\fP   'red_y'"colorimetric primary red CIE*xyY y component, double 
+.SS "#define \fBXCM_EDID_KEY_SERIAL\fP   'serial'"full length device serial number, string 
+.SS "#define \fBXCM_EDID_KEY_VENDOR\fP   'vendor'"full length vendor, string 
+.SS "#define \fBXCM_EDID_KEY_WEEK\fP   'week'"manufactur week, integer 
+.SS "#define \fBXCM_EDID_KEY_WHITEx\fP   'white_x'"colorimetric primary white CIE*xyY x component, double 
+.SS "#define \fBXCM_EDID_KEY_WHITEy\fP   'white_y'"colorimetric primary white CIE*xyY y component, double 
+.SS "#define \fBXCM_EDID_KEY_YEAR\fP   'year'"manufactur year, integer 
 .SH "Function Documentation"
 .PP 
-.SS "const char * XcmEdidErrorToString (XCM_EDID_ERROR_e error)"
+.SS "const char * \fBXcmEdidErrorToString\fP (XCM_EDID_ERROR_eerror)"
 .PP
-convert enum into a meaningful text string 
-.PP
-Function XcmEdidErrorToString 
+convert enum into a meaningful text string Function XcmEdidErrorToString 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -216,12 +168,12 @@ library owned error text string
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.3.0 
+libXcm: 0\&.3\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2009/12/12 (libXcm: 0.3.0) 
+2009/12/12 (libXcm: 0\&.3\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -230,11 +182,9 @@ libXcm: 0.3.0
 .RE
 .PP
 
-.SS "XCM_EDID_ERROR_e XcmEdidFree (XcmEdidKeyValue_s ** list)"
+.SS "XCM_EDID_ERROR_e \fBXcmEdidFree\fP (XcmEdidKeyValue_s **list)"
 .PP
-free library allocated list 
-.PP
-Function XcmEdidFree 
+free library allocated list Function XcmEdidFree 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -248,12 +198,12 @@ error code
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.3.0 
+libXcm: 0\&.3\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2009/12/12 (libXcm: 0.3.0) 
+2009/12/12 (libXcm: 0\&.3\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -262,11 +212,9 @@ libXcm: 0.3.0
 .RE
 .PP
 
-.SS "XCM_EDID_ERROR_e XcmEdidParse (void * edid, XcmEdidKeyValue_s ** list, int * count)"
+.SS "XCM_EDID_ERROR_e \fBXcmEdidParse\fP (void *edid, XcmEdidKeyValue_s **list, int *count)"
 .PP
-EDID to key/value pair transformation. 
-.PP
-Function XcmEdidParse The function performs no verification of the data block other than the first eight byte block signature.
+EDID to key/value pair transformation\&. Function XcmEdidParse The function performs no verification of the data block other than the first eight byte block signature\&.
 .PP
 \fBParameters:\fP
 .RS 4
@@ -274,7 +222,7 @@ Function XcmEdidParse The function performs no verification of the data block ot
 .br
 \fIlist\fP the key/value data structures 
 .br
-\fIcount\fP pass in a pointer to a int. gives the number of elements in list 
+\fIcount\fP pass in a pointer to a int\&. gives the number of elements in list 
 .RE
 .PP
 \fBReturns:\fP
@@ -284,12 +232,12 @@ error code
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.3.0 
+libXcm: 0\&.3\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2009/12/12 (libXcm: 0.3.0) 
+2009/12/12 (libXcm: 0\&.3\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -298,11 +246,9 @@ libXcm: 0.3.0
 .RE
 .PP
 
-.SS "XCM_EDID_ERROR_e XcmEdidPrintOpenIccJSON (void * edid, char ** text, void *(*)(size_t sz) alloc)"
+.SS "XCM_EDID_ERROR_e \fBXcmEdidPrintOpenIccJSON\fP (void *edid, char **text, void *(*)(size_t sz)alloc)"
 .PP
-convert a EDID block into a device configuration 
-.PP
-Function XcmEdidPrintOpenIccJSON 
+convert a EDID block into a device configuration Function XcmEdidPrintOpenIccJSON 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -320,12 +266,12 @@ error code
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.4.2 
+libXcm: 0\&.4\&.2 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2011/06/19 (libXcm: 0.4.2) 
+2011/06/19 (libXcm: 0\&.4\&.2) 
 .RE
 .PP
 \fBDate:\fP
@@ -334,11 +280,9 @@ libXcm: 0.4.2
 .RE
 .PP
 
-.SS "XCM_EDID_ERROR_e XcmEdidPrintString (void * edid, char ** text, void *(*)(size_t sz) alloc)"
+.SS "XCM_EDID_ERROR_e \fBXcmEdidPrintString\fP (void *edid, char **text, void *(*)(size_t sz)alloc)"
 .PP
-convert a EDID block into text 
-.PP
-Function XcmEdidPrintString 
+convert a EDID block into text Function XcmEdidPrintString 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -356,12 +300,12 @@ error code
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.3.0 
+libXcm: 0\&.3\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2009/12/12 (libXcm: 0.3.0) 
+2009/12/12 (libXcm: 0\&.3\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -372,4 +316,4 @@ libXcm: 0.3.0
 
 .SH "Author"
 .PP 
-Generated automatically by Doxygen for Xcm from the source code.
+Generated automatically by Doxygen for Xcm from the source code\&.
