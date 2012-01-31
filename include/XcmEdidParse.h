@@ -32,8 +32,7 @@ typedef struct {
   unsigned char sig[8];
   unsigned char mnft_id[2];            /* [8] manufaturer ID */
   unsigned char model_id[2];           /* [10] model ID */
-  unsigned char ser_id[2];             /* [12] serial ID */
-  unsigned char dummy_li[2];
+  unsigned char ser_id[4];             /* [12] serial ID */
   unsigned char week;                  /* [16] Week */
   unsigned char year;                  /* [17] + 1990 => Year */
   unsigned char major_version;         /* [18] */
