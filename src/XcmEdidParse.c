@@ -47,8 +47,7 @@
 static int
 decode_color_characteristics (const unsigned char *edid, double * c);
 
-static
-int          XcmBigEndian()
+static int          XcmBigEndian()
 {
   int big = 0;
   char testc[2] = {0,0};
@@ -58,8 +57,7 @@ int          XcmBigEndian()
   return big;
 }
 
-static
-uint16_t     XcmValueUInt16Swap        ( uint16_t          val )
+static uint16_t     XcmValueUInt16Swap ( uint16_t          val )
 {
   uint8_t * bytes = (uint8_t*)&val, 
             new_val[2];
@@ -71,8 +69,21 @@ uint16_t     XcmValueUInt16Swap        ( uint16_t          val )
   return val;
 }
 
-static
-int16_t      XcmValueInt16Swap         ( int16_t           val )
+static uint32_t     XcmValueUInt32Swap ( uint32_t          val )
+{
+  uint8_t * bytes = (uint8_t*)&val, 
+            new_val[4];
+  {
+    new_val[0] = bytes[3];
+    new_val[1] = bytes[2];
+    new_val[2] = bytes[1];
+    new_val[3] = bytes[0];
+    val = (*((uint32_t*)new_val));
+  }
+  return val;
+}
+
+static int16_t      XcmValueInt16Swap  ( int16_t           val )
 {
   uint8_t * bytes = (uint8_t*)&val, 
             new_val[2];
@@ -84,17 +95,22 @@ int16_t      XcmValueInt16Swap         ( int16_t           val )
   return val;
 }
 
-static
-uint16_t     XcmValueUInt16           ( uint16_t            val )
+static uint16_t     XcmValueUInt16    ( uint16_t            val )
 {
   if(!XcmBigEndian())
     val = XcmValueUInt16Swap(val);
   return val;
 }
 
+static uint32_t     XcmValueUInt32    ( uint32_t            val )
+{
+  if(!XcmBigEndian())
+    val = XcmValueUInt32Swap(val);
+  return val;
+}
 
-static
-void         XcmEdidSetInt           ( XcmEdidKeyValue_s * entry,
+
+static void         XcmEdidSetInt    ( XcmEdidKeyValue_s * entry,
                                        const char        * key,
                                        int                 value )
 {
@@ -102,8 +118,7 @@ void         XcmEdidSetInt           ( XcmEdidKeyValue_s * entry,
   entry->type = XCM_EDID_VALUE_INT;
   entry->value.integer = value;
 }
-static
-void         XcmEdidSetDouble        ( XcmEdidKeyValue_s * entry,
+static void         XcmEdidSetDouble ( XcmEdidKeyValue_s * entry,
                                        const char        * key,
                                        double              value )
 {
@@ -155,6 +170,7 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   int len, i, j;
   char mnf[4], * num;
   uint16_t mnft_id = 0, model_id = 0, week = 0, year = 0;
+  uint32_t serial_id = 0;
   char * serial = 0, * manufacturer = 0, * model = 0, * vendor = 0,
        * mnft = 0;
   double c[9] = {0,0,0,0,0,0,0,0,0};
@@ -199,10 +215,13 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   SET_INT( mnft_id )
   SET_INT( model_id )
 
-  /*printf( "MNF_ID: %d %d SER_ID: %d %d D:%d/%d bxh:%dx%dcm %s\n",
-           edi->MNF_ID[0], edi->MNF_ID[1], edi->SER_ID[0], edi->SER_ID[1],
-           edi->WEEK, edi->YEAR +1990,
-           edi->width, edi->height, mnf );*/
+  serial_id = XcmValueUInt32( *((uint32_t*)&edi->ser_id));
+
+  if(0)
+  fprintf( stderr, "MNF_ID: %d %d SER_ID: %d D:%d/%d bxh:%dx%dcm %s\n",
+           edi->mnft_id[0], edi->mnft_id[1], serial_id,
+           edi->week, edi->year +1990,
+           edi->width, edi->height, mnf );
 
   week = edi->week;
   year = edi->year + 1990;
