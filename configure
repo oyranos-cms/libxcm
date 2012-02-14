@@ -414,7 +414,7 @@ else
         test -n "$ECHO" && $ECHO $e "$echo_" >> $CONF_LOG; test -n "$INFOECHO" && $INFOECHO "$echo_"
         OSUNAME=BSD
       else
-        if [ $UNAME_ = "MINGW32_NT-6.1" ]; then
+        if [ `uname -a | grep W32 | wc -l` -gt 0 ]; then
           test -n "$ECHO" && $ECHO "WIN32 = 1" >> $CONF
           EXEC_END=.exe
           test -n "$ECHO" && $ECHO "#define WIN32 1" >> $CONF_H
