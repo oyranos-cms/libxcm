@@ -64,7 +64,7 @@ static uint16_t     XcmValueUInt16Swap ( uint16_t          val )
   {
     new_val[0] = bytes[1];
     new_val[1] = bytes[0];
-    val = (*((uint16_t*)new_val));
+    memcpy(&val, new_val, sizeof(val));
   }
   return val;
 }
@@ -78,7 +78,7 @@ static uint32_t     XcmValueUInt32Swap ( uint32_t          val )
     new_val[1] = bytes[2];
     new_val[2] = bytes[1];
     new_val[3] = bytes[0];
-    val = (*((uint32_t*)new_val));
+    memcpy(&val, new_val, sizeof(uint32_t));
   }
   return val;
 }
@@ -90,7 +90,7 @@ static int16_t      XcmValueInt16Swap  ( int16_t           val )
   {
     new_val[0] = bytes[1];
     new_val[1] = bytes[0];
-    val = (*((int16_t*)new_val));
+    memcpy(&val, new_val, sizeof(val));
   }
   return val;
 }
@@ -205,17 +205,18 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
           (char)(edi->mnft_id[1] & 31) + 'A' - 1 );
 
   /* MSB */
-  mnft_id = XcmValueUInt16( *((uint16_t*)&edi->mnft_id[0]) );
+  memcpy(&mnft_id, &edi->mnft_id[0], sizeof(mnft_id));
+  mnft_id = XcmValueUInt16(mnft_id);
   /* LSB */
+  memcpy(&model_id, &edi->model_id, sizeof(model_id));
   if(XcmBigEndian())
-    model_id = XcmValueUInt16Swap(*((uint16_t*)edi->model_id));
-  else
-    model_id = (*((uint16_t*)edi->model_id));
+    model_id = XcmValueUInt16Swap(model_id);
 
   SET_INT( mnft_id )
   SET_INT( model_id )
 
-  serial_id = XcmValueUInt32( *((uint32_t*)&edi->ser_id));
+  memcpy(&serial_id, &edi->ser_id, sizeof(uint32_t));
+  serial_id = XcmValueUInt32(serial_id);
 
   if(0)
   fprintf( stderr, "MNF_ID: %d %d SER_ID: %d D:%d/%d bxh:%dx%dcm %s\n",
