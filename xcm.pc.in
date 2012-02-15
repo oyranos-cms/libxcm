@@ -3,4 +3,4 @@ Name: libXcm
 Description: X Colour Management Library
 Libs: -L${libdir} -lXcm
 Cflags: -I${includedir}
-
+Requires.private: xproto x11
