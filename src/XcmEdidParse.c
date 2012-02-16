@@ -647,5 +647,5 @@ decode_color_characteristics (const unsigned char *edid, double * c)
 
 /* END edid-parse.c_SECTION */
 
-/** } XcmEdidParse */
+/** @} XcmEdidParse */
 

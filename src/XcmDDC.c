@@ -13,7 +13,9 @@
  *  @since    2010/12/28
  */
 
-#if !defined(__APPLE__) && !defined(__FreeBSD__)
+#include "XcmVersion.h"
+
+#if HAVE_LINUX
 
 #include "XcmDDC.h"
 
@@ -233,6 +235,6 @@ const char *   XcmDDCErrorToString   ( XCM_DDC_ERROR_e     error )
 }
 
 
-/** } XcmDDC */
+/** @} XcmDDC */
 
-#endif /* !__APPLE__ && !__FreeBSD__ */
+#endif /* Linux */

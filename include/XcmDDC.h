@@ -17,7 +17,9 @@
 #define XCM_DDC_H
 #include <stddef.h> /* size_t */
 
-#if !defined(__APPLE__) && !defined(__FreeBSD__)
+#include "XcmVersion.h"
+
+#if HAVE_LINUX
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,12 +56,12 @@ XCM_DDC_ERROR_e    XcmDDCgetEDID     ( const char        * device,
 const char *   XcmDDCErrorToString   ( XCM_DDC_ERROR_e     error );
 
 
-/** } XcmDDC */
+/** @} XcmDDC */
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* !__APPLE__ && !__FreeBSD__ */
+#endif /* HAVE_LINUX */
 
 #endif /* XCM_DDC_H */

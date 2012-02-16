@@ -1,3 +1,6 @@
+Version:        @PACKAGE_VERSION@
+Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@PACKAGE_VERSION_MAJOR@.@PACKAGE_VERSION_MINOR@.x/libXcm-@PACKAGE_VERSION@.tar.bz2
+Release:        0
 Summary:        X Color Management Library
 Name:           libXcm
 License:        MIT

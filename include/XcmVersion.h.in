@@ -1,0 +1,29 @@
+/*  @file XcmVersion.h
+ *
+ *  libXcm  Xorg Colour Management
+ *
+ *  @par Copyright:
+ *            2012 (C) Kai-Uwe Behrmann
+ *
+ *  @brief    X Color Management library
+ *  @internal
+ *  @author   Kai-Uwe Behrmann <ku.b@gmx.de>
+ *  @par License:
+ *            MIT <http://www.opensource.org/licenses/mit-license.php>
+ *  @since    2012/02/15
+ */
+
+#ifndef __XCM_VERSION_H__
+#define __XCM_VERSION_H__
+
+@HAVE_X11@
+#define HAVE_LINUX @HAVE_LINUX@
+
+#define XCM_VERSION_MAJOR @XCM_PACKAGE_MAJOR@
+#define XCM_VERSION_MINOR @XCM_PACKAGE_MINOR@
+#define XCM_VERSION_MICRO @XCM_PACKAGE_MICRO@
+#define XCM_VERSION       @PACKAGE_VERSION@
+#define XCM_VERSION_NUM   (@XCM_PACKAGE_MAJOR@*10000+@XCM_PACKAGE_MINOR@*100+@XCM_PACKAGE_MICRO@)
+#define XCM_LIB_VERSION   @LIBTOOL_VERSION@
+
+#endif /* __XCM_VERSION_H__ */
