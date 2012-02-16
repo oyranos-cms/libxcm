@@ -43,6 +43,22 @@ deb:    dist
 	$(RM) -R $(top_builddir)/debian/deb
 	echo ... $@ done
 
+help:
+	echo "... all :        build the binaries"
+	echo "non default build targets:"
+	echo "... check :      do a test build and run it"
+	echo "... "
+	echo "... install :    install the binaries, include files and data"
+	echo "... install-exec: install only binaries"
+	echo "... install-data: install only documentation"
+	echo "... uninstall"
+	echo "... clean :      remove binaries, object files and most processed data"
+	echo "... distclean :  remove all files processed from configure scripts"
+	echo "... rpm :        build RPM's"
+	echo "... dist :       build a distribution tarball and place local"
+	echo "  VARIABLES:"
+	echo "... DESTDIR=\"/user/a/My Install Dir/\" install"
+	echo "... BUILDDIR=../build_local"
 
 pkgconfigdir = ${libdir}/pkgconfig
 pkgconfig_DATA = xcm.pc
