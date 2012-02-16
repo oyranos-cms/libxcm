@@ -18,5 +18,31 @@ EXTRA_DIST = ${man_MANS} \
 	Doxyfile.in \
 	docs/X_Color_Management.txt
 
+RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
+
+rpm:    dist
+	mkdir -p rpmdir/BUILD \
+	rpmdir/SPECS \
+	rpmdir/SOURCES \
+	rpmdir/SRPMS \
+	rpmdir/RPMS/$(RPMARCH)
+	cp -f $(PACKAGE)-$(PACKAGE_VERSION).tar.bz2 rpmdir/SOURCES
+	rpmbuild --clean -ba $(top_builddir)/$(PACKAGE).spec --define "_topdir $$PWD/rpmdir"
+	@echo "============================================================"
+	@echo "Finished - the packages are in rpmdir/RPMS and rpmdir/SRPMS!"
+
+deb:    dist
+	mkdir -p debian/deb/DEBIAN
+	tar xvzf $(PACKAGE)-$(PACKAGE_VERSION).tar.gz
+	(cd $(PACKAGE)-$(PACKAGE_VERSION); \
+	./configure --prefix=/usr; \
+	make DESTDIR=$(top_builddir)/debian/deb/DEBIAN install;)
+	cp $(PACKAGE)-$(PACKAGE_VERSION)/$(PACKAGE)_control $(top_builddir)/debian/deb/DEBIAN/control
+	$(RM) -R $(PACKAGE)-$(PACKAGE_VERSION)
+	dpkg -b $(top_builddir)/debian/deb debian/$(PACKAGE)_$(PACKAGE_VERSION)-$(PACKAGE_RELEASE)_$(deb_arch).deb
+	$(RM) -R $(top_builddir)/debian/deb
+	echo ... $@ done
+
+
 pkgconfigdir = ${libdir}/pkgconfig
 pkgconfig_DATA = xcm.pc
