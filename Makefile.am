@@ -16,7 +16,15 @@ man_MANS = \
 
 EXTRA_DIST = ${man_MANS} \
 	Doxyfile.in \
-	docs/X_Color_Management.txt
+	docs/X_Color_Management.txt \
+	libXcm_control.in \
+	examples/compiz/client.c \
+	examples/compiz/color.c \
+	examples/compiz/makefile \
+	examples/edid-parse/edid_parse.c \
+	examples/edid-parse/makefile \
+	examples/net-color-region/netColorRegion2.c \
+	examples/net-color-region/makefile
 
 RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 
