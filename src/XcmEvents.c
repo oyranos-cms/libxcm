@@ -9,6 +9,9 @@
  *
  */
 
+#include "XcmVersion.h"
+#ifdef HAVE_X11
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,11 +35,6 @@ extern "C" {
 }
 #endif
 
-
-#ifdef __cplusplus
-extern "C" {
-}
-#endif
 
 #define M(code, context, format, ...) XcmMessage_p( code,context, format, \
                                                        __VA_ARGS__)
@@ -1190,6 +1188,6 @@ int      XcmeContext_WindowSet       ( XcmeContext_s    * c,
   return 0;
 }
 
-/** } XcmEvents */
+/** @} XcmEvents */
 
-
+#endif /* HAVE_X11 */

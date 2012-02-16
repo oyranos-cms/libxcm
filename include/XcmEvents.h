@@ -96,7 +96,7 @@ void           XcmICCprofileGetNameFuncSet
 void           XcmICCprofileFromMD5FuncSet
                                      ( XcmICCprofileGetFromMD5_f fromMD5 );
 
-/** } XcmEvents */
+/** @} XcmEvents */
 
 #ifdef __cplusplus
 } /* extern "C" */
