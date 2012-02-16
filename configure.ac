@@ -56,3 +56,27 @@ HAVE_LINUX="`uname | grep Linux | wc -l`"
 AC_CONFIG_FILES([Makefile src/Makefile xcm.pc Doxyfile libXcm.spec
 include/XcmVersion.h])
 AC_OUTPUT
+
+if [[ "$HAVE_X11" = "" ]]; then
+echo "HAVE_X11        =       no, X Color Management support skipped"
+else
+echo "HAVE_X11        =       yes (X Color Management)"
+fi
+if [[ "$HAVE_LINUX" = "" ]]; then
+echo "HAVE_LINUX      =       no, DDC over i2c support skipped"
+else
+echo "HAVE_LINUX      =       yes (DDC over i2c)"
+fi
+echo "CFLAGS          =       $CFLAGS"
+echo "CXXFLAGS        =       $CXXFLAGS"
+echo "LDFLAGS         =       $LDFLAGS"
+echo "prefix          =       $prefix"
+echo "exec_prefix     =       $exec_prefix"
+echo "bindir          =       $bindir"
+echo "sbindir         =       $sbindir"
+echo "libdir          =       $libdir"
+echo "includedir      =       $includedir"
+echo "datadir         =       $datadir"
+echo "mandir          =       $mandir"
+echo "pixmapdir       =       $pixmapdir"
+echo "desktopdir      =       $desktopdir"
