@@ -11,4 +11,4 @@ libXcm_la_SOURCES += Xcm.c XcmDDC.c XcmEvents.c
 endif
 libXcm_la_LIBADD  = -lm ${libX11_LIBS} ${libXfixes_LIBS} ${libXmu_LIBS}
 # NOT supposed to be the same as ${PACKAGE_VERSION}
-libXcm_la_LDFLAGS = -version-info 0.0.0
+libXcm_la_LDFLAGS = -version-info ${LIBTOOL_VERSION}
