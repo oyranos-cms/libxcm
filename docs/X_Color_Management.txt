@@ -35,11 +35,16 @@ Draft 1  Revision 0.4   2012-02-17  Kai-Uwe Behrmann
 
 The X Color Management specification defines a protocol, which can be used by 
 X11 clients to offload color correction and transformation into the 
-compositing manager. The basic idea is to communicate client side regions to 
-the X11 server.  The regions can of this version have no ICC profile attached,
-which means a color server, typical in a compositing manager, shall not color 
-manage these regions. These regions then are in the responsibility of the 
-application.
+compositing manager. The basic idea is to communicate client side informations 
+to the X11 server. The regions or outputs can of this version have no ICC 
+profile attached, which means a color server, typical in a compositing manager, 
+shall not color manage these regions or windows. These regions or windows then
+are in the responsibility of the application. This allowes for calibration and
+early colour binding.
+Support for client side colour space ICC profiles is possible. This allowes 
+applications to do late colour binding, which is very convenient to correct
+complex vector graphics or 3D scenes to multiple outputs, without the need
+to understand window transformations.
 
 
    Color Profile
