@@ -4,7 +4,7 @@
  *
  *  @par Copyright:
  *            2008 (C) Tomas Carnecky
- *            2008-2011 (C) Kai-Uwe Behrmann
+ *            2008-2012 (C) Kai-Uwe Behrmann
  *
  *  @brief    X Color Management specfication helpers
  *  @internal
@@ -132,11 +132,11 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 int XcolorRegionActivate(Display *dpy, Window win, unsigned long start, unsigned long count);
 
 /**
- *    The XCM_COLOR_TARGET macro
+ *    The XCM_COLOR_OUTPUTS macro
  * is attached to windows and specifies on which output the window should
  * look correctly. The type is XA_STRING.
  */
-#define XCM_COLOR_TARGET "_ICC_COLOR_TARGET"
+#define XCM_COLOR_OUTPUTS "_ICC_COLOR_OUTPUTS"
 
 /**
  *    The XCM_COLOR_DESKTOP macro
@@ -155,15 +155,15 @@ The second section contains time since epoch GMT as returned by time(NULL).
 The thired section contains the bar '|' separated and surrounded
 capabilities:
   - ICP  _ICC_COLOR_PROFILES
-  - ICT  _ICC_COLOR_TARGET
   - ICM  _ICC_COLOR_MANAGEMENT
+  - ICO  _ICC_COLOR_OUTPUTS
   - ICR  _ICC_COLOR_REGIONS
   - ICA  _ICC_COLOR_DISPLAY_ADVANCED
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
 The fourth section contains the servers name identifier.
 
 As of this specification the third section must contain ICR and the 
-supported _ICC_PROFILE in X version. ICT is optional.
+supported _ICC_PROFILE in X version.
 
 A example of a valid atom might look like:
 _ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
@@ -178,7 +178,7 @@ enum {
   XCM_COLOR_SERVER_REGIONS = 0x01,           /**< _ICC_COLOR_REGIONS */
   XCM_COLOR_SERVER_PROFILES = 0x02,          /**< _ICC_COLOR_PROFILES */
   XCM_COLOR_SERVER_DISPLAY_ADVANCED = 0x04,  /**< _ICC_COLOR_DISPLAY_ADVANCED */
-  XCM_COLOR_SERVER_TARGET = 0x08             /**< _ICC_COLOR_TARGET */
+  XCM_COLOR_SERVER_OUTPUTS = 0x08             /**< _ICC_COLOR_OUTPUTS */
 };
 /** Function  XcmColorServerCapabilities
  *  @brief    informs which colour server services are available
