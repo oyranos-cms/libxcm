@@ -18,6 +18,9 @@
 #ifndef __XCOLOR_H__
 #define __XCOLOR_H__
 
+#include "XcmVersion.h"
+#ifdef HAVE_X11
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
@@ -218,5 +221,7 @@ is undefined.
 } /* extern "C" */
 #endif /* __cplusplus */
 
+
+#endif /* HAVE_X11 */
 
 #endif /* __XCOLOR_H__ */

@@ -62,10 +62,10 @@ echo "HAVE_X11        =       no, X Color Management support skipped"
 else
 echo "HAVE_X11        =       yes (X Color Management)"
 fi
-if [[ "$HAVE_LINUX" = "" ]]; then
-echo "HAVE_LINUX      =       no, DDC over i2c support skipped"
-else
+if [[ "$HAVE_LINUX" = "1" ]]; then
 echo "HAVE_LINUX      =       yes (DDC over i2c)"
+else
+echo "HAVE_LINUX      =       no, DDC over i2c support skipped"
 fi
 echo "CFLAGS          =       $CFLAGS"
 echo "CXXFLAGS        =       $CXXFLAGS"
