@@ -8,4 +8,4 @@ Version:     @PACKAGE_VERSION@
 Description: X Colour Management Library
 Libs: -L${libdir} -lXcm
 Cflags: -I${includedir}
-Requires.private: xproto x11
+Requires.private: @PKG_CONFIG_PRIVATE_X11@
