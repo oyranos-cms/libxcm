@@ -1,4 +1,4 @@
-.TH "XcolorRegion" 3 "23 Sep 2011" "Version 0.5.0" "Xcm" \" -*- nroff -*-
+.TH "XcolorRegion" 3 "Sat Feb 18 2012" "Version 0.5.0" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -6,8 +6,8 @@ XcolorRegion \-
 .SH SYNOPSIS
 .br
 .PP
-\fC#include <Xcm.h>\fP
 .PP
+\fC#include <Xcm\&.h>\fP
 .SS "Data Fields"
 
 .in +1c
@@ -20,16 +20,12 @@ XcolorRegion \-
 .in -1c
 .SH "Detailed Description"
 .PP 
-The \fBXcolorRegion\fP typedefed structure describes a single region with an attached profile. The region is evaluated when the client enables the region and not when the region is atttached to the window. This allows clients to update the region (when the window is resized for example) by simply modifying the XserverRegion and then sending a ClientMessage. 
+The \fBXcolorRegion\fP typedefed structure describes a single region with an attached profile\&. The region is evaluated when the client enables the region and not when the region is atttached to the window\&. This allows clients to update the region (when the window is resized for example) by simply modifying the XserverRegion and then sending a ClientMessage\&. 
 .SH "Field Documentation"
 .PP 
-.SS "uint8_t \fBXcolorRegion::md5\fP[16]"
-.PP
-ICC MD5 of the associated profile 
-.SS "uint32_t \fBXcolorRegion::region\fP"
-.PP
-XserverRegion, network byte order 
+.SS "uint8_t \fBXcolorRegion::md5\fP[16]"ICC MD5 of the associated profile 
+.SS "uint32_t \fBXcolorRegion::region\fP"XserverRegion, network byte order 
 
 .SH "Author"
 .PP 
-Generated automatically by Doxygen for Xcm from the source code.
+Generated automatically by Doxygen for Xcm from the source code\&.

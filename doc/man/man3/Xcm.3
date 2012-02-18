@@ -1,4 +1,4 @@
-.TH "X Color Management Core API's" 3 "Thu Jan 12 2012" "Version 0.5.0" "Xcm" \" -*- nroff -*-
+.TH "X Color Management Core API's" 3 "Sat Feb 18 2012" "Version 0.5.0" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -23,7 +23,7 @@ X Color Management Core API's \-
 .RI "#define \fBXCM_COLOR_REGIONS\fP   '_ICC_COLOR_REGIONS'"
 .br
 .ti -1c
-.RI "#define \fBXCM_COLOR_TARGET\fP   '_ICC_COLOR_TARGET'"
+.RI "#define \fBXCM_COLOR_OUTPUTS\fP   '_ICC_COLOR_OUTPUTS'"
 .br
 .ti -1c
 .RI "#define \fBXCM_COLOR_DESKTOP\fP   '_ICC_COLOR_DESKTOP'"
@@ -36,7 +36,7 @@ X Color Management Core API's \-
 
 .in +1c
 .ti -1c
-.RI "enum { \fBXCM_COLOR_SERVER_REGIONS\fP =  0x01, \fBXCM_COLOR_SERVER_PROFILES\fP =  0x02, \fBXCM_COLOR_SERVER_DISPLAY_ADVANCED\fP =  0x04, \fBXCM_COLOR_SERVER_TARGET\fP =  0x08 }"
+.RI "enum { \fBXCM_COLOR_SERVER_REGIONS\fP =  0x01, \fBXCM_COLOR_SERVER_PROFILES\fP =  0x02, \fBXCM_COLOR_SERVER_DISPLAY_ADVANCED\fP =  0x04, \fBXCM_COLOR_SERVER_OUTPUTS\fP =  0x08 }"
 .br
 .in -1c
 .SS "Functions"
@@ -86,9 +86,9 @@ The first section contains the process id (pid_t) of the color server process, w
 .IP "\(bu" 2
 ICP _ICC_COLOR_PROFILES
 .IP "\(bu" 2
-ICT _ICC_COLOR_TARGET
-.IP "\(bu" 2
 ICM _ICC_COLOR_MANAGEMENT
+.IP "\(bu" 2
+ICO _ICC_COLOR_OUTPUTS
 .IP "\(bu" 2
 ICR _ICC_COLOR_REGIONS
 .IP "\(bu" 2
@@ -97,12 +97,12 @@ ICA _ICC_COLOR_DISPLAY_ADVANCED
 V0\&.3 indicates version compliance to the _ICC_Profile in X spec The fourth section contains the servers name identifier\&.
 .PP
 .PP
-As of this specification the third section must contain ICR and the supported _ICC_PROFILE in X version\&. ICT is optional\&.
+As of this specification the third section must contain ICR and the supported _ICC_PROFILE in X version\&.
 .PP
 A example of a valid atom might look like: _ICC_COLOR_DESKTOP(STRING) = '4518 1274001512 |ICR|V0\&.3| compiz_colour_desktop' 
+.SS "#define \fBXCM_COLOR_OUTPUTS\fP   '_ICC_COLOR_OUTPUTS'"The XCM_COLOR_OUTPUTS macro is attached to windows and specifies on which output the window should look correctly\&. The type is XA_STRING\&. 
 .SS "#define \fBXCM_COLOR_PROFILES\fP   '_ICC_COLOR_PROFILES'"The XCM_COLOR_PROFILES macro represents a atom name for under which \fBXcolorProfile\fP data can be stored\&. 
 .SS "#define \fBXCM_COLOR_REGIONS\fP   '_ICC_COLOR_REGIONS'"The XCM_COLOR_REGIONS macro represents a atom name for under which XcolorRegions data can be stored\&. 
-.SS "#define \fBXCM_COLOR_TARGET\fP   '_ICC_COLOR_TARGET'"The XCM_COLOR_TARGET macro is attached to windows and specifies on which output the window should look correctly\&. The type is XA_STRING\&. 
 .SS "#define \fBXCM_DEVICE_PROFILE\fP   '_ICC_DEVICE_PROFILE'"The _ICC_DEVICE_PROFILE atom The atom will hold a native ICC profile with the exposed device characteristics at the compositing window manager level\&. The colour server shall if no _ICC_DEVICE_PROFILE(_xxx) is set, copy the _ICC_PROFILE(_xxx) profiles to each equivalent _ICC_DEVICE_PROFILE(_xxx) atom\&. The _ICC_PROFILE(_xxx) profiles shall be replaced by a sRGB ICC profile\&. The counting in the atoms (_xxx) name section follows the rules outlined in the ICC Profile in X recommendation\&. After finishing the session the the old state has to be recovered by copying any _ICC_DEVICE_PROFILE(_xxx) atoms content into the appropriate _ICC_PROFILE(_xxx) atoms and removing all _ICC_DEVICE_PROFILE(_xxx) atoms\&. The colour server must be aware about change property events indicating that a _ICC_PROFILE(_xxx) atom has changed by a external application and needs to move that profile to the appropriate _ICC_DEVICE_PROFILE(_xxx) atom and set the _ICC_PROFILE(_xxx) atom to sRGB as well\&. The modification of the _ICC_DEVICE_PROFILE(_xxx) atoms by external applications is undefined\&. 
 .SH "Enumeration Type Documentation"
 .PP 
@@ -120,8 +120,8 @@ _ICC_COLOR_PROFILES
 \fB\fIXCM_COLOR_SERVER_DISPLAY_ADVANCED \fP\fP
 _ICC_COLOR_DISPLAY_ADVANCED 
 .TP
-\fB\fIXCM_COLOR_SERVER_TARGET \fP\fP
-_ICC_COLOR_TARGET 
+\fB\fIXCM_COLOR_SERVER_OUTPUTS \fP\fP
+_ICC_COLOR_OUTPUTS 
 .SH "Function Documentation"
 .PP 
 .SS "int \fBXcmColorServerCapabilities\fP (Display *dpy)"

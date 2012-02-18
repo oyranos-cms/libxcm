@@ -1,4 +1,4 @@
-.TH "X Color Management DDC/CI communication API's" 3 "23 Sep 2011" "Version 0.5.0" "Xcm" \" -*- nroff -*-
+.TH "X Color Management DDC/CI communication API's" 3 "Sat Feb 18 2012" "Version 0.5.0" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -29,17 +29,18 @@ X Color Management DDC/CI communication API's \-
 .in -1c
 .SH "Detailed Description"
 .PP 
-The purpose of the API is to establish client side communication with a monitor device. This can be used to update EEDID data and get MCCS properties. The former is supported by this library.
+The purpose of the API is to establish client side communication with a monitor device\&. This can be used to update EEDID data and get MCCS properties\&. The former is supported by this library\&.
 .PP
-\fBXcmDDClist()\fP returns a list of monitor i2c device names. \fBXcmDDCgetEDID()\fP can be used to fetch EEDID from a device name.
+\fBXcmDDClist()\fP returns a list of monitor i2c device names\&. \fBXcmDDCgetEDID()\fP can be used to fetch EEDID from a device name\&.
 .PP
-XcmDDC.h
+XcmDDC\&.h
 .PP
 Xcm Xorg Colour Management
 .PP
 DDC communication with monitor devices
 .PP
-\fBCopyright:\fP.RS 4
+\fBCopyright:\fP
+.RS 4
 2010 (C) Kai-Uwe Behrmann
 .RE
 .PP
@@ -48,7 +49,8 @@ DDC communication with monitor devices
 Kai-Uwe Behrmann <ku.b@gmx.de> 
 .RE
 .PP
-\fBLicense:\fP.RS 4
+\fBLicense:\fP
+.RS 4
 MIT <http://www.opensource.org/licenses/mit-license.php> 
 .RE
 .PP
@@ -62,16 +64,14 @@ MIT <http://www.opensource.org/licenses/mit-license.php>
 .PP 
 .SS "enum \fBXCM_DDC_ERROR_e\fP"
 .PP
-errors specific to XcmDDC 
-.PP
-\fBVersion:\fP
+errors specific to XcmDDC \fBVersion:\fP
 .RS 4
-libXcm: 0.4.0 
+libXcm: 0\&.4\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2010/12/28 (libXcm: 0.4.0) 
+2010/12/28 (libXcm: 0\&.4\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -100,11 +100,9 @@ could not obtain EEDID
 wrong EDID header 
 .SH "Function Documentation"
 .PP 
-.SS "const char * XcmDDCErrorToString (\fBXCM_DDC_ERROR_e\fP error)"
+.SS "const char * \fBXcmDDCErrorToString\fP (\fBXCM_DDC_ERROR_e\fPerror)"
 .PP
-convert enum into a meaningful text string 
-.PP
-Function XcmDDCErrorToString 
+convert enum into a meaningful text string Function XcmDDCErrorToString 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -118,12 +116,12 @@ library owned error text string
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.4.0 
+libXcm: 0\&.4\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2010/12/28 (libXcm: 0.4.0) 
+2010/12/28 (libXcm: 0\&.4\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -132,11 +130,9 @@ libXcm: 0.4.0
 .RE
 .PP
 
-.SS "\fBXCM_DDC_ERROR_e\fP XcmDDCgetEDID (const char * device_name, char ** data, size_t * size)"
+.SS "\fBXCM_DDC_ERROR_e\fP \fBXcmDDCgetEDID\fP (const char *device_name, char **data, size_t *size)"
 .PP
-obtain all monitors i2c device names 
-.PP
-Function XcmDDCgetEDID 
+obtain all monitors i2c device names Function XcmDDCgetEDID 
 .PP
 \fBParameters:\fP
 .RS 4
@@ -154,12 +150,12 @@ error code
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.4.0 
+libXcm: 0\&.4\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2010/12/28 (libXcm: 0.4,0) 
+2010/12/28 (libXcm: 0\&.4,0) 
 .RE
 .PP
 \fBDate:\fP
@@ -168,17 +164,15 @@ libXcm: 0.4.0
 .RE
 .PP
 
-.SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (char *** list, int * count)"
+.SS "\fBXCM_DDC_ERROR_e\fP \fBXcmDDClist\fP (char ***list, int *count)"
 .PP
-obtain all monitors i2c device names 
-.PP
-Function XcmDDClist 
+obtain all monitors i2c device names Function XcmDDClist 
 .PP
 \fBParameters:\fP
 .RS 4
 \fIlist\fP empty pointer to a list of device names 
 .br
-\fIcount\fP pass in a pointer to a int. gives the number of elements in list 
+\fIcount\fP pass in a pointer to a int\&. gives the number of elements in list 
 .RE
 .PP
 \fBReturns:\fP
@@ -188,12 +182,12 @@ error code
 .PP
 \fBVersion:\fP
 .RS 4
-libXcm: 0.4.0 
+libXcm: 0\&.4\&.0 
 .RE
 .PP
 \fBSince:\fP
 .RS 4
-2010/12/28 (libXcm: 0.4.0) 
+2010/12/28 (libXcm: 0\&.4\&.0) 
 .RE
 .PP
 \fBDate:\fP
@@ -204,4 +198,4 @@ libXcm: 0.4.0
 
 .SH "Author"
 .PP 
-Generated automatically by Doxygen for Xcm from the source code.
+Generated automatically by Doxygen for Xcm from the source code\&.
