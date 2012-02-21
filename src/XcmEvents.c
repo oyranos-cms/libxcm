@@ -138,9 +138,6 @@ int            XcmMessage            ( XCME_MSG_e          code,
 
   switch(code)
   {
-    case XCME_MSG_SYSTEM:
-         fprintf( stdout, "WARNING");
-         break;
     case XCME_MSG_DISPLAY_ERROR:
          fprintf( stdout, "!!! ERROR");
          break;
@@ -149,6 +146,7 @@ int            XcmMessage            ( XCME_MSG_e          code,
     case XCME_MSG_INFO:
     case XCME_MSG_DISPLAY_EVENT:
     case XCME_MSG_DISPLAY_STATUS:
+    case XCME_MSG_SYSTEM:
          /* nothing to add */
          break;
   }
@@ -706,12 +704,12 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
     if( fp )
     {
       txt = (char*) malloc( size + 1 );
-      while( (txt[i] = getc(fp)) != 0 && txt[i] != EOF && i < size-1 )
+      while( (txt[i] = getc(fp)) != 0 && feof(fp) == 0 && i < size-1 )
         ++i;
       if(txt[i-1] == '\n')
         txt[i-1] = 0;
       else
-      txt[i] = 0;
+        txt[i] = 0;
       S( "%s", txt );
       free( txt ); txt = 0;
     }
