@@ -30,11 +30,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#endif /* HAVE_X11 */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-
+#ifdef HAVE_X11
 /** \addtogroup Xcm X Color Management Core API's
 
  *  @{
@@ -173,6 +175,8 @@ _ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
  */
 #define XCM_COLOR_DESKTOP "_ICC_COLOR_DESKTOP"
 
+#endif /* HAVE_X11 */
+
 /**
  *   The XCM_COLOR_SERVER_ enums
  * describe colour server capabilities as specified in XCM_COLOR_DESKTOP atom.
@@ -183,6 +187,7 @@ enum {
   XCM_COLOR_SERVER_DISPLAY_ADVANCED = 0x04,  /**< _ICC_COLOR_DISPLAY_ADVANCED */
   XCM_COLOR_SERVER_OUTPUTS = 0x08             /**< _ICC_COLOR_OUTPUTS */
 };
+#ifdef HAVE_X11
 /** Function  XcmColorServerCapabilities
  *  @brief    informs which colour server services are available
  *
@@ -217,11 +222,11 @@ is undefined.
  *  @} *//*Xcm
  */
 
+
+#endif /* HAVE_X11 */
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */
-
-
-#endif /* HAVE_X11 */
 
 #endif /* __XCOLOR_H__ */
