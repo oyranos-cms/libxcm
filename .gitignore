@@ -5,9 +5,7 @@ Makefile
 *.lo
 *.o
 
-/aclocal.m4
 /autom4te.cache/
-/libtool
 /stamp-h1
 
 /xcm.pc
