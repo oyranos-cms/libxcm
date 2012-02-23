@@ -1,48 +1,44 @@
 Version:        @PACKAGE_VERSION@
-Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@PACKAGE_VERSION_MAJOR@.@PACKAGE_VERSION_MINOR@.x/libXcm-@PACKAGE_VERSION@.tar.bz2
-Release:        0
+Release:        1
+Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libXcm-@PACKAGE_VERSION@.tar.bz2
 Summary:        X Color Management Library
+
 Name:           libXcm
 License:        MIT
 Group:          System/Libraries
-URL:            http://www.oyranos.org
+
+Url:            http://www.oyranos.org
 Vendor:         Kai-Uwe Behrmann
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Prefix:         %{_prefix}
 
 %if 0%{?suse_version} > 0
-BuildRequires:     gcc-c++ pkgconfig    xorg-x11-Mesa xorg-x11-Mesa-devel
+BuildRequires:  gcc-c++ pkgconfig xorg-x11-Mesa xorg-x11-Mesa-devel
 %endif
-
 %if 0%{?suse_version} > 910
-BuildRequires:  bash bind-utils binutils bison bzip2 coreutils cpio cyrus-sasl diffutils e2fsprogs file filesystem findutils gcc gcc-c++ glibc glibc-devel grep groff gzip less make man mktemp patch perl pkgconfig popt readline rpm sed tar timezone unzip util-linux zlib zlib-devel
 %endif
-
 %if 0%{?suse_version} > 1010
-BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libs xorg-x11-util-devel xorg-x11-libXmu-devel
+BuildRequires:  Mesa Mesa-devel gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-libX11 xorg-x11-libX11-devel xorg-x11-libXfixes xorg-x11-libXfixes-devel xorg-x11-libXmu-devel xorg-x11-libs xorg-x11-util-devel
 %endif
-
 %if 0%{?mandriva_version} > 0
-BuildRequires:  Mesa mesagl-devel gcc-c++ pkgconfig
+BuildRequires:  Mesa gcc-c++ mesagl-devel pkgconfig
 %endif
-
 %if 0%{?fedora_version} > 0
-BuildRequires:  Mesa Mesa-devel gcc-c++ xorg-x11-devel xorg-x11-Mesa-devel xdg-utils  libXfixes-devel xorg-x11-proto-devel xorg-x11-xtrans-devel libXmu-devel
+BuildRequires:  Mesa Mesa-devel gcc-c++ libXfixes-devel libXmu-devel xdg-utils xorg-x11-Mesa-devel xorg-x11-devel xorg-x11-proto-devel xorg-x11-xtrans-devel
 %endif
-
 %if 0%{?debian_version} > 0
-BuildRequires: gcc-c++ pkgconfig xorg-x11 xorg-x11-devel xorg-x11-Mesa-devel  xdg-utils 
+BuildRequires:  gcc-c++ pkgconfig xdg-utils xorg-x11 xorg-x11-Mesa-devel xorg-x11-devel
 %endif
 
 
 %package      -n %{name}0
-Summary:   X Color Management Library
-Group:     Development/Libraries/Other
+Summary:        X Color Management Library
+Group:          Development/Libraries/Other
 
 %package      devel
-Summary:   Headers, Configuration and static Libs + Documentation
-Group:     Development/Libraries/Other
-Requires:  %{name}0 = %{version}
+Summary:        Headers, Configuration and static Libs + Documentation
+Group:          Development/Libraries/Other
+Requires:       %{name}0 = %{version}
 
 
 %description
@@ -65,10 +61,9 @@ The package contains headers and other development files.
 
 
 %prep
-%setup -q
+%setup -n %{name}-%{version}
 
 %build
-export CFLAGS="%{optflags}"
 %configure --disable-static
 make %{?_smp_mflags}
 
@@ -81,15 +76,9 @@ rm -fr %{buildroot}/%{_datadir}/doc/%{name}
 #Fix timestamp to prevent multilibs conflict
 touch -r ChangeLog doc/man/*
 
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %post -n %{name}0 -p /sbin/ldconfig
 
 %postun -n %{name}0 -p /sbin/ldconfig
-
 
 %files -n %{name}0
 %defattr(-, root, root)
@@ -105,7 +94,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/X11/Xcm/*.h
 %{_libdir}/pkgconfig/xcm.pc
 %{_mandir}/man3/*.3*
-
 
 %changelog
 * Wed Dec 29 2010 Kai-Uwe Behrmann
