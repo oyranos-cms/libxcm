@@ -73,7 +73,7 @@ export CFLAGS="%{optflags}"
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install-main
+make DESTDIR=%{buildroot} install
 
 #Remove installed doc
 rm -fr %{buildroot}/%{_datadir}/doc/%{name}
@@ -100,6 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc AUTHORS COPYING ChangeLog README
 %doc docs/X_Color_Management.txt
 %{_libdir}/%{name}.so
+%{_libdir}/%{name}.la
 %dir %{_includedir}/X11/Xcm
 %{_includedir}/X11/Xcm/*.h
 %{_libdir}/pkgconfig/xcm.pc
