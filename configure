@@ -10948,7 +10948,7 @@ else
   HAVE_X11_FALSE=
 fi
 
-        HAVE_X11="#define HAVE_X11 1"
+        HAVE_X11="#define XCM_HAVE_X11 1"
         PKG_CONFIG_PRIVATE_X11="xproto x11"
 
 else
@@ -11031,8 +11031,9 @@ done
 test -n "$RPMBUILD" || RPMBUILD=":"
 
 
-HAVE_LINUX="`uname | grep Linux | wc -l`"
-if [ $HAVE_LINUX = "1" ]; then
+LINUX="`uname | grep Linux | wc -l`"
+if [ $LINUX = "1" ]; then
+	HAVE_LINUX="#define XCM_HAVE_LINUX 1"
 	 if true; then
   HAVE_LINUX_TRUE=
   HAVE_LINUX_FALSE='#'
@@ -11042,6 +11043,7 @@ else
 fi
 
 else
+	HAVE_LINUX=
 	 if false; then
   HAVE_LINUX_TRUE=
   HAVE_LINUX_FALSE='#'
@@ -13436,10 +13438,10 @@ echo "HAVE_X11        =       no, X Color Management support skipped"
 else
 echo "HAVE_X11        =       yes (X Color Management)"
 fi
-if [ "$HAVE_LINUX" = "1" ]; then
-echo "HAVE_LINUX      =       yes (DDC over i2c)"
-else
+if [ "$HAVE_LINUX" = "" ]; then
 echo "HAVE_LINUX      =       no, DDC over i2c support skipped"
+else
+echo "HAVE_LINUX      =       yes (DDC over i2c)"
 fi
 echo "CFLAGS          =       $CFLAGS"
 echo "CXXFLAGS        =       $CXXFLAGS"

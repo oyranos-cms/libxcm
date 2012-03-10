@@ -13,6 +13,9 @@
 #ifndef XCM_EVENTS_H
 #define XCM_EVENTS_H
 
+#include "XcmVersion.h"
+#ifdef XCM_HAVE_X11
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -102,6 +105,7 @@ void           XcmICCprofileFromMD5FuncSet
 } /* extern "C" */
 #endif /* __cplusplus */
 
+#endif /* XCM_HAVE_X11 */
 
 #endif /* XCM_EVENTS_H */
 

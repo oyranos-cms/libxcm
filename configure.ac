@@ -50,7 +50,7 @@ PKG_CHECK_EXISTS([x11], [
 	PKG_CHECK_MODULES([libXfixes], [xfixes])
 	PKG_CHECK_MODULES([libXmu], [xmu])
 	AM_CONDITIONAL([HAVE_X11], [true])
-        HAVE_X11="#define HAVE_X11 1"
+        HAVE_X11="#define XCM_HAVE_X11 1"
         PKG_CONFIG_PRIVATE_X11="xproto x11"
 ], [
 	AC_MSG_CHECKING([for libX11])
@@ -67,10 +67,12 @@ fi
 
 AC_PATH_PROGS(RPMBUILD, rpm, :)
 
-HAVE_LINUX="`uname | grep Linux | wc -l`"
-if [[ $HAVE_LINUX = "1" ]]; then
+LINUX="`uname | grep Linux | wc -l`"
+if [[ $LINUX = "1" ]]; then
+	HAVE_LINUX="#define XCM_HAVE_LINUX 1"
 	AM_CONDITIONAL([HAVE_LINUX], [true])
 else
+	HAVE_LINUX=
 	AM_CONDITIONAL([HAVE_LINUX], [false])
 fi
 
@@ -83,10 +85,10 @@ echo "HAVE_X11        =       no, X Color Management support skipped"
 else
 echo "HAVE_X11        =       yes (X Color Management)"
 fi
-if [[ "$HAVE_LINUX" = "1" ]]; then
-echo "HAVE_LINUX      =       yes (DDC over i2c)"
-else
+if [[ "$HAVE_LINUX" = "" ]]; then
 echo "HAVE_LINUX      =       no, DDC over i2c support skipped"
+else
+echo "HAVE_LINUX      =       yes (DDC over i2c)"
 fi
 echo "CFLAGS          =       $CFLAGS"
 echo "CXXFLAGS        =       $CXXFLAGS"

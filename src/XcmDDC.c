@@ -15,7 +15,7 @@
 
 #include "XcmVersion.h"
 
-#if HAVE_LINUX
+#if XCM_HAVE_LINUX
 
 #include "XcmDDC.h"
 

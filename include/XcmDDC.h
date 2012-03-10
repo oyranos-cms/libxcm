@@ -19,7 +19,7 @@
 
 #include "XcmVersion.h"
 
-#if HAVE_LINUX
+#if XCM_HAVE_LINUX
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,6 +62,6 @@ const char *   XcmDDCErrorToString   ( XCM_DDC_ERROR_e     error );
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* HAVE_LINUX */
+#endif /* XCM_HAVE_LINUX */
 
 #endif /* XCM_DDC_H */
