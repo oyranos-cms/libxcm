@@ -1,6 +1,6 @@
 define([MAJOR],[0])
 define([MINOR],[5])
-define([MICRO],[0])
+define([MICRO],[1])
 AC_INIT([libXcm], [MAJOR.MINOR.MICRO],
          https://sourceforge.net/tracker/?group_id=177017&atid=879553,
          libXcm,
@@ -37,6 +37,14 @@ PACKAGE_RELEASE=0
 
 LIBTOOL_VERSION=$LIBTOOL_CURRENT:$LIBTOOL_REVISION:$LIBTOOL_AGE
 
+AC_MSG_CHECKING([wether to enable x11 support])
+AC_ARG_WITH(x11,
+    [  --with-x11           enable x11 support],
+    with_x11=$withval,
+    with_x11=yes)
+AC_MSG_RESULT($with_x11)
+
+if test "$with_x11" = "yes"; then
 PKG_CHECK_EXISTS([x11], [
 	PKG_CHECK_MODULES([libX11], [x11])
 	PKG_CHECK_MODULES([libXfixes], [xfixes])
@@ -50,6 +58,12 @@ PKG_CHECK_EXISTS([x11], [
 	AM_CONDITIONAL([HAVE_X11], [false])
         HAVE_X11=
 ])
+else
+	AC_MSG_CHECKING([for libX11])
+	AC_MSG_RESULT([no])
+	AM_CONDITIONAL([HAVE_X11], [false])
+	HAVE_X11=
+fi
 
 AC_PATH_PROGS(RPMBUILD, rpm, :)
 
