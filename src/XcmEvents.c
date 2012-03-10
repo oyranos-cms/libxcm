@@ -9,8 +9,6 @@
  *
  */
 
-#include "XcmVersion.h"
-#ifdef HAVE_X11
 
 #ifdef __cplusplus
 extern "C" {
@@ -110,27 +108,24 @@ int            XcmMessage            ( XCME_MSG_e          code,
   char * text = 0;
   va_list list;
   int i,len;
-  size_t sz = 256;
+  size_t sz = 0;
 
   if(code == XCME_MSG_INFO)
     return 0;
 
-  text = calloc( sizeof(char), sz );
-  if(!text)
-  {
-    fprintf(stderr,
-    "Xcm_events.c:93 XcmMessage() Could not allocate 256 byte of memory.\n");
-    return 1;
-  }
-
-  text[0] = 0;
   va_start( list, format);
-  len = vsnprintf( text, sz-1, format, list);
+  len = vsnprintf( text, sz, format, list);
   va_end  ( list );
 
-  if (len >= (sz - 1))
   {
-    text = realloc( text, (len+1)*sizeof(char) );
+    text = calloc( sizeof(char), len + 1 );
+    if(!text)
+    {
+      fprintf(stderr,
+      "Xcm_events.c:93 XcmMessage() Could not allocate 256 byte of memory.\n");
+      return 1;
+    }
+
     va_start( list, format);
     len = vsnprintf( text, len+1, format, list);
     va_end  ( list );
@@ -1188,4 +1183,3 @@ int      XcmeContext_WindowSet       ( XcmeContext_s    * c,
 
 /** @} XcmEvents */
 
-#endif /* HAVE_X11 */
