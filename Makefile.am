@@ -28,7 +28,7 @@ EXTRA_DIST = ${man_MANS} \
 
 RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 
-rpm:    dist
+rpm:    dist-bzip2
 	mkdir -p rpmdir/BUILD \
 	rpmdir/SPECS \
 	rpmdir/SOURCES \

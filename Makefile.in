@@ -906,7 +906,7 @@ uninstall-man: uninstall-man3
 	uninstall-pkgincludeHEADERS
 
 
-rpm:    dist
+rpm:    dist-bzip2
 	mkdir -p rpmdir/BUILD \
 	rpmdir/SPECS \
 	rpmdir/SOURCES \
