@@ -68,6 +68,11 @@ fi
 AC_PATH_PROGS(RPMBUILD, rpm, :)
 
 HAVE_LINUX="`uname | grep Linux | wc -l`"
+if [[ $HAVE_LINUX = "1" ]]; then
+	AM_CONDITIONAL([HAVE_LINUX], [true])
+else
+	AM_CONDITIONAL([HAVE_LINUX], [false])
+fi
 
 AC_CONFIG_FILES([Makefile src/Makefile xcm.pc Doxyfile libXcm.spec
 include/XcmVersion.h])

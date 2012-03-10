@@ -36,7 +36,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@HAVE_X11_TRUE@am__append_1 = Xcm.c XcmDDC.c XcmEvents.c
+@HAVE_LINUX_TRUE@am__append_1 = XcmDDC.c
+@HAVE_X11_TRUE@am__append_2 = Xcm.c XcmEvents.c
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -76,9 +77,11 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libXcm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am__libXcm_la_SOURCES_DIST = XcmEdidParse.c Xcm.c XcmDDC.c XcmEvents.c
-@HAVE_X11_TRUE@am__objects_1 = Xcm.lo XcmDDC.lo XcmEvents.lo
-am_libXcm_la_OBJECTS = XcmEdidParse.lo $(am__objects_1)
+am__libXcm_la_SOURCES_DIST = XcmEdidParse.c XcmDDC.c Xcm.c XcmEvents.c
+@HAVE_LINUX_TRUE@am__objects_1 = XcmDDC.lo
+@HAVE_X11_TRUE@am__objects_2 = Xcm.lo XcmEvents.lo
+am_libXcm_la_OBJECTS = XcmEdidParse.lo $(am__objects_1) \
+	$(am__objects_2)
 libXcm_la_OBJECTS = $(am_libXcm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -250,7 +253,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I${top_srcdir}/include ${libX11_CFLAGS} ${libXfixes_CFLAGS} ${libXmu_CFLAGS}
 AM_CFLAGS = -Wall
 lib_LTLIBRARIES = libXcm.la
-libXcm_la_SOURCES = XcmEdidParse.c $(am__append_1)
+libXcm_la_SOURCES = XcmEdidParse.c $(am__append_1) $(am__append_2)
 libXcm_la_LIBADD = -lm ${libX11_LIBS} ${libXfixes_LIBS} ${libXmu_LIBS}
 # NOT supposed to be the same as ${PACKAGE_VERSION}
 libXcm_la_LDFLAGS = -version-info ${LIBTOOL_VERSION}
