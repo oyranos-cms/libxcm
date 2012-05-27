@@ -1,3 +1,15 @@
+Version libXcm-0.5.1
+
+Kai-Uwe Behrmann (4):
+	* [core]: add XCM_ prefix to HAVE macros
+	* [core]: simplify varg allocation for messages
+	* [build]: depend on dist-bzip2 for make rpm target
+	* [conf]: fix DDC code linking
+
+Michael Weber (1):
+	* [conf]: add --disable-x11 configure option
+
+
 Version libXcm-0.5.0
 
 Jan Engelhardt (7):
