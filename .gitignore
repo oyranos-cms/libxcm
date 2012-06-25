@@ -7,5 +7,6 @@ Makefile
 
 /autom4te.cache/
 /stamp-h1
+/config.h.in~
 
 /xcm.pc
