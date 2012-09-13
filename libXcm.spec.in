@@ -1,5 +1,5 @@
 Version:        @PACKAGE_VERSION@
-Release:        1
+Release:        0
 Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libXcm-@PACKAGE_VERSION@.tar.bz2
 Summary:        X Color Management Library
 
