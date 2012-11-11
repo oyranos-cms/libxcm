@@ -29,6 +29,8 @@ Draft 2  Revision 0.3   2011-10-30  Kai-Uwe Behrmann
 
 Draft 1  Revision 0.4   2012-02-17  Kai-Uwe Behrmann
                                       add _ICC_COLOR_OUTPUTS
+Draft 2  Revision 0.4   2012-11-11  Kai-Uwe Behrmann
+                                      clearify about opt out
 
    Introduction
   --------------
@@ -77,7 +79,7 @@ to windows and used by the compositing manager to apply the proper color
 transformation. Windows can have an unlimited amount of regions attached, though
 only the first 2 * 2^32 can be referenced.
 As of this spec the md5 shall be set to zero to signal the region is already
-color managed by the application.
+color managed by the application. That capability is called opt out.
 
 
    Color Output
@@ -109,7 +111,7 @@ Xinerama screens can be named in plain Xinerama order. Xinerama screen names
 are ascii encoded numbers like "0".
 
 The md5 shall be set to zero to signal the window is already color managed 
-by the application.
+by the application. That capability is called opt out.
 
 
    Atoms
