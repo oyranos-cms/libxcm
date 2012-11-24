@@ -1,0 +1,30 @@
+Source: libxcm
+Priority: extra
+Maintainer: Kai-Uwe Behrmann (oy) <oy@oyranos.org>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.2
+Section: libs
+Homepage: http://www.oyranos.org/libxcm/
+Vcs-Git: git://www.oyranos.org/git/xcolor
+Vcs-Browser: http://www.oyranos.org/scm?p=xcolor.git;a=summary
+
+Package: libxcm-dev
+Section: libdevel
+Architecture: any
+Depends: libxcm0 (= ${binary:Version}),
+         ${misc:Depends}
+Description: X Color Management Library
+ The libXcm library is a reference implementation of the X Color Management specification.
+ It allows to attach colour regions to X windows to communicate with colour
+ servers. A EDID parser and a colour management event observer are included.
+ The package contains headers and other development files.
+
+Package: libxcm0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description:  X Color Management Library
+ The libXcm library is colour management helper for Xorg. It contains a 
+ reference implementation of the X Color Management specification.
+ It allows to attach colour regions to X windows to communicate with colour
+ servers. A EDID parser and a observer tool are included.

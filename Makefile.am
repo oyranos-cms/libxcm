@@ -51,6 +51,19 @@ deb:    dist
 	$(RM) -R $(top_builddir)/debian/deb
 	echo ... $@ done
 
+debsrc:	dist-bzip2
+	test -d $(PACKAGE)-$(VERSION) && $(RM) -R $(PACKAGE)-$(VERSION) || echo ""
+	tar xvjf $(PACKAGE)-$(VERSION).tar.bz2
+	pwd
+	mv $(PACKAGE)-$(VERSION).tar.bz2 libxcm_$(VERSION).orig.tar.bz2
+	cp -R $(srcdir)/extras/debian $(PACKAGE)-$(VERSION)
+	dpkg-source -b $(PACKAGE)-$(VERSION)
+	echo ... $@ done
+
+debian:	debsrc
+	cd $(PACKAGE)-$(VERSION) && debuild
+	echo ... $@ done
+
 help:
 	echo "... all :        build the binaries"
 	echo "non default build targets:"
@@ -63,6 +76,8 @@ help:
 	echo "... clean :      remove binaries, object files and most processed data"
 	echo "... distclean :  remove all files processed from configure scripts"
 	echo "... rpm :        build RPM's"
+	echo "... debian :     build debian package"
+	echo "... debsrc :     build debian source package"
 	echo "... dist :       build a distribution tarball and place local"
 	echo "  VARIABLES:"
 	echo "... DESTDIR=\"/user/a/My Install Dir/\" install"
