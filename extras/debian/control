@@ -1,7 +1,11 @@
 Source: libxcm
 Priority: extra
 Maintainer: Kai-Uwe Behrmann (oy) <oy@oyranos.org>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Build-Depends: debhelper (>= 8.0.0), autotools-dev,
+ pkg-config,
+ libxfixes-dev,
+ libxmu-dev,
+ x11proto-xext-dev
 Standards-Version: 3.9.2
 Section: libs
 Homepage: http://www.oyranos.org/libxcm/
