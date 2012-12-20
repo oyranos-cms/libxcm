@@ -159,11 +159,11 @@ which has set the atom.
 The second section contains time since epoch GMT as returned by time(NULL).
 The thired section contains the bar '|' separated and surrounded
 capabilities:
-  - ICP  _ICC_COLOR_PROFILES
-  - ICM  _ICC_COLOR_MANAGEMENT
-  - ICO  _ICC_COLOR_OUTPUTS
-  - ICR  _ICC_COLOR_REGIONS
-  - ICA  _ICC_COLOR_DISPLAY_ADVANCED
+  - ICP  _ICC_COLOR_PROFILES  - support per region profiles
+  - ICM  _ICC_COLOR_MANAGEMENT - color server is active
+  - ICO  _ICC_COLOR_OUTPUTS - support per window and output configuration
+  - ICR  _ICC_COLOR_REGIONS - support regions
+  - ICA  _ICC_COLOR_DISPLAY_ADVANCED - use CMS advanced settings, e.g. proofing
   - V0.3 indicates version compliance to the _ICC_Profile in X spec
 The fourth section contains the servers name identifier.
 
@@ -171,7 +171,7 @@ As of this specification the third section must contain ICR and the
 supported _ICC_PROFILE in X version.
 
 A example of a valid atom might look like:
-_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|V0.3| compiz_colour_desktop"
+_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICR|ICM|V0.3| compiz_colour_desktop"
  */
 #define XCM_COLOR_DESKTOP "_ICC_COLOR_DESKTOP"
 
@@ -185,7 +185,8 @@ enum {
   XCM_COLOR_SERVER_REGIONS = 0x01,           /**< _ICC_COLOR_REGIONS */
   XCM_COLOR_SERVER_PROFILES = 0x02,          /**< _ICC_COLOR_PROFILES */
   XCM_COLOR_SERVER_DISPLAY_ADVANCED = 0x04,  /**< _ICC_COLOR_DISPLAY_ADVANCED */
-  XCM_COLOR_SERVER_OUTPUTS = 0x08             /**< _ICC_COLOR_OUTPUTS */
+  XCM_COLOR_SERVER_OUTPUTS = 0x08,           /**< _ICC_COLOR_OUTPUTS */
+  XCM_COLOR_SERVER_MANAGEMENT = 0x10         /**< _ICC_COLOR_MANAGEMENT */
 };
 #ifdef XCM_HAVE_X11
 /** Function  XcmColorServerCapabilities

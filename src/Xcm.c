@@ -215,6 +215,8 @@ int    XcmColorServerCapabilities    ( Display *dpy )
         active |= XCM_COLOR_SERVER_REGIONS;
       if(strstr(atom_capabilities_text, "|ICA|"))
         active |= XCM_COLOR_SERVER_DISPLAY_ADVANCED;
+      if(strstr(atom_capabilities_text, "|ICM|"))
+        active |= XCM_COLOR_SERVER_MANAGEMENT;
     }
     free(atom_capabilities_text);
     free(atom_time_text);
