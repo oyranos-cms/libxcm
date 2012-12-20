@@ -31,6 +31,8 @@ Draft 1  Revision 0.4   2012-02-17  Kai-Uwe Behrmann
                                       add _ICC_COLOR_OUTPUTS
 Draft 2  Revision 0.4   2012-11-11  Kai-Uwe Behrmann
                                       clearify about opt out
+Draft 3  Revision 0.4   2012-12-20  Kai-Uwe Behrmann
+                                      specify ICM _ICC_COLOR_DESKTOP capability
 
    Introduction
   --------------
@@ -190,7 +192,7 @@ The thired section contains the bar '|' separated and surrounded
 capabilities:
   - ICP  _ICC_COLOR_PROFILES XcolorRegion::md5 is handled
   - ICT  _ICC_COLOR_TARGET - deprecated
-  - ICM  _ICC_COLOR_MANAGEMENT
+  - ICM  _ICC_COLOR_MANAGEMENT color server is converting 
   - ICR  _ICC_COLOR_REGIONS XcolorRegion is handled
   - ICO  _ICC_COLOR_OUTPUTS XcolorOutput is handled
   - ICA  _ICC_COLOR_DISPLAY_ADVANCED
@@ -203,7 +205,7 @@ ICO capability specifier to show baseline support. All other capability
 specifiers are optional to the third section.
 
 A example of a valid atom might look like:
-_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICA|ICR|ICO|ICP|V0.4| compicc"
+_ICC_COLOR_DESKTOP(STRING) = "4518 1274001512 |ICA|ICR|ICO|ICP|ICM|V0.4| compicc"
 
 
  _ICC_DEVICE_PROFILE(_xxx):
