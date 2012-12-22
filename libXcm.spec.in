@@ -64,6 +64,10 @@ The package contains headers and other development files.
 %setup -n %{name}-%{version}
 
 %build
+%ifarch %arm
+export CFLAGS="${RPM_OPT_FLAGS} -fPIC"
+export CXXFLAGS="${RPM_OPT_FLAGS} -fPIC"
+%endif
 %configure --disable-static
 make %{?_smp_mflags}
 
@@ -90,12 +94,17 @@ touch -r ChangeLog doc/man/*
 %doc docs/X_Color_Management.txt
 %{_libdir}/%{name}.so
 %{_libdir}/%{name}.la
+%dir %{_libdir}/cmake/Xcm/
+%{_libdir}/cmake/Xcm/XcmConfig.cmake
 %dir %{_includedir}/X11/Xcm
 %{_includedir}/X11/Xcm/*.h
 %{_libdir}/pkgconfig/xcm.pc
 %{_mandir}/man3/*.3*
 
 %changelog
+* Tue Dec 20 2012 Kai-Uwe Behrmann
+- install XcmConfig.cmake
+
 * Wed Dec 29 2010 Kai-Uwe Behrmann
 - include basic i2c DDC/CI - 0.4.0
 

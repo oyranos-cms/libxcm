@@ -25,7 +25,7 @@ EXTRA_DIST = ${man_MANS} \
 	examples/edid-parse/makefile \
 	examples/net-color-region/netColorRegion2.c \
 	examples/net-color-region/makefile \
-        extras/FindXcm.cmake
+        extras/XcmConfig.cmake
 
 RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 
@@ -87,6 +87,6 @@ help:
 pkgconfigdir = ${libdir}/pkgconfig
 pkgconfig_DATA = xcm.pc
 
-cmakedir = $(datadir)/cmake/Modules
-cmake_DATA = extras/FindXcm.cmake
+cmakedir = $(libdir)/cmake/Xcm
+cmake_DATA = extras/XcmConfig.cmake
 
