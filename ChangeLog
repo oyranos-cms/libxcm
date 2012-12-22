@@ -1,3 +1,26 @@
+Version libXcm-0.5.2
+
+Jan Engelhardt (2):
+	build: support for automake-1.12
+	build: do not fail if AM_SILENT_RULES is not present
+
+Jean-Sébastien Pédron (2):
+	* [build]: support build dir != source dir
+	* [build]: regen autotools files to correctly support FreeBSD 10
+
+Kai-Uwe Behrmann (11):
+	* [build]: rename FindXcm.cmake to XcmConfig.cmake
+	* [conf]: install FindXcm.cmake
+	* [core]: define XCM_COLOR_SERVER_MANAGEMENT enum
+	* [docs]: describe ICM in X Color Management spec
+	* [build]: fix debian install file names
+	* [build]: add needed build requirements for debian
+	* [build]: add requred dummy file
+	* [build]: add make debian target
+	* [docu]: mention opt out in X Color Management spec
+	* [conf]: bump version
+	* [build]: reset release version in RPM spec file
+
 Version libXcm-0.5.1
 
 Kai-Uwe Behrmann (4):
