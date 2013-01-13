@@ -499,6 +499,57 @@ int myXErrorHandler ( Display * display, XErrorEvent * e)
   return 0;
 }
 
+/** Function XcmeSelectInput
+ *  @brief   register windows
+ *
+ *  @version libXcm: 0.5.3
+ *  @date    2013/01/13
+ *  @since   2013/01/13 (libXcm: 0.5.3)
+ */
+void XcmeSelectInput( XcmeContext_s * c )
+{
+        unsigned long nWindow = 0;
+        Window * windows = 0;
+  Atom actual = 0;
+  int format = 0;
+  unsigned long left = 0, n = 0, i,j;
+
+        int r = XGetWindowProperty( c->display, c->root,
+          XInternAtom( c->display, "_NET_CLIENT_LIST", False), 0, ~0, False, XA_WINDOW, &actual, &format,
+          &nWindow, &left, (unsigned char**)&windows );
+        n = (int)(nWindow + left);
+
+        for(i = 0; i < (int)n; ++i)
+        {
+          /* search of a previous observation of a particular window */
+          int found = 0;
+          for(j = 0; j < c->nWindows; ++j)
+          {
+            if(windows[i] == c->Windows[j])
+              found = 1;
+          }
+
+          /* other new windows but not own */
+          if( c->w != windows[i] &&
+              !found )
+          {
+            /* observe other windows */
+            r = XSelectInput( c->display, windows[i],
+                       PropertyChangeMask |  /* Xcolor properties */
+                       ExposureMask );       /* Xcolor client messages */
+          }
+        }
+
+        if((int)n > c->nWindows)
+        {
+          if(c->Windows) free(c->Windows);
+          c->Windows = (Window*)malloc( sizeof(Window) * n );
+        }
+        memcpy( c->Windows, windows, sizeof(Window) * n );
+        c->nWindows = n;
+}
+
+
 /** Function XcmeContext_New
  *  @brief   allocate a event observer context structure
  *
@@ -648,6 +699,9 @@ int      XcmeContext_Setup2          ( XcmeContext_s     * c,
   XSelectInput( c->display, c->root,
                 PropertyChangeMask |   /* _ICC_COLOR_PROFILES */
                 ExposureMask );        /* _ICC_COLOR_MANAGEMENT */
+
+  /* observe windows */
+  XcmeSelectInput( c );
 
   return 0;
 }
@@ -919,7 +973,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
 
     } else if( event->type == PropertyNotify )
     {
-      int i,j = 0, r;
+      int r;
       Atom atom = event->xproperty.atom;
 
       actual_name = XGetAtomName( display, atom );
@@ -1066,46 +1120,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
           XInternAtom( display, "_NET_CLIENT_LIST", False) ==
           event->xproperty.atom )
       {
-        unsigned long nWindow = 0;
-        Window * windows = 0;
-        actual = 0;
-        format = n = 0;
-        left = 0;
-
-        r = XGetWindowProperty( display, c->root,
-          event->xproperty.atom, 0, ~0, False, XA_WINDOW, &actual, &format,
-          &nWindow, &left, (unsigned char**)&windows );
-        n = (int)(nWindow + left);
-
-        for(i = 0; i < (int)n; ++i)
-        {
-          /* search of a previous observation of a particular window */
-          int found = 0;
-          for(j = 0; j < c->nWindows; ++j)
-          {
-            if(windows[i] == c->Windows[j])
-              found = 1;
-          }
-
-          /* other new windows but not own */
-          if( c->w != windows[i] &&
-              !found )
-          {
-            /* observe other windows */
-            r = XSelectInput( display, windows[i],
-                       PropertyChangeMask |  /* Xcolor properties */
-                       ExposureMask );       /* Xcolor client messages */
-          }
-        }
-
-        if((int)n > c->nWindows)
-        {
-          if(c->Windows) free(c->Windows);
-          c->Windows = (Window*)malloc( sizeof(Window) * n );
-        }
-        memcpy( c->Windows, windows, sizeof(Window) * n );
-        c->nWindows = n;
-
+        XcmeSelectInput( c );
       }
       XFree( actual_name ); actual_name = 0;
 
