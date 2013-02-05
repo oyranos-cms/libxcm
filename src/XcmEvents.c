@@ -14,7 +14,6 @@
 extern "C" {
 #endif
 #include <X11/Xutil.h>
-#include <X11/Xmu/WinUtil.h>
 #include "Xcm.h"
 #include "XcmEdidParse.h"
 #include "XcmEvents.h"
@@ -236,7 +235,7 @@ const char * XcmePrintWindowName( Display * display, Window w )
   int screen = DefaultScreen( display );
   Window root = XRootWindow( display, screen );
   int dest_x_return, dest_y_return;
-  Window child_return, window;
+  Window child_return;
   Atom actual = 0;
   int format = 0;
   unsigned long left = 0, n = 0;
@@ -251,10 +250,7 @@ const char * XcmePrintWindowName( Display * display, Window w )
   XTranslateCoordinates( display, w, root, x_return, y_return,
                          &dest_x_return, &dest_y_return, &child_return );
 
-  /* a pain to work with that cruft */
-  window = XmuClientWindow( display, w );
-
-  XGetWindowProperty( display, window,
+  XGetWindowProperty( display, w,
                       XInternAtom(display, "WM_NAME", False),
                       0, ~0, False, XA_STRING,
                       &actual, &format, &n, &left, &data );
@@ -328,9 +324,6 @@ const char * XcmePrintWindowRegions  ( Display           * display,
   int i, j;
   XcolorRegion * regions = 0;
   static char * text = 0;
-
-  /* a pain to work with that cruft */
-  w = XmuClientWindow( display, w );
 
   regions = XcolorRegionFetch( display, w, &n );
 
@@ -409,9 +402,6 @@ void     xcmePrintWindowRegions      ( Display           * display,
   unsigned long n = 0;
   int i, j;
   XcolorRegion * regions = 0;
-
-  /* a pain to work with that cruft */
-  w = XmuClientWindow( display, w );
 
   regions = XcolorRegionFetch( display, w, &n );
 
