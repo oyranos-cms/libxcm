@@ -1,4 +1,4 @@
-.TH "X Color Management DDC/CI communication API's" 3 "Sat Feb 18 2012" "Version 0.5.0" "Xcm" \" -*- nroff -*-
+.TH "X Color Management DDC/CI communication API's" 3 "Tue Feb 5 2013" "Version 0.5.3" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -46,12 +46,12 @@ DDC communication with monitor devices
 .PP
 \fBAuthor:\fP
 .RS 4
-Kai-Uwe Behrmann <ku.b@gmx.de> 
+Kai-Uwe Behrmann ku.b@gmx.de 
 .RE
 .PP
 \fBLicense:\fP
 .RS 4
-MIT <http://www.opensource.org/licenses/mit-license.php> 
+MIT http://www.opensource.org/licenses/mit-license.php 
 .RE
 .PP
 \fBSince:\fP
@@ -63,6 +63,7 @@ MIT <http://www.opensource.org/licenses/mit-license.php>
 .SH "Enumeration Type Documentation"
 .PP 
 .SS "enum \fBXCM_DDC_ERROR_e\fP"
+
 .PP
 errors specific to XcmDDC \fBVersion:\fP
 .RS 4
@@ -100,7 +101,8 @@ could not obtain EEDID
 wrong EDID header 
 .SH "Function Documentation"
 .PP 
-.SS "const char * \fBXcmDDCErrorToString\fP (\fBXCM_DDC_ERROR_e\fPerror)"
+.SS "const char * XcmDDCErrorToString (\fBXCM_DDC_ERROR_e\fPerror)"
+
 .PP
 convert enum into a meaningful text string Function XcmDDCErrorToString 
 .PP
@@ -130,7 +132,8 @@ libXcm: 0\&.4\&.0
 .RE
 .PP
 
-.SS "\fBXCM_DDC_ERROR_e\fP \fBXcmDDCgetEDID\fP (const char *device_name, char **data, size_t *size)"
+.SS "\fBXCM_DDC_ERROR_e\fP XcmDDCgetEDID (const char *device_name, char **data, size_t *size)"
+
 .PP
 obtain all monitors i2c device names Function XcmDDCgetEDID 
 .PP
@@ -164,7 +167,8 @@ libXcm: 0\&.4\&.0
 .RE
 .PP
 
-.SS "\fBXCM_DDC_ERROR_e\fP \fBXcmDDClist\fP (char ***list, int *count)"
+.SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (char ***list, int *count)"
+
 .PP
 obtain all monitors i2c device names Function XcmDDClist 
 .PP
