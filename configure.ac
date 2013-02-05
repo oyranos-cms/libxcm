@@ -1,6 +1,6 @@
 define([MAJOR],[0])
 define([MINOR],[5])
-define([MICRO],[2])
+define([MICRO],[3])
 AC_INIT([libXcm], [MAJOR.MINOR.MICRO],
          https://sourceforge.net/tracker/?group_id=177017&atid=879553,
          libXcm,
