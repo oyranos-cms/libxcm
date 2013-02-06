@@ -255,6 +255,11 @@ const char * XcmePrintWindowName( Display * display, Window w )
                       0, ~0, False, XA_STRING,
                       &actual, &format, &n, &left, &data );
 
+  if(!n || !data)
+    XGetWindowProperty( display, w,
+                        XInternAtom(display, "_NET_WM_NAME", False),
+                        0, ~0, False, AnyPropertyType,
+                        &actual, &format, &n, &left, &data );
 
   if( RootWindow( display, DefaultScreen( display ) ) == w )
     sprintf( text, "root window" );
@@ -263,6 +268,9 @@ const char * XcmePrintWindowName( Display * display, Window w )
              dest_x_return<0?"":"+", dest_x_return,
              dest_y_return<0?"":"+", dest_y_return,
              data?(char*)data:"" );
+
+  if(data)
+    XFree( data );
 
   return text;
 }
