@@ -36,7 +36,7 @@ extern "C" {
 #define M(code, context, format, ...) XcmMessage_p( code,context, format, \
                                                        __VA_ARGS__)
 #define DE(format, ...) XcmMessage_p( XCME_MSG_DISPLAY_EVENT, 0, format, \
-                                         __VA_ARGS__)
+                                         __VA_ARGS__); result = 0;
 #define DERR(format, ...) XcmMessage_p( XCME_MSG_DISPLAY_ERROR, 0, format, \
                                          __VA_ARGS__)
 #define DS(format, ...) XcmMessage_p( XCME_MSG_DISPLAY_STATUS, 0, format, \
@@ -409,6 +409,7 @@ void     xcmePrintWindowRegions      ( Display           * display,
 {
   unsigned long n = 0;
   int i, j;
+  int result = -1;
   XcolorRegion * regions = 0;
 
   regions = XcolorRegionFetch( display, w, &n );
@@ -944,6 +945,7 @@ int      XcmeContext_Release         ( XcmeContext_s   ** c )
  *  @param[in,out] c                   a event observer context
  *  @param[in]     event               a X event handle
  *  @return                            - 0: success
+ *                                     - -1: nothing to do
  *                                     - 1: error
  *
  *  @version libXcm: 0.3.0
@@ -953,6 +955,8 @@ int      XcmeContext_Release         ( XcmeContext_s   ** c )
 int      XcmeContext_InLoop          ( XcmeContext_s    * c,
                                        XEvent            * event )
 {
+  int result = -1;
+
   /* observe events */
   {
     Display *display = event->xany.display;
@@ -977,8 +981,10 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
       actual_name = XGetAtomName( display, atom );
 
       if(display != c->display)
+      { int result = 1;
         DE( "PropertyNotify : event and context displays are different: %s",
                actual_name );
+      }
         
       actual = 0;
       format = 0;
@@ -1001,9 +1007,12 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
         n += left;
 
         if(event->xproperty.atom == c->aAdvanced)
-        r = XGetWindowProperty( display, event->xany.window,
+        {
+          r = XGetWindowProperty( display, event->xany.window,
                event->xproperty.atom, 0, ~0, False, XA_STRING,&actual,&format,
                 &n, &left, &data );
+          result = 0;
+        }
         n += left;
 
         if       ( event->xproperty.atom == c->aOutputs )
@@ -1041,6 +1050,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
         } else if( event->xproperty.atom == c->aRegion )
         {
           xcmePrintWindowRegions( display, event->xany.window, 1 );
+          result = 0;
 
         } else if(
            strstr( actual_name, XCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE) != 0 ||
@@ -1119,6 +1129,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
           event->xproperty.atom )
       {
         XcmeSelectInput( c );
+        result = 0;
       }
       XFree( actual_name ); actual_name = 0;
 
@@ -1140,7 +1151,7 @@ int      XcmeContext_InLoop          ( XcmeContext_s    * c,
       }
     }
   }
-  return 0;
+  return result;
 }
 
 /** Function XcmeContext_DisplayGet
