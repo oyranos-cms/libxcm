@@ -3,7 +3,7 @@
 AM_CPPFLAGS = -I${top_srcdir}/include -I${top_builddir}/include ${libX11_CFLAGS} ${libXfixes_CFLAGS} ${libXmu_CFLAGS}
 AM_CFLAGS   = -Wall
 
-lib_LTLIBRARIES = libXcmX11.la libXcmEDID.la libXcmDDC.la libXcm.la
+lib_LTLIBRARIES = libXcmEDID.la libXcmDDC.la libXcmX11.la libXcm.la
 
 libXcmEDID_la_SOURCES = XcmEdidParse.c
 EXTRA_SOURCES =
