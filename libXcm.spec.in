@@ -35,6 +35,18 @@ BuildRequires:  gcc-c++ pkgconfig xdg-utils xorg-x11 xorg-x11-Mesa-devel xorg-x1
 Summary:        X Color Management Library
 Group:          Development/Libraries/Other
 
+%package      -n %{name}EDID0
+Summary:        EDID Color Management Parsing
+Group:          Development/Libraries/Other
+
+%package      -n %{name}DDC0
+Summary:        EDID over DDC Detection
+Group:          Development/Libraries/Other
+
+%package      -n %{name}X110
+Summary:        X Color Management Implementation
+Group:          Development/Libraries/Other
+
 %package      devel
 Summary:        Headers, Configuration and static Libs + Documentation
 Group:          Development/Libraries/Other
@@ -42,20 +54,32 @@ Requires:       %{name}0 = %{version}
 
 
 %description
-The libXcm library is colour management helper for Xorg. It contains a 
+The libXcm library is color management helper for Xorg. It contains a 
 reference implementation of the X Color Management specification.
-It allows to attach colour regions to X windows to communicate with colour
+It allows to attach color regions to X windows to communicate with color
 servers. A EDID parser and a observer tool are included.
 
 %description -n %{name}0
 The libXcm library is a reference implementation of the X Color Management specification.
-It allows to attach colour regions to X windows to communicate with colour
-servers. A EDID parser and a colour management event observer are included.
+It allows to attach color regions to X windows to communicate with color
+servers. A EDID parser and a color management event observer are included.
+
+%description -n %{name}EDID0
+EDID parser implementing the key/value pairs needed for the ICC meta Tag for Monitor Profiles spec.
+http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
+
+%description -n %{name}DDC0
+Provide EDID detection through display data channel (DDC) communication.
+
+%description -n %{name}X110
+The libXcmX11 library is a reference implementation of the X Color Management specification.
+It allows to attach color regions to X windows to communicate with color
+servers.
 
 %description devel
 The libXcm library is a reference implementation of the X Color Management specification.
-It allows to attach colour regions to X windows to communicate with colour
-servers. A EDID parser and a colour management event observer are included.
+It allows to attach color regions to X windows to communicate with color
+servers. A EDID parser and a color management event observer are included.
 The package contains headers and other development files.
 
 
@@ -88,20 +112,35 @@ touch -r ChangeLog doc/man/*
 %defattr(-, root, root)
 %{_libdir}/%{name}.so.*
 
+%files -n %{name}EDID0
+%defattr(-, root, root)
+%{_libdir}/%{name}EDID.so.*
+
+%files -n %{name}DDC0
+%defattr(-, root, root)
+%{_libdir}/%{name}DDC.so.*
+
+%files -n %{name}X110
+%defattr(-, root, root)
+%{_libdir}/%{name}X11.so.*
+
 %files devel
 %defattr(-, root, root)
 %doc AUTHORS COPYING ChangeLog README
 %doc docs/X_Color_Management.txt
-%{_libdir}/%{name}.so
-%{_libdir}/%{name}.la
+%{_libdir}/%{name}*.so
+%{_libdir}/%{name}*.la
 %dir %{_libdir}/cmake/Xcm/
 %{_libdir}/cmake/Xcm/XcmConfig.cmake
 %dir %{_includedir}/X11/Xcm
 %{_includedir}/X11/Xcm/*.h
-%{_libdir}/pkgconfig/xcm.pc
+%{_libdir}/pkgconfig/xcm*.pc
 %{_mandir}/man3/*.3*
 
 %changelog
+* Wed Apr 24 2013 Kai-Uwe Behrmann
+- split into EDID, DDC and X11 libraries
+
 * Tue Dec 20 2012 Kai-Uwe Behrmann
 - install XcmConfig.cmake
 

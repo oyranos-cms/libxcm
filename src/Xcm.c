@@ -4,7 +4,7 @@
  *
  *  @par Copyright:
  *            2008 (C) Tomas Carnecky
- *            2008-2011 (C) Kai-Uwe Behrmann
+ *            2008-2013 (C) Kai-Uwe Behrmann
  *
  *  @brief    X Color Management specification helpers
  *  @internal
@@ -18,6 +18,18 @@
 #include <Xcm.h>
 #include <stdio.h>
 
+int  XcmChangeProperty_              ( Display           * dpy,
+                                       Window              win,
+                                       Atom                atom,
+                                       int                 PropMode,
+                                       unsigned char     * data,
+                                       unsigned int        length )
+{
+  int result = XChangeProperty(dpy, win, atom, XA_CARDINAL, 8, PropMode, data, length);
+  return result;
+}
+                                       
+
 int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 {
 	/* XcolorProfile::length is in network byte-order, swap it now */
@@ -27,7 +39,7 @@ int XcolorProfileUpload(Display *dpy, XcolorProfile *profile)
 	Atom netColorProfiles = XInternAtom(dpy, XCM_COLOR_PROFILES, False);
 
 	for (i = 0; i < ScreenCount(dpy); ++i) {
-		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile) + length);
+		XcmChangeProperty_(dpy, XRootWindow(dpy, i), netColorProfiles, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile) + length);
 	}
 
 	return 0;
@@ -42,7 +54,7 @@ int XcolorProfileDelete(Display *dpy, XcolorProfile *profile)
 	profile->length = 0;
 
 	for (i = 0; i < ScreenCount(dpy); ++i) {
-		XChangeProperty(dpy, XRootWindow(dpy, i), netColorProfiles, XA_CARDINAL, 8, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile));
+		XcmChangeProperty_(dpy, XRootWindow(dpy, i), netColorProfiles, PropModeAppend, (unsigned char *) profile, sizeof(XcolorProfile));
 	}
 
 	return 0;
@@ -81,7 +93,7 @@ int XcolorRegionInsert(Display *dpy, Window win, unsigned long pos, XcolorRegion
 	}
 	memcpy(ptr + pos, region, nRegions * sizeof(XcolorRegion));
 
-	result = !XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
+	result = !XcmChangeProperty_(dpy, win, netColorRegions, PropModeReplace, (unsigned char *) ptr, (nRegs + nRegions) * sizeof(XcolorRegion));
 
 	if(reg)
 		XFree(reg);
@@ -128,7 +140,7 @@ int XcolorRegionDelete(Display *dpy, Window win, unsigned long start, unsigned l
 	memmove(region + start, region + start + count, (nRegions - start - count) * sizeof(XcolorRegion));
 
   if(nRegions - count)
-  	result = !XChangeProperty(dpy, win, netColorRegions, XA_CARDINAL, 8, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
+  	result = !XcmChangeProperty_(dpy, win, netColorRegions, PropModeReplace, (unsigned char *) region, (nRegions - count) * sizeof(XcolorRegion));
   else
     result = !XDeleteProperty( dpy, win, netColorRegions );
 

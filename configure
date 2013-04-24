@@ -651,7 +651,11 @@ PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
 PKG_CONFIG
 HAVE_LINUX
+PKG_CONFIG_PRIVATE_DDC_PKG
+PKG_CONFIG_PRIVATE_X11_PKG
 PKG_CONFIG_PRIVATE_X11
+PKG_CONFIG_LIBS_DDC
+PKG_CONFIG_LIBS_X11
 HAVE_X11
 PACKAGE_RELEASE
 XCM_PACKAGE_MICRO
@@ -11584,6 +11588,10 @@ AM_BACKSLASH='\'
 
 
 
+
+
+
+
 XCM_PACKAGE_MAJOR=0
 XCM_PACKAGE_MINOR=5
 XCM_PACKAGE_MICRO=3
@@ -12008,6 +12016,8 @@ fi
 
         HAVE_X11="#define XCM_HAVE_X11 1"
         PKG_CONFIG_PRIVATE_X11="xproto x11"
+        PKG_CONFIG_LIBS_X11="-lXcmX11"
+        PKG_CONFIG_PRIVATE_X11_PKG="xcm-x11"
 
 else
 
@@ -12100,6 +12110,8 @@ else
   HAVE_LINUX_FALSE=
 fi
 
+	PKG_CONFIG_PRIVATE_DDC_PKG="xcm-ddc"
+	PKG_CONFIG_LIBS_DDC="-lXcmDDC"
 else
 	HAVE_LINUX=
 	 if false; then
@@ -12112,7 +12124,7 @@ fi
 
 fi
 
-ac_config_files="$ac_config_files Makefile src/Makefile xcm.pc Doxyfile libXcm.spec include/XcmVersion.h"
+ac_config_files="$ac_config_files Makefile src/Makefile xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc Doxyfile libXcm.spec include/XcmVersion.h"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -13143,6 +13155,9 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "xcm.pc") CONFIG_FILES="$CONFIG_FILES xcm.pc" ;;
+    "xcm-edid.pc") CONFIG_FILES="$CONFIG_FILES xcm-edid.pc" ;;
+    "xcm-ddc.pc") CONFIG_FILES="$CONFIG_FILES xcm-ddc.pc" ;;
+    "xcm-x11.pc") CONFIG_FILES="$CONFIG_FILES xcm-x11.pc" ;;
     "Doxyfile") CONFIG_FILES="$CONFIG_FILES Doxyfile" ;;
     "libXcm.spec") CONFIG_FILES="$CONFIG_FILES libXcm.spec" ;;
     "include/XcmVersion.h") CONFIG_FILES="$CONFIG_FILES include/XcmVersion.h" ;;

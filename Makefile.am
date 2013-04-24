@@ -85,7 +85,7 @@ help:
 	echo "... BUILDDIR=../build_local"
 
 pkgconfigdir = ${libdir}/pkgconfig
-pkgconfig_DATA = xcm.pc
+pkgconfig_DATA = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc
 
 cmakedir = $(libdir)/cmake/Xcm
 cmake_DATA = extras/XcmConfig.cmake

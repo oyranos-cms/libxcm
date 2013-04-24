@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name:        libXcm
 Version:     @PACKAGE_VERSION@
-Description: X Colour Management Library
-Libs: -L${libdir} -lXcm
+Description: X Color Management Library
+Libs: -L${libdir} -lXcm -lXcmEDID @PKG_CONFIG_LIBS_DDC@ @PKG_CONFIG_LIBS_X11@
 Cflags: -I${includedir}
-Requires.private: @PKG_CONFIG_PRIVATE_X11@
+Requires.private: @PKG_CONFIG_PRIVATE_X11@ @PKG_CONFIG_PRIVATE_X11_PKG@ xcm-edid @PKG_CONFIG_PRIVATE_DDC_PKG@

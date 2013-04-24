@@ -52,8 +52,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@HAVE_LINUX_TRUE@am__append_1 = XcmDDC.c
-@HAVE_X11_TRUE@am__append_2 = Xcm.c XcmEvents.c
+@HAVE_LINUX_FALSE@am__append_1 = XcmDDC.c
+@HAVE_X11_FALSE@am__append_2 = Xcm.c XcmEvents.c
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/build-aux/depcomp
@@ -97,14 +97,8 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-libXcm_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
-am__libXcm_la_SOURCES_DIST = XcmEdidParse.c XcmDDC.c Xcm.c XcmEvents.c
-@HAVE_LINUX_TRUE@am__objects_1 = XcmDDC.lo
-@HAVE_X11_TRUE@am__objects_2 = Xcm.lo XcmEvents.lo
-am_libXcm_la_OBJECTS = XcmEdidParse.lo $(am__objects_1) \
-	$(am__objects_2)
+libXcm_la_DEPENDENCIES = libXcmX11.la libXcmEDID.la libXcmDDC.la
+am_libXcm_la_OBJECTS = XcmDummy.lo
 libXcm_la_OBJECTS = $(am_libXcm_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -112,6 +106,26 @@ am__v_lt_0 = --silent
 libXcm_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libXcm_la_LDFLAGS) $(LDFLAGS) -o $@
+libXcmDDC_la_LIBADD =
+am__libXcmDDC_la_SOURCES_DIST = XcmDDC.c
+@HAVE_LINUX_TRUE@am_libXcmDDC_la_OBJECTS = XcmDDC.lo
+libXcmDDC_la_OBJECTS = $(am_libXcmDDC_la_OBJECTS)
+libXcmDDC_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libXcmDDC_la_LDFLAGS) $(LDFLAGS) -o $@
+libXcmEDID_la_LIBADD =
+am_libXcmEDID_la_OBJECTS = XcmEdidParse.lo
+libXcmEDID_la_OBJECTS = $(am_libXcmEDID_la_OBJECTS)
+libXcmEDID_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libXcmEDID_la_LDFLAGS) $(LDFLAGS) -o $@
+libXcmX11_la_DEPENDENCIES = libXcmEDID.la
+am__libXcmX11_la_SOURCES_DIST = Xcm.c XcmEvents.c
+@HAVE_X11_TRUE@am_libXcmX11_la_OBJECTS = Xcm.lo XcmEvents.lo
+libXcmX11_la_OBJECTS = $(am_libXcmX11_la_OBJECTS)
+libXcmX11_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(libXcmX11_la_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__depfiles_maybe = depfiles
@@ -138,8 +152,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN     " $@;
-SOURCES = $(libXcm_la_SOURCES)
-DIST_SOURCES = $(am__libXcm_la_SOURCES_DIST)
+SOURCES = $(libXcm_la_SOURCES) $(libXcmDDC_la_SOURCES) \
+	$(libXcmEDID_la_SOURCES) $(libXcmX11_la_SOURCES)
+DIST_SOURCES = $(libXcm_la_SOURCES) $(am__libXcmDDC_la_SOURCES_DIST) \
+	$(libXcmEDID_la_SOURCES) $(am__libXcmX11_la_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -210,8 +226,12 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_LIBS_DDC = @PKG_CONFIG_LIBS_DDC@
+PKG_CONFIG_LIBS_X11 = @PKG_CONFIG_LIBS_X11@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PKG_CONFIG_PRIVATE_DDC_PKG = @PKG_CONFIG_PRIVATE_DDC_PKG@
 PKG_CONFIG_PRIVATE_X11 = @PKG_CONFIG_PRIVATE_X11@
+PKG_CONFIG_PRIVATE_X11_PKG = @PKG_CONFIG_PRIVATE_X11_PKG@
 RANLIB = @RANLIB@
 RPMBUILD = @RPMBUILD@
 SED = @SED@
@@ -282,11 +302,25 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I${top_srcdir}/include -I${top_builddir}/include ${libX11_CFLAGS} ${libXfixes_CFLAGS} ${libXmu_CFLAGS}
 AM_CFLAGS = -Wall
-lib_LTLIBRARIES = libXcm.la
-libXcm_la_SOURCES = XcmEdidParse.c $(am__append_1) $(am__append_2)
-libXcm_la_LIBADD = -lm ${libX11_LIBS} ${libXfixes_LIBS} ${libXmu_LIBS}
+lib_LTLIBRARIES = libXcmX11.la libXcmEDID.la libXcmDDC.la libXcm.la
+libXcmEDID_la_SOURCES = XcmEdidParse.c
+EXTRA_SOURCES = $(am__append_1) $(am__append_2)
+@HAVE_LINUX_TRUE@libXcmDDC_la_SOURCES = XcmDDC.c
+@HAVE_X11_TRUE@libXcmX11_la_SOURCES = Xcm.c XcmEvents.c
+libXcm_la_SOURCES = XcmDummy.c
+libXcmX11_la_LIBADD = \
+			libXcmEDID.la
+
+libXcm_la_LIBADD = \
+			libXcmX11.la \
+			libXcmEDID.la \
+			libXcmDDC.la
+
 # NOT supposed to be the same as ${PACKAGE_VERSION}
-libXcm_la_LDFLAGS = -version-info ${LIBTOOL_VERSION}
+libXcmX11_la_LDFLAGS = -lm ${libX11_LIBS} ${libXfixes_LIBS} ${libXmu_LIBS} -version-info ${LIBTOOL_VERSION}
+libXcmEDID_la_LDFLAGS = -version-info ${LIBTOOL_VERSION}
+libXcmDDC_la_LDFLAGS = -version-info ${LIBTOOL_VERSION}
+libXcm_la_LDFLAGS = -L. -version-info ${LIBTOOL_VERSION}
 all: all-am
 
 .SUFFIXES:
@@ -357,6 +391,12 @@ clean-libLTLIBRARIES:
 	}
 libXcm.la: $(libXcm_la_OBJECTS) $(libXcm_la_DEPENDENCIES) $(EXTRA_libXcm_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libXcm_la_LINK) -rpath $(libdir) $(libXcm_la_OBJECTS) $(libXcm_la_LIBADD) $(LIBS)
+libXcmDDC.la: $(libXcmDDC_la_OBJECTS) $(libXcmDDC_la_DEPENDENCIES) $(EXTRA_libXcmDDC_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libXcmDDC_la_LINK) -rpath $(libdir) $(libXcmDDC_la_OBJECTS) $(libXcmDDC_la_LIBADD) $(LIBS)
+libXcmEDID.la: $(libXcmEDID_la_OBJECTS) $(libXcmEDID_la_DEPENDENCIES) $(EXTRA_libXcmEDID_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libXcmEDID_la_LINK) -rpath $(libdir) $(libXcmEDID_la_OBJECTS) $(libXcmEDID_la_LIBADD) $(LIBS)
+libXcmX11.la: $(libXcmX11_la_OBJECTS) $(libXcmX11_la_DEPENDENCIES) $(EXTRA_libXcmX11_la_DEPENDENCIES) 
+	$(AM_V_CCLD)$(libXcmX11_la_LINK) -rpath $(libdir) $(libXcmX11_la_OBJECTS) $(libXcmX11_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -366,6 +406,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Xcm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XcmDDC.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XcmDummy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XcmEdidParse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XcmEvents.Plo@am__quote@
 

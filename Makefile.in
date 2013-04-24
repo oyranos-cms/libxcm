@@ -56,8 +56,10 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(pkginclude_HEADERS) \
 	$(srcdir)/Doxyfile.in $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/libXcm.spec.in $(srcdir)/xcm.pc.in \
-	$(top_srcdir)/build-aux/ar-lib $(top_srcdir)/build-aux/compile \
+	$(srcdir)/libXcm.spec.in $(srcdir)/xcm-ddc.pc.in \
+	$(srcdir)/xcm-edid.pc.in $(srcdir)/xcm-x11.pc.in \
+	$(srcdir)/xcm.pc.in $(top_srcdir)/build-aux/ar-lib \
+	$(top_srcdir)/build-aux/compile \
 	$(top_srcdir)/build-aux/config.guess \
 	$(top_srcdir)/build-aux/config.sub \
 	$(top_srcdir)/build-aux/install-sh \
@@ -78,7 +80,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = xcm.pc Doxyfile libXcm.spec include/XcmVersion.h
+CONFIG_CLEAN_FILES = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc Doxyfile \
+	libXcm.spec include/XcmVersion.h
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
@@ -248,8 +251,12 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_LIBS_DDC = @PKG_CONFIG_LIBS_DDC@
+PKG_CONFIG_LIBS_X11 = @PKG_CONFIG_LIBS_X11@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+PKG_CONFIG_PRIVATE_DDC_PKG = @PKG_CONFIG_PRIVATE_DDC_PKG@
 PKG_CONFIG_PRIVATE_X11 = @PKG_CONFIG_PRIVATE_X11@
+PKG_CONFIG_PRIVATE_X11_PKG = @PKG_CONFIG_PRIVATE_X11_PKG@
 RANLIB = @RANLIB@
 RPMBUILD = @RPMBUILD@
 SED = @SED@
@@ -344,7 +351,7 @@ EXTRA_DIST = ${man_MANS} \
 
 RPMARCH = `rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 pkgconfigdir = ${libdir}/pkgconfig
-pkgconfig_DATA = xcm.pc
+pkgconfig_DATA = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc
 cmakedir = $(libdir)/cmake/Xcm
 cmake_DATA = extras/XcmConfig.cmake
 all: config.h
@@ -401,6 +408,12 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 xcm.pc: $(top_builddir)/config.status $(srcdir)/xcm.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+xcm-edid.pc: $(top_builddir)/config.status $(srcdir)/xcm-edid.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+xcm-ddc.pc: $(top_builddir)/config.status $(srcdir)/xcm-ddc.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+xcm-x11.pc: $(top_builddir)/config.status $(srcdir)/xcm-x11.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 Doxyfile: $(top_builddir)/config.status $(srcdir)/Doxyfile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
