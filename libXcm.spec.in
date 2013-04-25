@@ -64,7 +64,7 @@ Group:          Development/Libraries/Other
 Summary:        EDID over DDC Detection
 Group:          Development/Libraries/Other
 
-%package      -n %{name}X110
+%package      -n %{name}X11-0
 Summary:        X Color Management Implementation
 Group:          Development/Libraries/Other
 
@@ -92,7 +92,7 @@ http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
 %description -n %{name}DDC0
 Provide EDID detection through display data channel (DDC) communication.
 
-%description -n %{name}X110
+%description -n %{name}X11-0
 The libXcmX11 library is a reference implementation of the X Color Management specification.
 It allows to attach color regions to X windows to communicate with color
 servers.
@@ -129,8 +129,14 @@ touch -r ChangeLog doc/man/*
 rm %{buildroot}/%{_libdir}/%{name}EDID.la %{buildroot}/%{_libdir}/%{name}DDC.la
 
 %post -n %{name}0 -p /sbin/ldconfig
+%post -n %{name}EDID0 -p /sbin/ldconfig
+%post -n %{name}DDC0 -p /sbin/ldconfig
+%post -n %{name}X11-0 -p /sbin/ldconfig
 
 %postun -n %{name}0 -p /sbin/ldconfig
+%postun -n %{name}EDID0 -p /sbin/ldconfig
+%postun -n %{name}DDC0 -p /sbin/ldconfig
+%postun -n %{name}X11-0 -p /sbin/ldconfig
 
 %files -n %{name}0
 %defattr(-, root, root)
@@ -144,7 +150,7 @@ rm %{buildroot}/%{_libdir}/%{name}EDID.la %{buildroot}/%{_libdir}/%{name}DDC.la
 %defattr(-, root, root)
 %{_libdir}/%{name}DDC.so.*
 
-%files -n %{name}X110
+%files -n %{name}X11-0
 %defattr(-, root, root)
 %{_libdir}/%{name}X11.so.*
 
@@ -154,6 +160,7 @@ rm %{buildroot}/%{_libdir}/%{name}EDID.la %{buildroot}/%{_libdir}/%{name}DDC.la
 %doc docs/X_Color_Management.txt
 %{_libdir}/%{name}*.so
 %{_libdir}/%{name}*.la
+%dir %{_libdir}/cmake/
 %dir %{_libdir}/cmake/Xcm/
 %{_libdir}/cmake/Xcm/XcmConfig.cmake
 %dir %{_includedir}/X11/Xcm
