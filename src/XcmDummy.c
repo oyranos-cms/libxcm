@@ -1,0 +1,2 @@
+void XcmDummy_()
+{}
