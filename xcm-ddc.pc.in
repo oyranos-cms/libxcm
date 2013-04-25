@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name:        libXcmDDC
+Version:     @PACKAGE_VERSION@
+Description: DDC EDID Detection Library
+Libs: -L${libdir} -lXcmDDC
+Cflags: -I${includedir}
