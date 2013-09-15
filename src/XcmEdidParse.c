@@ -3,7 +3,7 @@
  *  libXcm  Xorg Colour Management
  *
  *  @par Copyright:
- *            2005-2011 (C) Kai-Uwe Behrmann
+ *            2005-2013 (C) Kai-Uwe Behrmann
  *
  *  @brief    EDID data block parsing
  *  @internal
@@ -634,7 +634,7 @@ static int
 decode_color_characteristics (const unsigned char *edid, double * c)
 {   
     c[0]/*red_x*/ = decode_fraction (edid[0x1b], get_bits (edid[0x19], 6, 7));
-    c[1]/*red_y*/ = decode_fraction (edid[0x1c], get_bits (edid[0x19], 5, 4));
+    c[1]/*red_y*/ = decode_fraction (edid[0x1c], get_bits (edid[0x19], 4, 5));
     c[2]/*green_x*/ = decode_fraction (edid[0x1d], get_bits (edid[0x19], 2, 3));
     c[3]/*green_y*/ = decode_fraction (edid[0x1e], get_bits (edid[0x19], 0, 1));
     c[4]/*blue_x*/ = decode_fraction (edid[0x1f], get_bits (edid[0x1a], 6, 7));
