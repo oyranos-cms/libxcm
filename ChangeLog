@@ -1,3 +1,30 @@
+Version libXcm-0.5.3
+
+Florian Höch (1):
+	* [core]: Patch for transposed EDID red y bits
+
+Kai-Uwe Behrmann (20):
+	* [build]: remove all libtool files from RPM
+	* [core]: fix conditional compiling of XcmDummy
+	* [build]: fix spec packaging issues
+	* [core]: call split libraries in libXcm
+	* [build]: sync spec file with obs
+	* [core]: add XcmDummy.c file
+	* [build]: add xcm-edid xcm-x11 xcm-ddc pkg-config files
+	* [build]: reorder building of libraries
+	* [build]: split EDID parsing library out
+	* [core]: XcmeContext_InLoop return meaningful value
+	* [core]: Fix window name print
+	* [conf]: update debian changelog
+	* [docu]: update man pages
+	* [core]: omit XmuClientWindow()
+	* [conf]: bump version
+	* [core]: initialy observe windows
+	* [docu]: fix link
+	* [build]: update autotools files
+	* [build]: remove libtool
+	* [build]: add missed automake script
+
 Version libXcm-0.5.2
 
 Jan Engelhardt (2):
