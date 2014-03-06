@@ -125,8 +125,8 @@ rm -fr %{buildroot}/%{_datadir}/doc/%{name}
 #Fix timestamp to prevent multilibs conflict
 touch -r ChangeLog doc/man/*
 
-# Remove libtool files with empty dependency_libs variable
-rm %{buildroot}/%{_libdir}/%{name}EDID.la %{buildroot}/%{_libdir}/%{name}DDC.la
+# Remove libtool files
+rm %{buildroot}/%{_libdir}/%{name}*.la
 
 %post -n %{name}0 -p /sbin/ldconfig
 %post -n %{name}EDID0 -p /sbin/ldconfig
@@ -159,7 +159,6 @@ rm %{buildroot}/%{_libdir}/%{name}EDID.la %{buildroot}/%{_libdir}/%{name}DDC.la
 %doc AUTHORS COPYING ChangeLog README
 %doc docs/X_Color_Management.txt
 %{_libdir}/%{name}*.so
-%{_libdir}/%{name}*.la
 %dir %{_libdir}/cmake/
 %dir %{_libdir}/cmake/Xcm/
 %{_libdir}/cmake/Xcm/XcmConfig.cmake
