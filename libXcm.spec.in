@@ -72,7 +72,9 @@ Group:          Development/Libraries/Other
 Summary:        Headers, Configuration and static Libs + Documentation
 Group:          Development/Libraries/Other
 Requires:       %{name}0 = %{version}
-
+Requires:       %{name}EDID0 = %{version}
+Requires:       %{name}DDC0 = %{version}
+Requires:       %{name}X11-0 = %{version}
 
 %description
 The libXcm library is color management helper for Xorg. It contains a 
