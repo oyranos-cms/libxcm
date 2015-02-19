@@ -1,4 +1,4 @@
-libXcm:
+# libXcm
 
     The libXcm library contains the a reference implementation of the 
     X Color Management specification. The X Color Management specification 
@@ -19,17 +19,18 @@ libXcm:
     info is in xcm-x11.
 
 
-Internet:
-    sources: git clone git://github.com/oyranos-cms/libxcm
-    www:     OpenICC http://www.openicc.info
-    email:   http://lists.freedesktop.org/mailman/listinfo/openicc
+## Internet
+* sources: [git clone git://github.com/oyranos-cms/libxcm](https://github.com/oyranos-cms/libxcm)
+* www: [OpenICC](http://www.oyranos.org/libxcm)
+* support: [email list](http://lists.freedesktop.org/mailman/listinfo/openicc)
 
 
-Dependencies:
-    Xorg www.x.org
+## Dependencies
+[Xorg](http://www.x.org)
+libxmu-dev
 
 
-Building:
+## Building
     $ make
     $ make install
 
