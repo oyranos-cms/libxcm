@@ -189,7 +189,12 @@ char * printfNetColorDesktop ( XcmeContext_s * c, int verbose )
          * atom_capabilities_text = (char*)malloc(1024);
     struct tm * gmt;
 
-    atom_time_text[0]= atom_colour_server_name[0]= atom_capabilities_text[0]= 0;
+    if(!atom_time_text ||
+       !atom_colour_server_name ||
+       !atom_capabilities_text)
+      return NULL;
+
+    atom_time_text[0]= atom_colour_server_name[0]= atom_capabilities_text[0]= '\000';
 
     if(n && data && strlen((char*)data))
     {
@@ -212,9 +217,10 @@ char * printfNetColorDesktop ( XcmeContext_s * c, int verbose )
     else
       sprintf( net_color_desktop_text, "%d %s",
                (int)c->old_pid, atom_capabilities_text );
-    if(atom_time_text) free(atom_time_text);
-    if(atom_colour_server_name) free(atom_colour_server_name);
-    if(atom_capabilities_text) free(atom_capabilities_text);
+
+    free(atom_time_text);
+    free(atom_colour_server_name);
+    free(atom_capabilities_text);
   }
   else
     sprintf( net_color_desktop_text, "0" );
