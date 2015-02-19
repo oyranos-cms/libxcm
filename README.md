@@ -1,4 +1,4 @@
-# libXcm [![Build Status](https://travis-ci.org/oyranos-cms/libxcm.svg?branch=master)](https://travis-ci.org/oyranos-cms/libxcm)
+# libXcm [![Build Status](https://travis-ci.org/oyranos-cms/libxcm.svg?branch=master)](https://travis-ci.org/oyranos-cms/libxcm) [![Coverity Scan Build Status](https://scan.coverity.com/projects/4303/badge.svg)](https://scan.coverity.com/projects/4303)
 
 The libXcm library contains the a reference implementation of the 
 X Color Management specification. The X Color Management specification 
