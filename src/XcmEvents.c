@@ -757,9 +757,13 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
     fp = popen(  "oyranos-monitor -lc", "r" );
     if( fp )
     {
+      int c;
       txt = (char*) malloc( size + 1 );
-      while( (txt[i] = getc(fp)) != 0 && feof(fp) == 0 && i < size-1 )
+      while( (c = getc(fp)) != 0 && c != EOF && i < size-1 )
+      {
+        txt[i] = c;
         ++i;
+      }
       if(txt[i-1] == '\n')
         txt[i-1] = 0;
       else
