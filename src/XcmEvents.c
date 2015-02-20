@@ -766,8 +766,8 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
         txt[i] = 0;
       S( "%s", txt );
       free( txt ); txt = 0;
+      fclose( fp );
     }
-    fclose( fp );
   }
 
   /* tell about existing regions */
@@ -840,10 +840,13 @@ void         XcmStringAdd_           ( char             ** text,
   if(text_copy)
     sprintf( text_copy, "%s%s", *text?*text:"", append?append:"" );
 
-  if(text && *text && dealloc_func)
-    dealloc_func(*text);
+  if(text)
+  {
+    if(*text && dealloc_func)
+      dealloc_func(*text);
 
-  *text = text_copy;
+    *text = text_copy;
+  }
 }
 
 void         xcmeUnrollEdid1_       ( void              * edid,
@@ -908,7 +911,8 @@ void         xcmeUnrollEdid1_       ( void              * edid,
       c[8] = list[i].value.dbl;
   }
 
-  XcmEdidFree( &list );
+  if(list)
+    XcmEdidFree( &list );
 }
 
 /** Function XcmeContext_Release
