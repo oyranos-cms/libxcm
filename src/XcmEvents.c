@@ -842,7 +842,7 @@ void         XcmStringAdd_           ( char             ** text,
 
   text_copy = allocate_func(len + 1);
   if(text_copy)
-    sprintf( text_copy, "%s%s", *text?*text:"", append?append:"" );
+    sprintf( text_copy, "%s%s", (text && *text)?*text:"", append?append:"" );
 
   if(text)
   {
