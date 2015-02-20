@@ -86,9 +86,15 @@ XCM_DDC_ERROR_e   XcmDDClist         ( char            *** list,
   size_t size;
   char * fn = calloc(sizeof(char),1024);
   int n = 0;
+  char ** devices;
 
-  char ** devices = calloc(sizeof(char*), 128);
+  if(!dir)
+    return XCM_DDC_NO_FILE;
 
+  devices = calloc(sizeof(char*), 128);
+
+  if(!devices || !fn)
+    return XCM_DDC_NO_FILE;
 
   do
   {
@@ -106,7 +112,8 @@ XCM_DDC_ERROR_e   XcmDDClist         ( char            *** list,
       }
 
       if(data)
-        free(data); data = 0;
+        free(data);
+      data = 0;
     }
   } while(entry);
  
@@ -119,6 +126,9 @@ XCM_DDC_ERROR_e   XcmDDClist         ( char            *** list,
     devices = NULL;
   } else if(devices)
     free(devices);
+
+  closedir(dir);
+  free(fn);
 
   return error;
 }

@@ -231,7 +231,8 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
 
   for( i = 0; i < 4; ++i)
   {
-    unsigned char *block = edi->text1 + i * 18;
+    /* we get i==0 -> text1, i==1 -> text2, ... i==3 -> text3 */
+    unsigned char *block = &edi->text1[0] + i * 18;
     char **target = NULL,
          * tmp = 0;
 
@@ -579,6 +580,8 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
 
   if(count)
     *text = txt;
+  else
+    free(txt);
 
   XcmEdidFree( &l );
 
