@@ -84,9 +84,9 @@ XCM_DDC_ERROR_e   XcmDDClist         ( char            *** list,
   struct dirent * entry;
   char * data = 0;
   size_t size;
-  char * fn;
+  char * fn = NULL;
   int n = 0;
-  char ** devices;
+  char ** devices = NULL;
 
   if(!dir)
     return XCM_DDC_NO_FILE;
