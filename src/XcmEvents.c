@@ -770,7 +770,7 @@ int      XcmeContext_Setup           ( XcmeContext_s    * c,
         txt[i] = 0;
       S( "%s", txt );
       free( txt ); txt = 0;
-      fclose( fp );
+      pclose( fp );
     }
   }
 
