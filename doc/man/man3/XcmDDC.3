@@ -1,4 +1,4 @@
-.TH "X Color Management DDC/CI communication API's" 3 "Tue Feb 5 2013" "Version 0.5.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management DDC/CI communication API's" 3 "Mon May 11 2015" "Version 0.5.4" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -65,7 +65,9 @@ MIT http://www.opensource.org/licenses/mit-license.php
 .SS "enum \fBXCM_DDC_ERROR_e\fP"
 
 .PP
-errors specific to XcmDDC \fBVersion:\fP
+errors specific to XcmDDC 
+.PP
+\fBVersion:\fP
 .RS 4
 libXcm: 0\&.4\&.0 
 .RE
@@ -82,7 +84,7 @@ libXcm: 0\&.4\&.0
 .PP
 
 .PP
-\fBEnumerator: \fP
+\fBEnumerator\fP
 .in +1c
 .TP
 \fB\fIXCM_DDC_OK \fP\fP
@@ -132,6 +134,8 @@ libXcm: 0\&.4\&.0
 .RE
 .PP
 
+.PP
+References XCM_DDC_EDID_READ_FAIL, XCM_DDC_NO_FILE, XCM_DDC_OK, XCM_DDC_PREPARE_FAIL, and XCM_DDC_WRONG_EDID\&.
 .SS "\fBXCM_DDC_ERROR_e\fP XcmDDCgetEDID (const char *device_name, char **data, size_t *size)"
 
 .PP
@@ -167,6 +171,10 @@ libXcm: 0\&.4\&.0
 .RE
 .PP
 
+.PP
+References XCM_DDC_NO_FILE, XCM_DDC_OK, XCM_DDC_PREPARE_FAIL, and XCM_DDC_WRONG_EDID\&.
+.PP
+Referenced by XcmDDClist()\&.
 .SS "\fBXCM_DDC_ERROR_e\fP XcmDDClist (char ***list, int *count)"
 
 .PP
@@ -200,6 +208,8 @@ libXcm: 0\&.4\&.0
 .RE
 .PP
 
+.PP
+References XCM_DDC_NO_FILE, XCM_DDC_OK, and XcmDDCgetEDID()\&.
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Xcm from the source code\&.

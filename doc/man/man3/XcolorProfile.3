@@ -1,4 +1,4 @@
-.TH "XcolorProfile" 3 "Tue Feb 5 2013" "Version 0.5.3" "Xcm" \" -*- nroff -*-
+.TH "XcolorProfile" 3 "Mon May 11 2015" "Version 0.5.4" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -25,6 +25,8 @@ The \fBXcolorProfile\fP typedefed structure describes a single ICC profile\&. Th
 .PP 
 .SS "uint32_t XcolorProfile::length"
 number of bytes following, network byte order 
+.PP
+Referenced by XcolorProfileDelete(), and XcolorProfileUpload()\&.
 .SS "uint8_t XcolorProfile::md5[16]"
 ICC MD5 of the profile 
 

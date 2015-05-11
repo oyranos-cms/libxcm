@@ -74,8 +74,9 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./ src/ include/
-FILE_PATTERNS          = XcmVersion.h \
+INPUT                  = ./ doc/ src/ include/
+FILE_PATTERNS          = doxymentation.dox \
+                         XcmVersion.h \
                          Xcm.c \
                          XcmDDC.c \
                          XcmEvents.c \
@@ -117,10 +118,9 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-#HTML_HEADER            = doxygen.header
-#HTML_FOOTER            = doxygen.footer
-#HTML_STYLESHEET        = doxygen.css
-HTML_ALIGN_MEMBERS     = YES
+HTML_HEADER            = doc/doxygen.header.dox
+HTML_FOOTER            = doc/doxygen.footer.dox
+HTML_STYLESHEET        = doc/doxygen.css
 GENERATE_HTMLHELP      = NO
 CHM_FILE               = 
 HHC_LOCATION           = 
@@ -167,8 +167,6 @@ MAN_LINKS              = NO
 #---------------------------------------------------------------------------
 GENERATE_XML           = NO
 XML_OUTPUT             = xml
-XML_SCHEMA             = 
-XML_DTD                = 
 XML_PROGRAMLISTING     = YES
 #---------------------------------------------------------------------------
 # configuration options for the AutoGen Definitions output

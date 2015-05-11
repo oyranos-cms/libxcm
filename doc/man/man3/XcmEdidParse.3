@@ -1,4 +1,4 @@
-.TH "X Color Management EDID data block parsing API's" 3 "Tue Feb 5 2013" "Version 0.5.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management EDID data block parsing API's" 3 "Mon May 11 2015" "Version 0.5.4" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -128,26 +128,48 @@ Xcm Xorg Colour Management
 .PP 
 .SS "#define XCM_EDID_KEY_A2BLUE   'a2blue'"
 transfer value for blue component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_A2GREEN   'a2green'"
 transfer value for green component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_A2RED   'a2red'"
 transfer value for red component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_A3BLUE   'a3blue'"
 transfer value for blue component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_A3GREEN   'a3green'"
 transfer value for green component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_A3RED   'a3red'"
 transfer value for red component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_BLUEx   'blue_x'"
 colorimetric primary blue CIE*xyY x component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_BLUEy   'blue_y'"
 colorimetric primary blue CIE*xyY y component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_GAMMA   'gamma'"
 colorimetric single gamma for all channels, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_GREENx   'green_x'"
 colorimetric primary green CIE*xyY x component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_GREENy   'green_y'"
 colorimetric primary green CIE*xyY y component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_MANUFACTURER   'manufacturer'"
 full length manufacturer, string 
 .SS "#define XCM_EDID_KEY_MNFT   'mnft'"
@@ -160,8 +182,12 @@ full length device model, string
 model ID, integer 
 .SS "#define XCM_EDID_KEY_REDx   'red_x'"
 colorimetric primary red CIE*xyY x component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_REDy   'red_y'"
 colorimetric primary red CIE*xyY y component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_SERIAL   'serial'"
 full length device serial number, string 
 .SS "#define XCM_EDID_KEY_VENDOR   'vendor'"
@@ -170,8 +196,12 @@ full length vendor, string
 manufactur week, integer 
 .SS "#define XCM_EDID_KEY_WHITEx   'white_x'"
 colorimetric primary white CIE*xyY x component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_WHITEy   'white_y'"
 colorimetric primary white CIE*xyY y component, double 
+.PP
+Referenced by XcmEdidParse()\&.
 .SS "#define XCM_EDID_KEY_YEAR   'year'"
 manufactur year, integer 
 .SH "Function Documentation"
@@ -238,6 +268,8 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+Referenced by XcmEdidPrintOpenIccJSON(), and XcmEdidPrintString()\&.
 .SS "XCM_EDID_ERROR_e XcmEdidParse (void *edid, XcmEdidKeyValue_s **list, int *count)"
 
 .PP
@@ -273,6 +305,10 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+References XCM_EDID_KEY_A2BLUE, XCM_EDID_KEY_A2GREEN, XCM_EDID_KEY_A2RED, XCM_EDID_KEY_A3BLUE, XCM_EDID_KEY_A3GREEN, XCM_EDID_KEY_A3RED, XCM_EDID_KEY_BLUEx, XCM_EDID_KEY_BLUEy, XCM_EDID_KEY_GAMMA, XCM_EDID_KEY_GREENx, XCM_EDID_KEY_GREENy, XCM_EDID_KEY_REDx, XCM_EDID_KEY_REDy, XCM_EDID_KEY_WHITEx, and XCM_EDID_KEY_WHITEy\&.
+.PP
+Referenced by XcmEdidPrintOpenIccJSON(), and XcmEdidPrintString()\&.
 .SS "XCM_EDID_ERROR_e XcmEdidPrintOpenIccJSON (void *edid, char **text, void *(*)(size_t sz)alloc)"
 
 .PP
@@ -308,6 +344,8 @@ libXcm: 0\&.4\&.2
 .RE
 .PP
 
+.PP
+References XcmEdidFree(), and XcmEdidParse()\&.
 .SS "XCM_EDID_ERROR_e XcmEdidPrintString (void *edid, char **text, void *(*)(size_t sz)alloc)"
 
 .PP
@@ -343,6 +381,8 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+References XcmEdidFree(), and XcmEdidParse()\&.
 .SH "Author"
 .PP 
 Generated automatically by Doxygen for Xcm from the source code\&.

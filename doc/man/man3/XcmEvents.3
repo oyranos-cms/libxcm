@@ -1,4 +1,4 @@
-.TH "X Color Management Event API's" 3 "Tue Feb 5 2013" "Version 0.5.3" "Xcm" \" -*- nroff -*-
+.TH "X Color Management Event API's" 3 "Mon May 11 2015" "Version 0.5.4" "Xcm" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -27,7 +27,7 @@ X Color Management Event API's \-
 
 .in +1c
 .ti -1c
-.RI "enum \fBXCME_MSG_e\fP { \fBXCME_MSG_TITLE\fP =  400, \fBXCME_MSG_COPYRIGHT\fP, \fBXCME_MSG_INFO\fP, \fBXCME_MSG_SYSTEM\fP, \fBXCME_MSG_DISPLAY_ERROR\fP, \fBXCME_MSG_DISPLAY_EVENT\fP, \fBXCME_MSG_DISPLAY_STATUS\fP }"
+.RI "enum \fBXCME_MSG_e\fP { \fBXCME_MSG_TITLE\fP = 400, \fBXCME_MSG_COPYRIGHT\fP, \fBXCME_MSG_INFO\fP, \fBXCME_MSG_SYSTEM\fP, \fBXCME_MSG_DISPLAY_ERROR\fP, \fBXCME_MSG_DISPLAY_EVENT\fP, \fBXCME_MSG_DISPLAY_STATUS\fP }"
 .br
 .RI "\fIcustomisable signals for a observer \fP"
 .in -1c
@@ -133,10 +133,14 @@ MIT http://www.opensource.org/licenses/mit-license.php
 
 .PP
 X Color Management spec atoms\&. 
+.PP
+Referenced by XcmeContext_InLoop()\&.
 .SS "#define XCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE   '_ICC_PROFILE'"
 
 .PP
 \fIICC_PROFILE\fP(xxx) in X spec atoms 
+.PP
+Referenced by XcmeContext_InLoop()\&.
 .SH "Typedef Documentation"
 .PP 
 .SS "typedef struct XcmeContext_s_ \fBXcmeContext_s\fP"
@@ -150,7 +154,7 @@ context for parsing events
 .PP
 customisable signals for a observer 
 .PP
-\fBEnumerator: \fP
+\fBEnumerator\fP
 .in +1c
 .TP
 \fB\fIXCME_MSG_TITLE \fP\fP
@@ -206,6 +210,8 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+References XcmeContext_New(), and XcmeContext_Setup()\&.
 .SS "Display * XcmeContext_DisplayGet (\fBXcmeContext_s\fP *c)"
 
 .PP
@@ -286,6 +292,8 @@ check for colour management events Function XcmeContext_InLoop This function nee
 .RS 4
 - 0: success
 .IP "\(bu" 2
+-1: nothing to do
+.IP "\(bu" 2
 1: error
 .PP
 .RE
@@ -306,6 +314,8 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+References XCM_ICC_COLOUR_SERVER_TARGET_PROFILE_IN_X_BASE, XCM_ICC_V0_3_TARGET_PROFILE_IN_X_BASE, XcmePrintWindowName(), xcmePrintWindowRegions(), and XcmeSelectInput()\&.
 .SS "\fBXcmeContext_s\fP * XcmeContext_New ()"
 
 .PP
@@ -332,6 +342,8 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+Referenced by XcmeContext_Create()\&.
 .SS "int XcmeContext_Release (\fBXcmeContext_s\fP **c)"
 
 .PP
@@ -386,6 +398,10 @@ libXcm: 0\&.4\&.1
 .RE
 .PP
 
+.PP
+References XCM_COLOR_DESKTOP, XCM_COLOR_OUTPUTS, XCM_COLOR_PROFILES, XCM_COLOR_REGIONS, XCME_MSG_COPYRIGHT, XCME_MSG_TITLE, XcmeContext_Setup2(), and xcmePrintWindowRegions()\&.
+.PP
+Referenced by XcmeContext_Create()\&.
 .SS "int XcmeContext_Setup2 (\fBXcmeContext_s\fP *c, const char *display_name, intflags)"
 
 .PP
@@ -416,6 +432,10 @@ libXcm: 0\&.5\&.0
 .RE
 .PP
 
+.PP
+References XCM_COLOR_DESKTOP, XCM_COLOR_OUTPUTS, XCM_COLOR_PROFILES, XCM_COLOR_REGIONS, and XcmeSelectInput()\&.
+.PP
+Referenced by XcmeContext_Setup()\&.
 .SS "int XcmeContext_WindowSet (\fBXcmeContext_s\fP *c, Windowwindow)"
 
 .PP
@@ -453,6 +473,8 @@ libXcm: 0\&.3\&.0
 
 .PP
 return a short window description text 
+.PP
+Referenced by XcmeContext_InLoop(), XcmePrintWindowRegions(), and xcmePrintWindowRegions()\&.
 .SS "const char * XcmePrintWindowRegions (Display *display, Windoww, intalways)"
 
 .PP
@@ -483,6 +505,8 @@ libXcm: 0\&.4\&.3
 .RE
 .PP
 
+.PP
+References XCM_COLOR_REGIONS, XcmePrintWindowName(), and XcolorRegionFetch()\&.
 .SS "void xcmePrintWindowRegions (Display *display, Windoww, intalways)"
 
 .PP
@@ -513,6 +537,10 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+References XCM_COLOR_REGIONS, XcmePrintWindowName(), and XcolorRegionFetch()\&.
+.PP
+Referenced by XcmeContext_InLoop(), and XcmeContext_Setup()\&.
 .SS "void XcmeSelectInput (\fBXcmeContext_s\fP *c)"
 
 .PP
@@ -534,6 +562,8 @@ libXcm: 0\&.5\&.3
 .RE
 .PP
 
+.PP
+Referenced by XcmeContext_InLoop(), and XcmeContext_Setup2()\&.
 .SS "void XcmICCprofileFromMD5FuncSet (XcmICCprofileGetFromMD5_ffromMD5)"
 
 .PP
@@ -615,6 +645,8 @@ libXcm: 0\&.3\&.0
 .RE
 .PP
 
+.PP
+References XCME_MSG_COPYRIGHT, XCME_MSG_DISPLAY_ERROR, XCME_MSG_DISPLAY_EVENT, XCME_MSG_DISPLAY_STATUS, XCME_MSG_INFO, XCME_MSG_SYSTEM, and XCME_MSG_TITLE\&.
 .SS "int XcmMessageFuncSet (XcmMessage_fmessage_func)"
 
 .PP

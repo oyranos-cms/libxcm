@@ -1,0 +1,52 @@
+/** @mainpage libXcm API Documentation
+
+    @section text_contents Descriptive Contents
+    @ref intro |
+    @ref tools |
+    @ref user |
+    @ref api_tutorial |
+
+    @author Tomas Carnecky, Kai-Uwe Behrmann and others
+    @since  June 2008
+
+    @par Internet:
+          http://www.oyranos.org/libxcm
+
+    @par Sources:
+          https://github.com/oyranos-cms/libxcm
+
+    @n@n
+    @section intro Introduction
+  
+    The libXcm library contains the a reference implementation of the X Color Management
+    specification. The X Color Management specification allows to attach colour regions 
+    to X windows to communicate with colour servers.
+
+    @section tools User Tools Documentation
+    - xcmsevents - show X11 events on the command line
+
+    @section user User API Documentation
+    - @ref Xcm - reference implementation of the X Color Management specification
+    - @ref XcmDDC - fetch a EDID data block from a monitor over a i2c
+    - @ref XcmEdidParse - parsing EDID data blocks
+    - @ref XcmEvents - observe X11 colour management events
+
+    @subsection api_tutorial Programming Tutorial
+    Frist you have to put a
+    @verbatim
+    #include <X11/Xcm/XcmVersion.h> @endverbatim
+    in your source text, in order to use libXcm. 
+    @verbatim
+    int main( int argc, char ** argv ) {
+      int version = XCM_VERSION_NUM;
+      return 0;
+    }@endverbatim
+    \b pkg-config \b --cflags xcm delivers the compiler flags and \b pkg-config \b --libs xcm the linker flags.
+
+    Then you can put libXcm functions in your code and compile with:
+    @verbatim
+    cc `pkg-config --cflags --libs xcm xcm-edid xcm-ddc xcm-x11` mycode.c -o myApp @endverbatim
+    to link libXcm into your application.
+
+ */
+
