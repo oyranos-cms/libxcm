@@ -15,7 +15,7 @@ man_MANS = \
 	doc/man/man3/XcolorRegion.3 libXcm.3
 
 EXTRA_DIST = ${man_MANS} \
-	Doxyfile.in \
+	doc/Doxyfile.in \
 	docs/X_Color_Management.txt \
 	extras/libXcm_control.in \
 	extras/libXcm.spec.in \
@@ -88,7 +88,7 @@ help:
 	echo "... BUILDDIR=../build_local"
 
 pkgconfigdir = ${libdir}/pkgconfig
-pkgconfig_DATA = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc
+pkgconfig_DATA = extras/xcm.pc extras/xcm-edid.pc extras/xcm-ddc.pc extras/xcm-x11.pc
 
 cmakedir = $(libdir)/cmake/Xcm
 cmake_DATA = extras/XcmConfig.cmake
