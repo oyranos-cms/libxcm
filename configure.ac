@@ -85,7 +85,7 @@ else
 	AM_CONDITIONAL([HAVE_LINUX], [false])
 fi
 
-AC_CONFIG_FILES([Makefile src/Makefile xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc Doxyfile libXcm.spec
+AC_CONFIG_FILES([Makefile src/Makefile extras/xcm.pc extras/xcm-edid.pc extras/xcm-ddc.pc extras/xcm-x11.pc doc/Doxyfile extras/libXcm.spec
 include/XcmVersion.h])
 AC_OUTPUT
 

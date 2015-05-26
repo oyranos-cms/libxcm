@@ -19,13 +19,16 @@ The included xcmsevents makes use of the XcmEvents API. The package config
 info is in xcm-x11.
 
 
-## Internet
+###Links
 * sources: [git clone git://github.com/oyranos-cms/libxcm](https://github.com/oyranos-cms/libxcm)
 * www: [OpenICC](http://www.oyranos.org/libxcm)
 * support: [email list](http://lists.freedesktop.org/mailman/listinfo/openicc)
+* [ChangeLog](docs/ChangeLog)
+* [Copyright](docs/COPYING) - MIT
+* [Authors](docs/AUTHORS)
 
 
-## Dependencies
+### Dependencies
 * [Xorg](http://www.x.org)
 * autotools-dev
 * pkg-config
@@ -34,7 +37,7 @@ info is in xcm-x11.
 * x11proto-xext-dev
 
 
-## Building
+### Building
     $ make
     $ make install
 

@@ -3,9 +3,9 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = Xcm
+PROJECT_NAME           = Xcm-@PACKAGE_VERSION@
 PROJECT_NUMBER         = @PACKAGE_VERSION@
-OUTPUT_DIRECTORY       = doc/
+OUTPUT_DIRECTORY       = ./
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 BRIEF_MEMBER_DESC      = YES
@@ -74,7 +74,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = ./ doc/ src/ include/
+INPUT                  = ./ ../src/ ../include/
 FILE_PATTERNS          = doxymentation.dox \
                          XcmVersion.h \
                          Xcm.c \
@@ -118,10 +118,10 @@ IGNORE_PREFIX          =
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
-HTML_HEADER            = doc/doxygen.header.dox
-HTML_FOOTER            = doc/doxygen.footer.dox
-HTML_STYLESHEET        = doc/doxygen.css
-GENERATE_HTMLHELP      = NO
+HTML_HEADER            = doxygen.header.dox
+HTML_FOOTER            = doxygen.footer.dox
+HTML_STYLESHEET        = doxygen.css
+GENERATE_HTMLHELP      = O
 CHM_FILE               = 
 HHC_LOCATION           = 
 GENERATE_CHI           = NO
@@ -186,7 +186,7 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
-INCLUDE_PATH           = include/
+INCLUDE_PATH           = ../include/
 INCLUDE_FILE_PATTERNS  = XcmVersion.h
 PREDEFINED             = 
 EXPAND_AS_DEFINED      = 

@@ -83,12 +83,14 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in $(srcdir)/xcm.pc.in \
-	$(srcdir)/xcm-edid.pc.in $(srcdir)/xcm-ddc.pc.in \
-	$(srcdir)/xcm-x11.pc.in $(srcdir)/Doxyfile.in \
-	$(srcdir)/libXcm.spec.in $(top_srcdir)/include/XcmVersion.h.in \
-	$(dist_doc_DATA) $(pkginclude_HEADERS) AUTHORS COPYING \
-	ChangeLog build-aux/ar-lib build-aux/compile \
+	$(srcdir)/config.h.in $(top_srcdir)/extras/xcm.pc.in \
+	$(top_srcdir)/extras/xcm-edid.pc.in \
+	$(top_srcdir)/extras/xcm-ddc.pc.in \
+	$(top_srcdir)/extras/xcm-x11.pc.in \
+	$(top_srcdir)/doc/Doxyfile.in \
+	$(top_srcdir)/extras/libXcm.spec.in \
+	$(top_srcdir)/include/XcmVersion.h.in $(dist_doc_DATA) \
+	$(pkginclude_HEADERS) build-aux/ar-lib build-aux/compile \
 	build-aux/config.guess build-aux/config.sub build-aux/depcomp \
 	build-aux/install-sh build-aux/missing build-aux/ltmain.sh \
 	$(top_srcdir)/build-aux/ar-lib $(top_srcdir)/build-aux/compile \
@@ -108,8 +110,9 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc Doxyfile \
-	libXcm.spec include/XcmVersion.h
+CONFIG_CLEAN_FILES = extras/xcm.pc extras/xcm-edid.pc \
+	extras/xcm-ddc.pc extras/xcm-x11.pc doc/Doxyfile \
+	extras/libXcm.spec include/XcmVersion.h
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -396,7 +399,8 @@ man_MANS = \
 EXTRA_DIST = ${man_MANS} \
 	Doxyfile.in \
 	docs/X_Color_Management.txt \
-	libXcm_control.in \
+	extras/libXcm_control.in \
+	extras/libXcm.spec.in \
 	examples/compiz/client.c \
 	examples/compiz/color.c \
 	examples/compiz/makefile \
@@ -411,7 +415,7 @@ pkgconfigdir = ${libdir}/pkgconfig
 pkgconfig_DATA = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc
 cmakedir = $(libdir)/cmake/Xcm
 cmake_DATA = extras/XcmConfig.cmake
-dist_doc_DATA = README.md AUTHORS ChangeLog COPYING
+dist_doc_DATA = README.md docs/AUTHORS docs/ChangeLog docs/COPYING
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -465,17 +469,17 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-xcm.pc: $(top_builddir)/config.status $(srcdir)/xcm.pc.in
+extras/xcm.pc: $(top_builddir)/config.status $(top_srcdir)/extras/xcm.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-xcm-edid.pc: $(top_builddir)/config.status $(srcdir)/xcm-edid.pc.in
+extras/xcm-edid.pc: $(top_builddir)/config.status $(top_srcdir)/extras/xcm-edid.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-xcm-ddc.pc: $(top_builddir)/config.status $(srcdir)/xcm-ddc.pc.in
+extras/xcm-ddc.pc: $(top_builddir)/config.status $(top_srcdir)/extras/xcm-ddc.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-xcm-x11.pc: $(top_builddir)/config.status $(srcdir)/xcm-x11.pc.in
+extras/xcm-x11.pc: $(top_builddir)/config.status $(top_srcdir)/extras/xcm-x11.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-Doxyfile: $(top_builddir)/config.status $(srcdir)/Doxyfile.in
+doc/Doxyfile: $(top_builddir)/config.status $(top_srcdir)/doc/Doxyfile.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-libXcm.spec: $(top_builddir)/config.status $(srcdir)/libXcm.spec.in
+extras/libXcm.spec: $(top_builddir)/config.status $(top_srcdir)/extras/libXcm.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 include/XcmVersion.h: $(top_builddir)/config.status $(top_srcdir)/include/XcmVersion.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
