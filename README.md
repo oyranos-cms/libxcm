@@ -28,7 +28,7 @@ info is in xcm-x11.
 * [Authors](docs/AUTHORS)
 
 
-### Dependencies
+### Dependencies - optional
 * [Xorg](http://www.x.org)
 * autotools-dev
 * pkg-config
