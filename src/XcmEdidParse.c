@@ -232,9 +232,17 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
   for( i = 0; i < 4; ++i)
   {
     /* we get i==0 -> text1, i==1 -> text2, ... i==3 -> text3 */
-    unsigned char *block = &edi->text1[0] + i * 18;
+    unsigned char * block;
     char **target = NULL,
          * tmp = 0;
+
+    switch(i)
+    {
+    case 0: block = edi->text1;
+    case 1: block = edi->text2;
+    case 2: block = edi->text3;
+    case 3: block = edi->text4;
+    }
 
     if(block[0] == 0 && block[1] == 0 && block[2] == 0)
     {
