@@ -10,7 +10,7 @@ Url:            http://www.oyranos.org
 #Git-Clone:     git://www.oyranos.org/git/xcolor
 Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libXcm-@PACKAGE_VERSION@.tar.bz2
 Vendor:         Kai-Uwe Behrmann
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildRoot:      %{_tmppath}/libxcm-%{version}-build
 
 %if 0%{?suse_version} > 0
 BuildRequires:  gcc-c++
@@ -39,7 +39,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  mesagl-devel
 BuildRequires:  pkgconfig
 %endif
-%if 0%{?fedora_version} > 0
+%if 0%{?fedora_version} > 0 || 0%{?rhel_version} > 0 || 0%{?centos_version} > 0
 BuildRequires:  Mesa
 BuildRequires:  Mesa-devel
 BuildRequires:  gcc-c++
@@ -47,9 +47,6 @@ BuildRequires:  libXfixes-devel
 BuildRequires:  libXmu-devel
 BuildRequires:  xdg-utils
 BuildRequires:  xorg-x11-Mesa-devel
-BuildRequires:  xorg-x11-devel
-BuildRequires:  xorg-x11-proto-devel
-BuildRequires:  xorg-x11-xtrans-devel
 %endif
 
 %package      -n %{name}0
@@ -75,6 +72,7 @@ Requires:       %{name}0 = %{version}
 Requires:       %{name}EDID0 = %{version}
 Requires:       %{name}DDC0 = %{version}
 Requires:       %{name}X11-0 = %{version}
+
 
 %description
 The libXcm library is color management helper for Xorg. It contains a 
@@ -108,7 +106,7 @@ The package contains headers and other development files.
 
 
 %prep
-%setup -q
+%setup -q  -n %{name}-%{version}
 
 %build
 %ifarch %arm
@@ -127,7 +125,7 @@ rm -fr %{buildroot}/%{_datadir}/doc/%{name}
 #Fix timestamp to prevent multilibs conflict
 touch -r ChangeLog doc/man/*
 
-# Remove libtool files
+# Remove libtool files with empty dependency_libs variable
 rm %{buildroot}/%{_libdir}/%{name}*.la
 
 %post -n %{name}0 -p /sbin/ldconfig
@@ -158,7 +156,7 @@ rm %{buildroot}/%{_libdir}/%{name}*.la
 
 %files devel
 %defattr(-, root, root)
-%doc AUTHORS COPYING ChangeLog README
+%doc AUTHORS COPYING ChangeLog README.md
 %doc docs/X_Color_Management.txt
 %{_libdir}/%{name}*.so
 %dir %{_libdir}/cmake/
@@ -173,7 +171,7 @@ rm %{buildroot}/%{_libdir}/%{name}*.la
 * Wed Apr 24 2013 Kai-Uwe Behrmann
 - split into EDID, DDC and X11 libraries
 
-* Tue Dec 20 2012 Kai-Uwe Behrmann
+* Thu Dec 20 2012 Kai-Uwe Behrmann
 - install XcmConfig.cmake
 
 * Wed Dec 29 2010 Kai-Uwe Behrmann
