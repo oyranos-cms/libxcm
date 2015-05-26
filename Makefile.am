@@ -92,3 +92,4 @@ pkgconfig_DATA = xcm.pc xcm-edid.pc xcm-ddc.pc xcm-x11.pc
 cmakedir = $(libdir)/cmake/Xcm
 cmake_DATA = extras/XcmConfig.cmake
 
+dist_doc_DATA = README.md AUTHORS ChangeLog COPYING
