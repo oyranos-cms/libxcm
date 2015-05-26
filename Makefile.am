@@ -29,13 +29,13 @@ EXTRA_DIST = ${man_MANS} \
 
 RPMARCH=`rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 
-rpm:    dist-bzip2
+rpm:    dist-orig
 	mkdir -p rpmdir/BUILD \
 	rpmdir/SPECS \
 	rpmdir/SOURCES \
 	rpmdir/SRPMS \
 	rpmdir/RPMS/$(RPMARCH)
-	cp -f $(PACKAGE)-$(PACKAGE_VERSION).tar.bz2 rpmdir/SOURCES
+	cp -f libxcm_$(VERSION).orig.tar.bz2 rpmdir/SOURCES
 	rpmbuild --clean -ba $(top_builddir)/$(PACKAGE).spec --define "_topdir $$PWD/rpmdir"
 	@echo "============================================================"
 	@echo "Finished - the packages are in rpmdir/RPMS and rpmdir/SRPMS!"
@@ -52,11 +52,13 @@ deb:    dist
 	$(RM) -R $(top_builddir)/debian/deb
 	echo ... $@ done
 
-debsrc:	dist-bzip2
+dist-orig: dist-bzip2
 	test -d $(PACKAGE)-$(VERSION) && $(RM) -R $(PACKAGE)-$(VERSION) || echo ""
 	tar xvjf $(PACKAGE)-$(VERSION).tar.bz2
 	pwd
 	mv $(PACKAGE)-$(VERSION).tar.bz2 libxcm_$(VERSION).orig.tar.bz2
+
+debsrc:	dist-orig
 	cp -R $(srcdir)/extras/debian $(PACKAGE)-$(VERSION)
 	dpkg-source -b $(PACKAGE)-$(VERSION)
 	echo ... $@ done
