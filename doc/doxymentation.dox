@@ -45,7 +45,7 @@
 
     Then you can put libXcm functions in your code and compile with:
     @verbatim
-    cc `pkg-config --cflags --libs xcm xcm-edid xcm-ddc xcm-x11` mycode.c -o myApp @endverbatim
+    cc `pkg-config --cflags --libs xcm` mycode.c -o myApp @endverbatim
     to link libXcm into your application.
 
  */
