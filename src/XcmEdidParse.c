@@ -126,14 +126,25 @@ static void         XcmEdidSetDouble ( XcmEdidKeyValue_s * entry,
   entry->type = XCM_EDID_VALUE_DOUBLE;
   entry->value.dbl = value;
 }
-static
-void         XcmEdidSetText          ( XcmEdidKeyValue_s * entry,
+static char *       XcmCheckText     ( char              * value )
+{
+  int len = strlen( value ),
+      i;
+  for( i = 0; i < len; ++i )
+    if( value[i] < 32 || 126 < value[i] )
+    {
+      value[i] = '\000';
+      break;
+    }
+  return value;
+}
+static void         XcmEdidSetText   ( XcmEdidKeyValue_s * entry,
                                        const char        * key,
                                        char              * value )
 {
   entry->key = key;
   entry->type = XCM_EDID_VALUE_TEXT;
-  entry->value.text = value;
+  entry->value.text = XcmCheckText( value );
 }
 
 #define SET_INT(key)  if(key) \
