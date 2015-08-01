@@ -3,7 +3,7 @@
  *  libXcm  Xorg Colour Management
  *
  *  @par Copyright:
- *            2005-2013 (C) Kai-Uwe Behrmann
+ *            2005-2015 (C) Kai-Uwe Behrmann
  *
  *  @brief    EDID data block parsing
  *  @internal
@@ -238,10 +238,10 @@ XCM_EDID_ERROR_e  XcmEdidParse       ( void              * edid,
 
     switch(i)
     {
-    case 0: block = edi->text1;
-    case 1: block = edi->text2;
-    case 2: block = edi->text3;
-    case 3: block = edi->text4;
+    case 0: block = edi->text1; break;
+    case 1: block = edi->text2; break;
+    case 2: block = edi->text3; break;
+    case 3: block = edi->text4; break;
     }
 
     if(block[0] == 0 && block[1] == 0 && block[2] == 0)
