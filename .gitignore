@@ -4,9 +4,13 @@ Makefile
 *.la
 *.lo
 *.o
+*.log
 
 /autom4te.cache/
 /stamp-h1
 /config.h.in~
+/config.h
+/libtool
 
-/xcm.pc
+*.pc
+*.spec
