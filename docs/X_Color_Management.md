@@ -1,5 +1,6 @@
-# X Color Management specification 0.4
-   ====================
+# X Color Management specification
+
+Version 0.4
 
 DRAFT 1
 
@@ -112,7 +113,6 @@ by the application. That capability is called opt out.
 
 
 ## Atoms
-  -------
 
  _ICC_COLOR_PROFILES:
 
