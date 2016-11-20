@@ -123,7 +123,7 @@ make DESTDIR=%{buildroot} install
 rm -fr %{buildroot}/%{_datadir}/doc/%{name}
 
 #Fix timestamp to prevent multilibs conflict
-touch -r ChangeLog doc/man/*
+touch -r docs/ChangeLog.md doc/man/*
 
 # Remove libtool files with empty dependency_libs variable
 rm %{buildroot}/%{_libdir}/%{name}*.la
@@ -156,8 +156,8 @@ rm %{buildroot}/%{_libdir}/%{name}*.la
 
 %files devel
 %defattr(-, root, root)
-%doc AUTHORS COPYING ChangeLog README.md
-%doc docs/X_Color_Management.txt
+%doc docs/AUTHORS.md docs/COPYING.md docs/ChangeLog.md README.md
+%doc docs/X_Color_Management.md
 %{_libdir}/%{name}*.so
 %dir %{_libdir}/cmake/
 %dir %{_libdir}/cmake/Xcm/

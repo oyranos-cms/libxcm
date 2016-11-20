@@ -1,41 +1,39 @@
-
-    X Color Management specification 0.4
+# X Color Management specification 0.4
    ====================
 
 DRAFT 1
 
-   Revision History
-  ------------------
-Revision 0.1            2008-07-21  Tomas Carnecky
+## Revision History
+
+* Revision 0.1            2008-07-21  Tomas Carnecky
                                       initial incomplete spec for 
                                       Color Management near X
-Draft for Revision 0.2  2010-05-16  Kai-Uwe Behrmann
+* Draft for Revision 0.2  2010-05-16  Kai-Uwe Behrmann
                                       clearify XcolorRegion, add references,
                                       history, date and headers,
                                       remove XRandR, _ICC_COLOR_MANAGEMENT and
                                       _ICC_COLOR_PROFILES from this version,
                                       add _ICC_COLOR_REGIONS and
                                       _ICC_COLOR_DESKTOP
-Draft 2  Revision 0.2   2010-08-14  Kai-Uwe Behrmann
+* Draft 2  Revision 0.2   2010-08-14  Kai-Uwe Behrmann
                                       add _ICC_DEVICE_PROFILE(_xxx)
 
-Draft 1  Revision 0.3   2011-09-11  Kai-Uwe Behrmann
+* Draft 1  Revision 0.3   2011-09-11  Kai-Uwe Behrmann
                                       rename _NET prefix to _ICC
 
-Draft 2  Revision 0.3   2011-10-30  Kai-Uwe Behrmann
+* Draft 2  Revision 0.3   2011-10-30  Kai-Uwe Behrmann
                                       describe _ICC_COLOR_DISPLAY_ADVANCED,
                                       readd _ICC_COLOR_PROFILES
                                       add color server implementation note
 
-Draft 1  Revision 0.4   2012-02-17  Kai-Uwe Behrmann
+* Draft 1  Revision 0.4   2012-02-17  Kai-Uwe Behrmann
                                       add _ICC_COLOR_OUTPUTS
-Draft 2  Revision 0.4   2012-11-11  Kai-Uwe Behrmann
+* Draft 2  Revision 0.4   2012-11-11  Kai-Uwe Behrmann
                                       clearify about opt out
-Draft 3  Revision 0.4   2012-12-20  Kai-Uwe Behrmann
+* Draft 3  Revision 0.4   2012-12-20  Kai-Uwe Behrmann
                                       specify ICM _ICC_COLOR_DESKTOP capability
 
-   Introduction
-  --------------
+## Introduction
 
 The X Color Management specification defines a protocol, which can be used by 
 X11 clients to offload color correction and transformation into the 
@@ -51,8 +49,7 @@ complex vector graphics or 3D scenes to multiple outputs, without the need
 to understand window transformations.
 
 
-   Color Profile
-  ---------------
+## Color Profile
 
 A single ICC color profile is described by the following C structure.
 
@@ -66,8 +63,7 @@ and later referenced in color regions. The actual profile data follows directly
 after the structure.
 
 
-   Color Region
-  --------------
+## Color Region
 
 A color region is described by the following C structure:
 
@@ -84,8 +80,7 @@ As of this spec the md5 shall be set to zero to signal the region is already
 color managed by the application. That capability is called opt out.
 
 
-   Color Output
-  --------------
+## Color Output
 
 A windows profile reference is described by the following C structure:
 
@@ -116,7 +111,7 @@ The md5 shall be set to zero to signal the window is already color managed
 by the application. That capability is called opt out.
 
 
-   Atoms
+## Atoms
   -------
 
  _ICC_COLOR_PROFILES:
@@ -178,25 +173,31 @@ colour server to use advanced CMS options like proofing. The type is XA_STRING.
 The atom is attached on the root window to inform about the color server.
 The content is of type XA_STRING and has four sections separated by a 
 empty space char ' '. 
+
 The _ICC_COLOR_DESKTOP atom is a string with following usages:
-- uniquely identify the colour server
-- tell the name of the colour server
-- tell the colour server is alive
-- list the colour server capabilities and spec compliance
+
+* uniquely identify the colour server
+* tell the name of the colour server
+* tell the colour server is alive
+* list the colour server capabilities and spec compliance
+
 All sections are separated by one space char ' ' for easy parsing.
 
 The first section contains the process id (pid_t) of the color server process, 
 which has set the atom.
 The second section contains time since epoch GMT as returned by time(NULL).
 The thired section contains the bar '|' separated and surrounded
-capabilities:
-  - ICP  _ICC_COLOR_PROFILES XcolorRegion::md5 is handled
-  - ICT  _ICC_COLOR_TARGET - deprecated
-  - ICM  _ICC_COLOR_MANAGEMENT color server is converting 
-  - ICR  _ICC_COLOR_REGIONS XcolorRegion is handled
-  - ICO  _ICC_COLOR_OUTPUTS XcolorOutput is handled
-  - ICA  _ICC_COLOR_DISPLAY_ADVANCED
-  - V0.4 indicates version compliance to the _ICC_Profile in X spec
+
+Capabilities:
+
+* ICP  _ICC_COLOR_PROFILES XcolorRegion::md5 is handled
+* ICT  _ICC_COLOR_TARGET - deprecated
+* ICM  _ICC_COLOR_MANAGEMENT color server is converting
+* ICR  _ICC_COLOR_REGIONS XcolorRegion is handled
+* ICO  _ICC_COLOR_OUTPUTS XcolorOutput is handled
+* ICA  _ICC_COLOR_DISPLAY_ADVANCED
+* V0.4 indicates version compliance to the _ICC_Profile in X spec
+
 The fourth section contains the servers name identifier.
 
 As of this specification the third section must contain the supported 
@@ -220,6 +221,7 @@ the ICC Profile in X recommendation. After finishing the session the the old
 state has to be recovered by copying any _ICC_DEVICE_PROFILE(_xxx) atoms 
 content into the appropriate _ICC_PROFILE(_xxx) atoms and removing all
 _ICC_DEVICE_PROFILE(_xxx) atoms.
+
 The colour server must be aware about change property events indicating that
 a _ICC_PROFILE(_xxx) atom has changed by a external application and needs to
 move that profile to the appropriate _ICC_DEVICE_PROFILE(_xxx) atom and set
@@ -228,16 +230,14 @@ The modification of the _ICC_DEVICE_PROFILE(_xxx) atoms by external applications
 is undefined.
 
 
-   Baseline Implementation
-  -------------------------
+## Baseline Implementation
 
 _ICC_COLOR_OUTPUTS support must be implemented. That allowes applications and
 toolkits to rely on a common level of support from different colour server
 implementations.
 
 
-   Discussion
-  ------------
+## Discussion
 
 Elder desktop applications might not be aware of the capabilities exposed 
 through a implementation of this recommendation. Thus a way is needed to enshure
@@ -246,7 +246,7 @@ expose capable clients the desired information about the monitor characteristics
 at the discussed level. The _ICC_PROFILE(_xxx) atom is maintained to enshure the
 desired backward compatibility.
 
- Implementation Notes:
+### Implementation Notes:
 
 Color servers see in a X11 environment only asynchronous events. Therefore they
 shall control the setup of _ICC_PROFILE(_xxx) atoms. That way they will
@@ -261,8 +261,7 @@ intermediate colour space, which is then finally converted to each output by
 the colour server. Therefor _ICC_COLOR_PROFILES support is highly encouraged.
 
 
-   References
-  ------------
+## References
 
 1. X window system (hhtp://www.x.org)
 2. International Color Consortium (http://www.color.org)

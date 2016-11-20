@@ -28,9 +28,9 @@ info is in xcm-x11.
 * sources: [git clone git://github.com/oyranos-cms/libxcm](https://github.com/oyranos-cms/libxcm)
 * www: [OpenICC](http://www.oyranos.org/libxcm)
 * support: [email list](http://lists.freedesktop.org/mailman/listinfo/openicc)
-* [ChangeLog](docs/ChangeLog)
-* [Copyright](docs/COPYING) - MIT
-* [Authors](docs/AUTHORS)
+* [ChangeLog](docs/ChangeLog.md)
+* [Copyright](docs/COPYING.md) - MIT
+* [Authors](docs/AUTHORS.md)
 
 
 ### Dependencies - optional

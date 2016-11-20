@@ -16,7 +16,7 @@ man_MANS = \
 
 EXTRA_DIST = ${man_MANS} \
 	doc/Doxyfile.in \
-	docs/X_Color_Management.txt \
+	docs/X_Color_Management.md \
 	extras/libXcm_control.in \
 	extras/libXcm.spec.in \
 	examples/compiz/client.c \
@@ -93,4 +93,4 @@ pkgconfig_DATA = extras/xcm.pc extras/xcm-edid.pc extras/xcm-ddc.pc extras/xcm-x
 cmakedir = $(libdir)/cmake/Xcm
 cmake_DATA = extras/XcmConfig.cmake
 
-dist_doc_DATA = README.md docs/AUTHORS docs/ChangeLog docs/COPYING
+dist_doc_DATA = README.md docs/AUTHORS.md docs/ChangeLog.md docs/COPYING.md

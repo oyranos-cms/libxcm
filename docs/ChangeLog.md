@@ -1,9 +1,11 @@
-Version libXcm-0.5.3
+# ChangeLog
 
-Florian Höch (1):
+# Version libXcm-0.5.3
+
+### Florian Höch (1):
 	* [core]: Patch for transposed EDID red y bits
 
-Kai-Uwe Behrmann (20):
+### Kai-Uwe Behrmann (20):
 	* [build]: remove all libtool files from RPM
 	* [core]: fix conditional compiling of XcmDummy
 	* [build]: fix spec packaging issues
@@ -25,17 +27,17 @@ Kai-Uwe Behrmann (20):
 	* [build]: remove libtool
 	* [build]: add missed automake script
 
-Version libXcm-0.5.2
+# Version libXcm-0.5.2
 
-Jan Engelhardt (2):
+### Jan Engelhardt (2):
 	build: support for automake-1.12
 	build: do not fail if AM_SILENT_RULES is not present
 
-Jean-Sébastien Pédron (2):
+### Jean-Sébastien Pédron (2):
 	* [build]: support build dir != source dir
 	* [build]: regen autotools files to correctly support FreeBSD 10
 
-Kai-Uwe Behrmann (11):
+### Kai-Uwe Behrmann (11):
 	* [build]: rename FindXcm.cmake to XcmConfig.cmake
 	* [conf]: install FindXcm.cmake
 	* [core]: define XCM_COLOR_SERVER_MANAGEMENT enum
@@ -48,21 +50,21 @@ Kai-Uwe Behrmann (11):
 	* [conf]: bump version
 	* [build]: reset release version in RPM spec file
 
-Version libXcm-0.5.1
+# Version libXcm-0.5.1
 
-Kai-Uwe Behrmann (4):
+### Kai-Uwe Behrmann (4):
 	* [core]: add XCM_ prefix to HAVE macros
 	* [core]: simplify varg allocation for messages
 	* [build]: depend on dist-bzip2 for make rpm target
 	* [conf]: fix DDC code linking
 
-Michael Weber (1):
+### Michael Weber (1):
 	* [conf]: add --disable-x11 configure option
 
 
-Version libXcm-0.5.0
+# Version libXcm-0.5.0
 
-Jan Engelhardt (7):
+### Jan Engelhardt (7):
 	* [conf]: allow building without X11
 	* [build]: allow building without X11
 	* [core]: resolve compiler warnings about incorrect code
@@ -71,7 +73,7 @@ Jan Engelhardt (7):
 	* [conf]: switch to autotools
 	* [conf]: Xcm header files utilize header files from xproto (Xatom.h) and x11 (Xlib.h)
 
-Kai-Uwe Behrmann (75):
+### Kai-Uwe Behrmann (75):
 	* [build]: correct configure version macor in spec
 	* [build]: update spec file for autotools changes
 	* [core]: keep capabilities visible for non X11
@@ -148,9 +150,9 @@ Kai-Uwe Behrmann (75):
 	* [conf]: bump version
 	* [core]: chose first text block for type
 
-Version libXcm-0.4.2
+# Version libXcm-0.4.2
 
-Kai-Uwe Behrmann (11):
+### Kai-Uwe Behrmann (11):
 	* [core]: use only JSON array in xcmedid
 	* [core]: skip the numbered JSON device level in xcmedid
 	* [build]: default to bz2 compression for RPM
@@ -163,9 +165,9 @@ Kai-Uwe Behrmann (11):
 	* [core]: exclude DDC from __FreeBSD__
 	* [conf]: bump version
 
-Version libXcm-0.4.1
+# Version libXcm-0.4.1
 
-Kai-Uwe Behrmann (14):
+### Kai-Uwe Behrmann (14):
 	* [core]: dont call exit() from library code
 	* [build]: rpm group is System/Libraries
 	* [core]: initialy print capabilities
@@ -181,12 +183,12 @@ Kai-Uwe Behrmann (14):
 	* [build]: remove libxorg-x11-devel from mandriva
 	* [docu]: update ChangeLog
 
-Nicolas Chauvet (1):
+### Nicolas Chauvet (1):
 	* [conf]: apply Fedora patch for pkg-config
 
-Version libXcm-0.4.0
+# Version libXcm-0.4.0
 
-Kai-Uwe Behrmann (26):
+### Kai-Uwe Behrmann (26):
 	* [conf]: bump version
 	* [core]: fix empty string access in XcmStringAdd_
 	* [core]: add XcmValueInt16()
@@ -214,9 +216,9 @@ Kai-Uwe Behrmann (26):
 	* [docu]: update to XcmDDC
 	* [build]: Makefile.all is no more up to date
 
-libXcm-0.3.0
+# libXcm-0.3.0
 
-Kai-Uwe Behrmann (17):
+### Kai-Uwe Behrmann (17):
 	* [docu]: update ChangeLog
 	* [conf]: bump to 0.2.8
 	* [docu]: Draft 2 for net-color spec 0.2
@@ -235,9 +237,9 @@ Kai-Uwe Behrmann (17):
 	* [docu]: update XcmEdidParse man page
 	* [docu]: update AUTHORS and README
 
-libXcm-0.2.7
+# libXcm-0.2.7
 
-Kai-Uwe Behrmann (10):
+### Kai-Uwe Behrmann (10):
 	* [docu]: limit doxygen search paths
 	* [docu]: update ChangeLog
 	* [doku]: rename Doxyfile for automatic updates
@@ -249,9 +251,9 @@ Kai-Uwe Behrmann (10):
 	* [build]: sync with Nicolas Chauvet alias kwizart
 	* [docu]: rename Xcm.3x to libXcm.3
 
-libXcm-0.2.6
+# libXcm-0.2.6
 
-Kai-Uwe Behrmann (39):
+### Kai-Uwe Behrmann (39):
 	* [build]: link -lX11 to libXcolor.so
 	* [Xc]: XcolorRegionDelete allow real delete
 	* [Xc]: fix wrong memcpy bug
@@ -292,7 +294,7 @@ Kai-Uwe Behrmann (39):
 	* [build]: omit RPM buildroot cleaning
 	* [conf]: bump version
 
-Tomas Carnecky (41):
+### Tomas Carnecky (41):
 	Initial import.
 	Better visualization of the color transformation.
 	Use the compiz fragment API

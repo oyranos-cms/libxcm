@@ -1,3 +1,5 @@
+# MIT License
+
 License download: http://www.opensource.org/licenses/mit-license.php
 --------------------------------------------------------------------------------
 Copyright (c) 2008, Tomas Carnecky, (c) 2008-2010, Kai-Uwe Behrmann
