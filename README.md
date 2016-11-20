@@ -1,5 +1,9 @@
 # libXcm README
-[![Build Status](https://travis-ci.org/oyranos-cms/libxcm.svg?branch=master)](https://travis-ci.org/oyranos-cms/libxcm) [![Coverity Scan Build Status](https://scan.coverity.com/projects/4303/badge.svg)](https://scan.coverity.com/projects/4303) [![Documentation](https://codedocs.xyz/oyranos-cms/libxcm.svg)](https://codedocs.xyz/oyranos-cms/libxcm/)
+[![Build Status](https://travis-ci.org/oyranos-cms/libxcm.svg?branch=master)](https://travis-ci.org/oyranos-cms/libxcm)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/4303/badge.svg)](https://scan.coverity.com/projects/4303)
+[![Documentation](https://codedocs.xyz/oyranos-cms/libxcm.svg)](https://codedocs.xyz/oyranos-cms/libxcm/)
+[![Issues](https://img.shields.io/github/issues-raw/oyranos-cms/libxcm.svg?style=flat-square)](https://github.com/oyranos-cms/libxcm/issues)
+[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](http://www.opensource.org/licenses/mit-license.php)
 
 The libXcm library contains the a reference implementation of the 
 X Color Management specification. The X Color Management specification 
