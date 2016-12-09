@@ -1,5 +1,52 @@
 # ChangeLog
 
+# Version 0.5.4
+
+### Kai-Uwe Behrmann (43):
+* [core]: fix some compile warnings
+* [core]: show _NET_DESKTOP_GEOMETRY event
+* [docs]: repair github markdown
+* [docs]: convert more docs to markdown
+* [docu]: add README badges for issues and license
+* [docu]: move the project links below the headline
+* [docu]: link to development page
+* [docu]: add link to life doxygen
+* [conf]: exclude more intermediate build files from git
+* [core]: allow only printable ascii for edid strings
+* [core]: fix newly introduced edid vendor parsing error
+* [conf]: fix autotools rebuilding scripts for CI
+* [conf]: add missed autotools file
+* [conf]: fix distcheck target
+* [docu]: declare most dependencies optional
+* [core]: fix warning: iteration 1u invokes undefined behavior [-Waggressive-loop-optimizations]
+* [conf]: file shuffling
+* [docu]: slightly simplify tutorial compile option
+* [build]: update all autotools files
+* [conf]: sync local spec file almost with OBS one
+* [build]: update autotools for README.md rename
+* [build]: use orig.tar.bz2 for rpm target
+* [docu]: remove unused file
+* Revert "* [docu]: satisfy autotools"
+* [docu]: satisfy autotools
+* [docu]: improve html docu
+* [core]: fix Dereference after null check
+* [core]: fix use of correct deallocator
+* [core]: fix warning about getc truncation
+* [core]: fix possiply deferencing null pointer
+* [docu]: explain XcmDummy function
+* [core]: fix introduces access of uninitialised pointer
+* [core]: fix CID 31728 resource leak
+* [core]: fix some coverity detected leakages
+* [core]: more clearly set char and not pointer
+* [conf]: add coverty key
+* [docu]: add CI status label to README
+* [conf]: add CI dependencies
+* [docu]: convert README to markdown format
+* [conf]: enable CI
+* [docu]: update URLs
+* [conf]: bump version
+* [build]: fix RPM spec requires
+
 # Version libXcm-0.5.3
 
 ### Florian Höch (1):
