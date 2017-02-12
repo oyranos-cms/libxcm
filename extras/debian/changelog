@@ -1,3 +1,12 @@
+libxcm (0.5.4-1) unstable; urgency=low
+
+  * show _NET_DESKTOP_GEOMETRY event
+  * fix warnings from code audit
+  * fix leaks from code audit
+  * fix use of correct deallocator
+
+ -- Kai-Uwe Behrmann (oy) <oy@oyranos.org>  Tue, 29 Nov 2016 12:00:00 +0100
+
 libxcm (0.5.3-1) unstable; urgency=low
 
   * remove libtool
