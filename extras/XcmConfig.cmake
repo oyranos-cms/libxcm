@@ -1,5 +1,21 @@
+# Redistribution and use is allowed according to the terms of the BSD license.
+# Copyright (c) 2012-2014, Kai-Uwe Behrmann, <ku.b@gmx.de>
+
 find_package(PkgConfig)
 pkg_check_modules(XCM xcm)
+
+FIND_PATH(XCM_INCLUDE_DIRS NAMES Xcm.h
+	ONLY_CMAKE_FIND_ROOT_PATH
+	)
+
+FIND_LIBRARY(XCM_LIBRARY_DIR NAMES Xcm XcmEdid
+	ONLY_CMAKE_FIND_ROOT_PATH
+	)
+
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(XCM
+	REQUIRED_VARS XCM_LIBRARY_DIR XCM_INCLUDE_DIRS
+	)
 
 
 if (XCM_FOUND)
