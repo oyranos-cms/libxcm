@@ -6,8 +6,8 @@ SUBDIRS = src
 
 pkgincludedir = ${includedir}/X11/Xcm
 pkginclude_HEADERS = \
-	include/Xcm.h include/XcmDDC.h include/XcmEdidParse.h \
-	include/XcmEvents.h include/XcmVersion.h
+	include/X11/Xcm/Xcm.h include/X11/Xcm/XcmDDC.h include/X11/Xcm/XcmEdidParse.h \
+	include/X11/Xcm/XcmEvents.h include/X11/Xcm/XcmVersion.h
 
 man_MANS = \
 	doc/man/man3/Xcm.3 doc/man/man3/XcmDDC.3 doc/man/man3/XcmEdidParse.3 \

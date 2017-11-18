@@ -1,6 +1,6 @@
 # -*- Makefile -*-
 
-AM_CPPFLAGS = -I${top_srcdir}/include -I${top_builddir}/include ${libX11_CFLAGS} ${libXfixes_CFLAGS} ${libXmu_CFLAGS}
+AM_CPPFLAGS = -I${top_srcdir}/include/X11/Xcm -I${top_builddir}/include/X11/Xcm ${libX11_CFLAGS} ${libXfixes_CFLAGS} ${libXmu_CFLAGS}
 AM_CFLAGS   = -Wall
 
 lib_LTLIBRARIES = libXcmEDID.la libXcmDDC.la libXcmX11.la libXcm.la

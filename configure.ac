@@ -2,7 +2,7 @@ define([MAJOR],[0])
 define([MINOR],[5])
 define([MICRO],[4])
 AC_INIT([libXcm], [MAJOR.MINOR.MICRO],
-         https://sourceforge.net/tracker/?group_id=177017&atid=879553,
+         https://github.com/oyranos-cms/libxcm/issues,
          libXcm,
          http://www.oyranos.org)
 LIBTOOL_CURRENT=0
@@ -86,7 +86,7 @@ else
 fi
 
 AC_CONFIG_FILES([Makefile src/Makefile extras/xcm.pc extras/xcm-edid.pc extras/xcm-ddc.pc extras/xcm-x11.pc doc/Doxyfile extras/libXcm.spec
-include/XcmVersion.h])
+include/X11/Xcm/XcmVersion.h])
 AC_OUTPUT
 
 if [[ "$HAVE_X11" = "" ]]; then
