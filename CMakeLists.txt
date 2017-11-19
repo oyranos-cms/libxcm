@@ -2,7 +2,7 @@ OPTION(ENABLE_SHARED_LIBS "Build shared libs" ON)
 OPTION(ENABLE_STATIC_LIBS "Build static libs" ON)
 OPTION(ENABLE_INSTALL     "Install files" ON)
 
-SET (OPROJECT_NAME "libXcm" )
+SET (OPROJECT_NAME "XCM" )
 SET( ${OPROJECT_NAME}_PACKAGE_MAJOR 0)
 SET( ${OPROJECT_NAME}_PACKAGE_MINOR 5)
 SET( ${OPROJECT_NAME}_PACKAGE_MICRO 4)
@@ -98,6 +98,16 @@ IF(ENABLE_INSTALL)
        libXcm.3
      )
   INSTALL( FILES ${MAN3_PAGES} DESTINATION ${CMAKE_INSTALL_MANDIR}/man3 )
+  SET( CHEADERS_PUBLIC
+	     include/X11/Xcm/Xcm.h
+       include/X11/Xcm/XcmDDC.h
+       include/X11/Xcm/XcmEdidParse.h
+       include/X11/Xcm/XcmEvents.h 
+     )
+  INSTALL( FILES
+	     ${CHEADERS_PUBLIC}
+       ${CMAKE_BINARY_DIR}/src/include/X11/Xcm/XcmVersion.h
+	     DESTINATION ${includedir} )
 ENDIF(ENABLE_INSTALL)
 
 SET( SOURCES_STATIC ${SOURCES_STATIC} PARENT_SCOPE )
