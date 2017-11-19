@@ -91,6 +91,6 @@ pkgconfigdir = ${libdir}/pkgconfig
 pkgconfig_DATA = extras/xcm.pc extras/xcm-edid.pc extras/xcm-ddc.pc extras/xcm-x11.pc
 
 cmakedir = $(libdir)/cmake/Xcm
-cmake_DATA = extras/XcmConfig.cmake
+cmake_DATA = cmake/XcmConfig.cmake
 
 dist_doc_DATA = README.md docs/AUTHORS.md docs/ChangeLog.md docs/COPYING.md

@@ -1,6 +1,6 @@
 Source: libxcm
 Priority: extra
-Maintainer: Kai-Uwe Behrmann (oy) <oy@oyranos.org>
+Maintainer: Kai-Uwe Behrmann <ku.b@gmx.de>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev,
  pkg-config,
  libxfixes-dev,
