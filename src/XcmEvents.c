@@ -17,6 +17,7 @@ extern "C" {
 #include "Xcm.h"
 #include "XcmEdidParse.h"
 #include "XcmEvents.h"
+#include "XcmInternal.h"
 
 #define __USE_POSIX2 1
 #include <stdio.h>  /* popen() */
@@ -100,7 +101,7 @@ int      myXErrorHandler             ( Display           * display,
  *  @date    2010/10/01
  */
 int            XcmMessage            ( XCME_MSG_e          code,
-                                       const void        * context,
+                                       const void        * context XCM_UNUSED,
                                        const char        * format,
                                        ... )
 {
@@ -415,7 +416,7 @@ void     xcmePrintWindowRegions      ( Display           * display,
 {
   unsigned long n = 0;
   int i, j;
-  int result = -1;
+  int result XCM_UNUSED = -1;
   XcolorRegion * regions = 0;
 
   regions = XcolorRegionFetch( display, w, &n );
@@ -497,7 +498,7 @@ static inline unsigned long XcolorProfileCount(void *data, unsigned long nBytes)
   }
 }*/
 
-int myXErrorHandler ( Display * display, XErrorEvent * e)
+int myXErrorHandler ( Display * display XCM_UNUSED, XErrorEvent * e XCM_UNUSED)
 {
   DERR( "%s:%d catched a X11 error\n", 
           strrchr(__FILE__, '/')?strrchr(__FILE__, '/')+1:__FILE__,__LINE__ );
@@ -524,11 +525,11 @@ void XcmeSelectInput( XcmeContext_s * c )
           &nWindow, &left, (unsigned char**)&windows );
         n = (int)(nWindow + left);
 
-        for(i = 0; i < (int)n; ++i)
+        for(i = 0; i < n; ++i)
         {
           /* search of a previous observation of a particular window */
           int found = 0;
-          for(j = 0; j < c->nWindows; ++j)
+          for(j = 0; (int)j < c->nWindows; ++j)
           {
             if(windows[i] == c->Windows[j])
               found = 1;
@@ -632,7 +633,7 @@ XcmeContext_s * XcmeContext_Create   ( const char        * display_name )
  */
 int      XcmeContext_Setup2          ( XcmeContext_s     * c,
                                        const char        * display_name,
-                                       int                 flags )
+                                       int                 flags XCM_UNUSED )
 {
   /* Open the display and create our window. */
   Visual * vis = 0;
