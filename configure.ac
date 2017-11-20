@@ -1,6 +1,6 @@
 define([MAJOR],[0])
 define([MINOR],[5])
-define([MICRO],[4])
+define([MICRO],[5])
 AC_INIT([libXcm], [MAJOR.MINOR.MICRO],
          https://github.com/oyranos-cms/libxcm/issues,
          libXcm,
