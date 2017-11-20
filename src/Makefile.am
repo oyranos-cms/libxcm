@@ -17,7 +17,7 @@ libXcmX11_la_SOURCES = Xcm.c XcmEvents.c
 else
 EXTRA_SOURCES += Xcm.c XcmEvents.c
 endif
-libXcm_la_SOURCES = XcmDummy.c
+libXcm_la_SOURCES = XcmDummy.c XcmInternal.h
 
 libXcmX11_la_LIBADD  = \
 			libXcmEDID.la

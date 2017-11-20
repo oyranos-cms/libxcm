@@ -7,47 +7,19 @@ Group:          System/Libraries
 Name:           libXcm
 
 Url:            http://www.oyranos.org
-#Git-Clone:     git://www.oyranos.org/git/xcolor
-Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libXcm-@PACKAGE_VERSION@.tar.bz2
+Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libxcm_@PACKAGE_VERSION@.orig.tar.bz2
 Vendor:         Kai-Uwe Behrmann
 BuildRoot:      %{_tmppath}/libxcm-%{version}-build
 
-%if 0%{?suse_version} > 0
+BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig
-BuildRequires:  xorg-x11-Mesa
-BuildRequires:  xorg-x11-Mesa-devel
-%endif
-%if 0%{?suse_version} > 1010
-BuildRequires:  Mesa
-BuildRequires:  Mesa-devel
-BuildRequires:  gcc-c++
-BuildRequires:  pkgconfig
-BuildRequires:  xorg-x11
-BuildRequires:  xorg-x11-devel
-BuildRequires:  xorg-x11-libX11
-BuildRequires:  xorg-x11-libX11-devel
-BuildRequires:  xorg-x11-libXfixes
-BuildRequires:  xorg-x11-libXfixes-devel
-BuildRequires:  xorg-x11-libXmu-devel
-BuildRequires:  xorg-x11-libs
-BuildRequires:  xorg-x11-util-devel
-%endif
-%if 0%{?mandriva_version} > 0
-BuildRequires:  Mesa
-BuildRequires:  gcc-c++
-BuildRequires:  mesagl-devel
-BuildRequires:  pkgconfig
-%endif
-%if 0%{?fedora_version} > 0 || 0%{?rhel_version} > 0 || 0%{?centos_version} > 0
-BuildRequires:  Mesa
-BuildRequires:  Mesa-devel
-BuildRequires:  gcc-c++
-BuildRequires:  libXfixes-devel
-BuildRequires:  libXmu-devel
-BuildRequires:  xdg-utils
-BuildRequires:  xorg-x11-Mesa-devel
-%endif
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xfixes)
+BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(xmu)
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xxf86vm)
 
 %package      -n %{name}0
 Summary:        X Color Management Library

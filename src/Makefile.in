@@ -372,7 +372,7 @@ libXcmEDID_la_SOURCES = XcmEdidParse.c
 EXTRA_SOURCES = $(am__append_1) $(am__append_2)
 @HAVE_LINUX_TRUE@libXcmDDC_la_SOURCES = XcmDDC.c
 @HAVE_X11_TRUE@libXcmX11_la_SOURCES = Xcm.c XcmEvents.c
-libXcm_la_SOURCES = XcmDummy.c
+libXcm_la_SOURCES = XcmDummy.c XcmInternal.h
 libXcmX11_la_LIBADD = \
 			libXcmEDID.la
 

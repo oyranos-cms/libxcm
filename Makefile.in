@@ -419,7 +419,7 @@ EXTRA_DIST = ${man_MANS} \
 	examples/edid-parse/makefile \
 	examples/net-color-region/netColorRegion2.c \
 	examples/net-color-region/makefile \
-        extras/XcmConfig.cmake
+  cmake/XcmConfig.cmake
 
 RPMARCH = `rpmbuild --showrc | awk '/^build arch/ {print $$4}'`
 pkgconfigdir = ${libdir}/pkgconfig
@@ -1069,7 +1069,7 @@ rpm:    dist-orig
 	rpmdir/SRPMS \
 	rpmdir/RPMS/$(RPMARCH)
 	cp -f libxcm_$(VERSION).orig.tar.bz2 rpmdir/SOURCES
-	rpmbuild --clean -ba $(top_builddir)/$(PACKAGE).spec --define "_topdir $$PWD/rpmdir"
+	rpmbuild --clean -ba $(top_builddir)/extras/$(PACKAGE).spec --define "_topdir $$PWD/rpmdir"
 	@echo "============================================================"
 	@echo "Finished - the packages are in rpmdir/RPMS and rpmdir/SRPMS!"
 
