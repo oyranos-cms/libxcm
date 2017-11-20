@@ -548,8 +548,16 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
   XcmEdidKeyValue_s * l = 0;
   int count = 0, i;
   XCM_EDID_ERROR_e err = XcmEdidParse( edid, &l, &count );
-  char * txt = calloc( sizeof(char), 4096 );
+  char * txt;
   int year = 0, week = 0;
+
+  if(!count)
+  {
+    XcmEdidFree( &l );
+    return err;
+  }
+
+  txt = alloc( sizeof(char) * 4096 );
 
   sprintf(txt,
   "{\n"
@@ -597,10 +605,7 @@ XCM_EDID_ERROR_e  XcmEdidPrintOpenIccJSON (
   "}\n"
   );
 
-  if(count)
-    *text = txt;
-  else
-    free(txt);
+  *text = txt;
 
   XcmEdidFree( &l );
 
