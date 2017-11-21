@@ -38,7 +38,9 @@ SET (TARGET_DOCUMENTATION_FOLDER
 
 #cmake settings for use by find_package
 INSTALL ( FILES
-		"${CMAKE_CURRENT_SOURCE_DIR}/XcmConfig.cmake"
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/${TARGET_CMAKE_FOLDER} COMPONENT dev
-	)
+          "${CMAKE_CURRENT_SOURCE_DIR}/XcmConfig.cmake"
+          DESTINATION ${CMAKE_INSTALL_LIBDIR}/${TARGET_CMAKE_FOLDER}
+          COMPONENT dev
+          RENAME FindXcm.cmake
+        )
 
