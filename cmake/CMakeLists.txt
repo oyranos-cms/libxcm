@@ -43,6 +43,5 @@ INSTALL ( FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/XcmConfig.cmake"
           DESTINATION ${CMAKE_MODULES_INSTALL_DIR}
           COMPONENT dev
-          RENAME FindXcm.cmake
         )
 
