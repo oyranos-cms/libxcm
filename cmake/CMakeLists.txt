@@ -8,11 +8,13 @@ SET (TARGET_INCLUDE_FOLDER
 		"Optional folder below system include folder to install include files."
     )
 
-SET (TARGET_CMAKE_FOLDER
-		"cmake/Xcm"
+IF(NOT CMAKE_MODULES_INSTALL_DIR)
+  SET (CMAKE_MODULES_INSTALL_DIR
+		"${CMAKE_INSTALL_LIBDIR}/cmake/${PACKAGE_NAME}"
 		CACHE STRING
-		"The folder below system prefix where to install cmake files."
+		"The folder where to install cmake files."
     )
+ENDIF(NOT CMAKE_MODULES_INSTALL_DIR)
 
 SET (TARGET_PLUGIN_FOLDER "xcm"
 		CACHE STRING
@@ -39,7 +41,7 @@ SET (TARGET_DOCUMENTATION_FOLDER
 #cmake settings for use by find_package
 INSTALL ( FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/XcmConfig.cmake"
-          DESTINATION ${CMAKE_INSTALL_LIBDIR}/${TARGET_CMAKE_FOLDER}
+          DESTINATION ${CMAKE_MODULES_INSTALL_DIR}
           COMPONENT dev
           RENAME FindXcm.cmake
         )
