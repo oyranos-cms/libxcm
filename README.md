@@ -26,7 +26,7 @@ info is in xcm-x11.
 
 ### Links
 * sources: [git clone git://github.com/oyranos-cms/libxcm](https://github.com/oyranos-cms/libxcm)
-* www: [OpenICC](http://www.oyranos.org/libxcm)
+* www: [www.oyranos.org/libxcm](http://www.oyranos.org/libxcm)
 * support: [email list](http://lists.freedesktop.org/mailman/listinfo/openicc)
 * [ChangeLog](docs/ChangeLog.md)
 * [Copyright](docs/COPYING.md) - MIT
