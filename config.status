@@ -425,7 +425,7 @@ $config_headers
 Configuration commands:
 $config_commands
 
-Report bugs to <https://github.com/oyranos-cms/libxcm/issues>.
+Report bugs to <https://gitlab.com/oyranos/libxcm/issues>.
 libXcm home page: <http://www.oyranos.org>."
 
 ac_cs_config="'--prefix=/home/kuwe/.local' 'PKG_CONFIG_PATH=:/home/kuwe/.local/lib64/pkgconfig:/home/kuwe/.local/lib64/pkgconfig'"
@@ -540,7 +540,7 @@ _ASBOX
 #
 # INIT-COMMANDS
 #
-AMDEP_TRUE="" ac_aux_dir="build-aux"
+AMDEP_TRUE="" MAKE="make"
 
 
 # The HP-UX ksh and POSIX shell print the target directory to stdout
@@ -675,8 +675,8 @@ postuninstall_cmds=''
 finish_cmds='PATH="\$PATH:/sbin" ldconfig -n $libdir'
 finish_eval=''
 hardcode_into_libs='yes'
-sys_lib_search_path_spec='/usr/lib64/gcc/x86_64-suse-linux/7 /usr/lib64 /lib64 /usr/x86_64-suse-linux/lib '
-sys_lib_dlsearch_path_spec='/lib /usr/lib /usr/local/lib64 /usr/local/lib /usr/lib64/elektra4 /usr/lib64/graphviz /usr/lib64/graphviz/sharp /usr/lib64/graphviz/java /usr/lib64/graphviz/perl /usr/lib64/graphviz/php /usr/lib64/graphviz/ocaml /usr/lib64/graphviz/python /usr/lib64/graphviz/lua /usr/lib64/graphviz/tcl /usr/lib64/graphviz/guile /usr/lib64/graphviz/ruby /usr/lib64/kid3 /usr/lib64/octave/4.2.1 '
+sys_lib_search_path_spec='/usr/lib64/gcc/x86_64-suse-linux/11 /usr/lib64 /lib64 /usr/x86_64-suse-linux/lib '
+sys_lib_dlsearch_path_spec='/lib /usr/lib /usr/local/lib64 /usr/local/lib /usr/lib64/elektra4 /usr/lib64/kid3 '
 hardcode_action='immediate'
 enable_dlopen='unknown'
 enable_dlopen_self='unknown'
@@ -828,14 +828,14 @@ S["LTLIBOBJS"]=""
 S["LIBOBJS"]=""
 S["HAVE_LINUX_FALSE"]="#"
 S["HAVE_LINUX_TRUE"]=""
-S["RPMBUILD"]="/bin/rpm"
+S["RPMBUILD"]="/usr/bin/rpm"
 S["HAVE_X11_FALSE"]="#"
 S["HAVE_X11_TRUE"]=""
-S["libXmu_LIBS"]="-lXmu -lXt -lX11"
+S["libXmu_LIBS"]="-lXmu -lXt -lX11 "
 S["libXmu_CFLAGS"]=""
-S["libXfixes_LIBS"]="-lXfixes"
+S["libXfixes_LIBS"]="-lXfixes "
 S["libXfixes_CFLAGS"]=""
-S["libX11_LIBS"]="-lX11"
+S["libX11_LIBS"]="-lX11 "
 S["libX11_CFLAGS"]=""
 S["PKG_CONFIG_LIBDIR"]=""
 S["PKG_CONFIG_PATH"]=":/home/kuwe/.local/lib64/pkgconfig:/home/kuwe/.local/lib64/pkgconfig"
@@ -889,7 +889,6 @@ S["am__nodep"]="_no"
 S["AMDEPBACKSLASH"]="\\"
 S["AMDEP_FALSE"]="#"
 S["AMDEP_TRUE"]=""
-S["am__quote"]=""
 S["am__include"]="include"
 S["DEPDIR"]=".deps"
 S["OBJEXT"]="o"
@@ -903,6 +902,9 @@ S["AM_BACKSLASH"]="\\"
 S["AM_DEFAULT_VERBOSITY"]="1"
 S["AM_DEFAULT_V"]="$(AM_DEFAULT_VERBOSITY)"
 S["AM_V"]="$(V)"
+S["CSCOPE"]="cscope"
+S["ETAGS"]="etags"
+S["CTAGS"]="ctags"
 S["am__untar"]="$${TAR-tar} xf -"
 S["am__tar"]="$${TAR-tar} chof - \"$$tardir\""
 S["AMTAR"]="$${TAR-tar}"
@@ -916,9 +918,9 @@ S["STRIP"]="strip"
 S["install_sh"]="${SHELL} /home/kuwe/programme/libxcm/build-aux/install-sh"
 S["MAKEINFO"]="makeinfo"
 S["AUTOHEADER"]="autoheader"
-S["AUTOMAKE"]="automake-1.15"
+S["AUTOMAKE"]="automake-1.16"
 S["AUTOCONF"]="autoconf"
-S["ACLOCAL"]="aclocal-1.15"
+S["ACLOCAL"]="aclocal-1.16"
 S["VERSION"]="0.5.5"
 S["PACKAGE"]="libXcm"
 S["CYGPATH_W"]="echo"
@@ -950,20 +952,21 @@ S["sharedstatedir"]="${prefix}/com"
 S["sysconfdir"]="${prefix}/etc"
 S["datadir"]="${datarootdir}"
 S["datarootdir"]="${prefix}/share"
-S["libexecdir"]="${exec_prefix}/lib"
+S["libexecdir"]="${exec_prefix}/libexec"
 S["sbindir"]="${exec_prefix}/sbin"
 S["bindir"]="${exec_prefix}/bin"
 S["program_transform_name"]="s,x,x,"
 S["prefix"]="/home/kuwe/.local"
 S["exec_prefix"]="${prefix}"
 S["PACKAGE_URL"]="http://www.oyranos.org"
-S["PACKAGE_BUGREPORT"]="https://github.com/oyranos-cms/libxcm/issues"
+S["PACKAGE_BUGREPORT"]="https://gitlab.com/oyranos/libxcm/issues"
 S["PACKAGE_STRING"]="libXcm 0.5.5"
 S["PACKAGE_VERSION"]="0.5.5"
 S["PACKAGE_TARNAME"]="libXcm"
 S["PACKAGE_NAME"]="libXcm"
 S["PATH_SEPARATOR"]=":"
 S["SHELL"]="/bin/sh"
+S["am__quote"]=""
 _ACAWK
 cat >>"$ac_tmp/subs1.awk" <<_ACAWK &&
   for (key in S) S_is_set[key] = 1
@@ -1009,7 +1012,7 @@ D["PACKAGE_NAME"]=" \"libXcm\""
 D["PACKAGE_TARNAME"]=" \"libXcm\""
 D["PACKAGE_VERSION"]=" \"0.5.5\""
 D["PACKAGE_STRING"]=" \"libXcm 0.5.5\""
-D["PACKAGE_BUGREPORT"]=" \"https://github.com/oyranos-cms/libxcm/issues\""
+D["PACKAGE_BUGREPORT"]=" \"https://gitlab.com/oyranos/libxcm/issues\""
 D["PACKAGE_URL"]=" \"http://www.oyranos.org\""
 D["PACKAGE"]=" \"libXcm\""
 D["VERSION"]=" \"0.5.5\""
@@ -1352,29 +1355,35 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
   # Older Autoconf quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval
   # if we detect the quoting.
-  case $CONFIG_FILES in
-  *\'*) eval set x "$CONFIG_FILES" ;;
-  *)   set x $CONFIG_FILES ;;
-  esac
+  # TODO: see whether this extra hack can be removed once we start
+  # requiring Autoconf 2.70 or later.
+  case $CONFIG_FILES in #(
+  *\'*) :
+    eval set x "$CONFIG_FILES" ;; #(
+  *) :
+    set x $CONFIG_FILES ;; #(
+  *) :
+     ;;
+esac
   shift
-  for mf
+  # Used to flag and report bootstrapping failures.
+  am_rc=0
+  for am_mf
   do
     # Strip MF so we end up with the name of the file.
-    mf=`echo "$mf" | sed -e 's/:.*$//'`
-    # Check whether this is an Automake generated Makefile or not.
-    # We used to match only the files named 'Makefile.in', but
-    # some people rename them; so instead we look at the file content.
-    # Grep'ing the first line is not enough: some people post-process
-    # each Makefile.in and add a new line on top of each file to say so.
-    # Grep'ing the whole file is not good either: AIX grep has a line
+    am_mf=`$as_echo "$am_mf" | sed -e 's/:.*$//'`
+    # Check whether this is an Automake generated Makefile which includes
+    # dependency-tracking related rules and includes.
+    # Grep'ing the whole file directly is not great: AIX grep has a line
     # limit of 2048, but all sed's we know have understand at least 4000.
-    if sed -n 's,^#.*generated by automake.*,X,p' "$mf" | grep X >/dev/null 2>&1; then
-      dirpart=`$as_dirname -- "$mf" ||
-$as_expr X"$mf" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-	 X"$mf" : 'X\(//\)[^/]' \| \
-	 X"$mf" : 'X\(//\)$' \| \
-	 X"$mf" : 'X\(/\)' \| . 2>/dev/null ||
-$as_echo X"$mf" |
+    sed -n 's,^am--depfiles:.*,X,p' "$am_mf" | grep X >/dev/null 2>&1 \
+      || continue
+    am_dirpart=`$as_dirname -- "$am_mf" ||
+$as_expr X"$am_mf" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
+	 X"$am_mf" : 'X\(//\)[^/]' \| \
+	 X"$am_mf" : 'X\(//\)$' \| \
+	 X"$am_mf" : 'X\(/\)' \| . 2>/dev/null ||
+$as_echo X"$am_mf" |
     sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
 	    s//\1/
 	    q
@@ -1392,53 +1401,50 @@ $as_echo X"$mf" |
 	    q
 	  }
 	  s/.*/./; q'`
-    else
-      continue
-    fi
-    # Extract the definition of DEPDIR, am__include, and am__quote
-    # from the Makefile without running 'make'.
-    DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
-    test -z "$DEPDIR" && continue
-    am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "$am__include" && continue
-    am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
-    # Find all dependency output files, they are included files with
-    # $(DEPDIR) in their names.  We invoke sed twice because it is the
-    # simplest approach to changing $(DEPDIR) to its actual value in the
-    # expansion.
-    for file in `sed -n "
-      s/^$am__include $am__quote\(.*(DEPDIR).*\)$am__quote"'$/\1/p' <"$mf" | \
-	 sed -e 's/\$(DEPDIR)/'"$DEPDIR"'/g'`; do
-      # Make sure the directory exists.
-      test -f "$dirpart/$file" && continue
-      fdir=`$as_dirname -- "$file" ||
-$as_expr X"$file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
-	 X"$file" : 'X\(//\)[^/]' \| \
-	 X"$file" : 'X\(//\)$' \| \
-	 X"$file" : 'X\(/\)' \| . 2>/dev/null ||
-$as_echo X"$file" |
-    sed '/^X\(.*[^/]\)\/\/*[^/][^/]*\/*$/{
+    am_filepart=`$as_basename -- "$am_mf" ||
+$as_expr X/"$am_mf" : '.*/\([^/][^/]*\)/*$' \| \
+	 X"$am_mf" : 'X\(//\)$' \| \
+	 X"$am_mf" : 'X\(/\)' \| . 2>/dev/null ||
+$as_echo X/"$am_mf" |
+    sed '/^.*\/\([^/][^/]*\)\/*$/{
 	    s//\1/
 	    q
 	  }
-	  /^X\(\/\/\)[^/].*/{
+	  /^X\/\(\/\/\)$/{
 	    s//\1/
 	    q
 	  }
-	  /^X\(\/\/\)$/{
-	    s//\1/
-	    q
-	  }
-	  /^X\(\/\).*/{
+	  /^X\/\(\/\).*/{
 	    s//\1/
 	    q
 	  }
 	  s/.*/./; q'`
-      as_dir=$dirpart/$fdir; as_fn_mkdir_p
-      # echo "creating $dirpart/$file"
-      echo '# dummy' > "$dirpart/$file"
-    done
+    { echo "$as_me:$LINENO: cd "$am_dirpart" \
+      && sed -e '/# am--include-marker/d' "$am_filepart" \
+        | $MAKE -f - am--depfiles" >&5
+   (cd "$am_dirpart" \
+      && sed -e '/# am--include-marker/d' "$am_filepart" \
+        | $MAKE -f - am--depfiles) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); } || am_rc=$?
   done
+  if test $am_rc -ne 0; then
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Something went wrong bootstrapping makefile fragments
+    for automatic dependency tracking.  If GNU make was not used, consider
+    re-running the configure script with MAKE=\"gmake\" (or whatever is
+    necessary).  You can also try re-running configure with the
+    '--disable-dependency-tracking' option to at least be able to build
+    the package (albeit without support for automatic dependency tracking).
+See \`config.log' for more details" "$LINENO" 5; }
+  fi
+  { am_dirpart=; unset am_dirpart;}
+  { am_filepart=; unset am_filepart;}
+  { am_mf=; unset am_mf;}
+  { am_rc=; unset am_rc;}
+  rm -f conftest-deps.mk
 }
  ;;
     "libtool":C)
