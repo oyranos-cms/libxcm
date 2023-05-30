@@ -37,7 +37,6 @@ info is in xcm-x11.
 * autotools-dev
 * pkg-config
 * libxfixes-dev
-* libxmu-dev
 * x11proto-xext-dev
 
 

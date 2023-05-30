@@ -4,7 +4,6 @@ Maintainer: Kai-Uwe Behrmann <ku.b@gmx.de>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev,
  pkg-config,
  libxfixes-dev,
- libxmu-dev,
  x11proto-xext-dev
 Standards-Version: 3.9.2
 Section: libs

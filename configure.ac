@@ -1,10 +1,7 @@
 define([MAJOR],[0])
 define([MINOR],[5])
 define([MICRO],[5])
-AC_INIT([libXcm], [MAJOR.MINOR.MICRO],
-         https://gitlab.com/oyranos/libxcm/issues,
-         libXcm,
-         http://www.oyranos.org)
+AC_INIT([libXcm],[MAJOR.MINOR.MICRO],[https://gitlab.com/oyranos/libxcm/issues],[libXcm],[http://www.oyranos.org])
 LIBTOOL_CURRENT=0
 LIBTOOL_REVISION=5
 LIBTOOL_AGE=0
@@ -18,7 +15,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_DISABLE_STATIC
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
-AM_PROG_LIBTOOL
+LT_INIT
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 
 AC_SUBST(LIBTOOL_VERSION)
@@ -53,7 +50,6 @@ if test "$with_x11" = "yes"; then
 PKG_CHECK_EXISTS([x11], [
 	PKG_CHECK_MODULES([libX11], [x11])
 	PKG_CHECK_MODULES([libXfixes], [xfixes])
-	PKG_CHECK_MODULES([libXmu], [xmu])
 	AM_CONDITIONAL([HAVE_X11], [true])
         HAVE_X11="#define XCM_HAVE_X11 1"
         PKG_CONFIG_PRIVATE_X11="xproto x11"

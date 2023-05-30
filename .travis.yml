@@ -6,7 +6,7 @@ compiler:
 script: touch configure.ac aclocal.m4 configure Makefile.am Makefile.in config.h.in; ./configure && make
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y autotools-dev pkg-config libxfixes-dev libxmu-dev x11proto-xext-dev
+  - sudo apt-get install -y autotools-dev pkg-config libxfixes-dev x11proto-xext-dev
 
 env:
   global:

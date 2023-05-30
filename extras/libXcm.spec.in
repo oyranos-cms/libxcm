@@ -17,7 +17,6 @@ BuildRequires:  pkgconfig
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xfixes)
 BuildRequires:  pkgconfig(xinerama)
-BuildRequires:  pkgconfig(xmu)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xxf86vm)
 
