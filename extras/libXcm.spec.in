@@ -6,8 +6,8 @@ Group:          System/Libraries
 
 Name:           libXcm
 
-Url:            http://www.oyranos.org
-Source:         http://downloads.sourceforge.net/projects/oyranos/libXcm/libXcm-@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libxcm_@PACKAGE_VERSION@.orig.tar.bz2
+Url:            https://gitlab.com/oyranos/libxcm
+Source:         https://gitlab.com/oyranos/libxcm/-/archive/@XCM_PACKAGE_MAJOR@.@XCM_PACKAGE_MINOR@.x/libxcm-@PACKAGE_VERSION@.tar.bz2
 Vendor:         Kai-Uwe Behrmann
 BuildRoot:      %{_tmppath}/libxcm-%{version}-build
 
